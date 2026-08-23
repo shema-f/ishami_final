@@ -52,6 +52,7 @@ export default function Quiz() {
   const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED' | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [countedQuestions, setCountedQuestions] = useState<Set<string>>(new Set());
+  const [quizLang, setQuizLang] = useState<'rw' | 'en'>(lang === 'en' ? 'en' : 'rw');
 
   useEffect(() => {
     if (timeLeft > 0 && !quizCompleted) {
@@ -73,10 +74,27 @@ export default function Quiz() {
     })();
   }, []);
 
+  const toggleQuizLang = async () => {
+    const newLang = quizLang === 'rw' ? 'en' : 'rw';
+    setQuizLang(newLang);
+    // If a quiz is active, reload questions with new language
+    if (selectedQuiz) {
+      try {
+        const res = await quizAPI.getQuiz(selectedQuiz.id, newLang);
+        setQuestions(res.questions);
+        setCurrentQuestion(0);
+        setSelectedAnswer(null);
+        setAnswered(false);
+      } catch (error) {
+        console.error('Failed to reload quiz:', error);
+      }
+    }
+  };
+
   const startQuiz = async (quiz: QuizCard) => {
     try {
       if (!user) { navigate('/auth'); return; }
-      const res = await quizAPI.getQuiz(quiz.id, lang);
+      const res = await quizAPI.getQuiz(quiz.id, quizLang);
       setSelectedQuiz(quiz);
       setQuestions(res.questions);
       setPaywallAfter(res.paywallAfter || 6);
@@ -322,10 +340,22 @@ export default function Quiz() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-              {t('quiz.title', 'Choose a Quiz')}
-            </h1>
-            <p className="text-gray-400">{t('quiz.subtitle', 'Each quiz contains 20 questions. Test your knowledge!')}</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
+                  {t('quiz.title', 'Choose a Quiz')}
+                </h1>
+                <p className="text-gray-400">{t('quiz.subtitle', 'Each quiz contains 20 questions. Test your knowledge!')}</p>
+              </div>
+              {/* Language Toggle */}
+              <button
+                onClick={toggleQuizLang}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
+              >
+                <Languages className="w-5 h-5 text-blue-400" />
+                <span className="text-sm font-medium text-white">{quizLang === 'en' ? 'EN' : 'RW'}</span>
+              </button>
+            </div>
           </motion.div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -421,6 +451,15 @@ export default function Quiz() {
                   <p className="text-xl font-bold text-white font-[family-name:var(--font-mono)]">{score}</p>
                 </div>
               </div>
+
+              {/* Language Toggle (during quiz) */}
+              <button
+                onClick={toggleQuizLang}
+                className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
+                title={quizLang === 'en' ? 'Switch to Kinyarwanda' : 'Switch to English'}
+              >
+                <Languages className="w-5 h-5 text-blue-400" />
+              </button>
             </div>
           </div>
         </motion.div>
