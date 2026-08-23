@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles } from 'lucide-react';
+import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 import { quizAPI, paymentAPI } from '../services/api';
+import { useTranslation } from '../contexts/I18nContext';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.png', { eager: true });
 const resolveQuizImage = (idx: number) => {
   const n = Math.min(idx + 1, 20);
   const key1 = `../assets/quiz${n}.png`;
-  const key2 = `../assets/quiz ${n}.png`; // some files may contain a space (e.g., "quiz 17.png")
+  const key2 = `../assets/quiz ${n}.png`;
   const mod = (quizImages[key1] as any) || (quizImages[key2] as any);
   return typeof mod === 'string' ? mod : mod?.default || '';
 };
@@ -29,11 +30,10 @@ interface QuizCard {
   questionCount: number;
 }
 
- 
-
 export default function Quiz() {
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
+  const { t, lang } = useTranslation();
   const [quizzes, setQuizzes] = useState<QuizCard[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<QuizCard | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -76,7 +76,7 @@ export default function Quiz() {
   const startQuiz = async (quiz: QuizCard) => {
     try {
       if (!user) { navigate('/auth'); return; }
-      const res = await quizAPI.getQuiz(quiz.id);
+      const res = await quizAPI.getQuiz(quiz.id, lang);
       setSelectedQuiz(quiz);
       setQuestions(res.questions);
       setPaywallAfter(res.paywallAfter || 6);
@@ -96,7 +96,6 @@ export default function Quiz() {
   const handleAnswerSelect = (optionIndex: number) => {
     if (answered) return;
 
-    // Paywall after question 6 for non-Pro
     if (!user?.isPro && currentQuestion >= paywallAfter) {
       setShowPaywall(true);
       return;
@@ -155,6 +154,7 @@ export default function Quiz() {
   };
 
   const isTimeRunningOut = timeLeft <= 60;
+  const progressPercentage = questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
   useEffect(() => {
     (async () => {
@@ -170,65 +170,137 @@ export default function Quiz() {
         } catch (e) {
           console.error('Failed to submit quiz:', e);
         }
+        // Save quiz history to localStorage for the Profile page
+        const percentage = Math.round((score / questions.length) * 100);
+        const passed = percentage >= 70;
+        const historyEntry = {
+          id: `${Date.now()}-${selectedQuiz.id}`,
+          quizTitle: selectedQuiz.title || `Quiz ${selectedQuiz.id}`,
+          score,
+          totalQuestions: questions.length,
+          percentage,
+          completedAt: new Date().toISOString(),
+          passed,
+        };
+        const existing = localStorage.getItem('quizHistory');
+        const history = existing ? JSON.parse(existing) : [];
+        history.unshift(historyEntry);
+        localStorage.setItem('quizHistory', JSON.stringify(history.slice(0, 50)));
+        // Save certificate data if passed
+        if (passed) {
+          const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+          localStorage.setItem('latestCertificate', JSON.stringify({
+            userId: user.id,
+            username: user.username,
+            score,
+            totalQuestions: questions.length,
+            quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
+            issuedAt: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+            certificateNo: certNo,
+            passed: true,
+          }));
+        }
       }
     })();
   }, [quizCompleted]);
 
+  // Confetti component
+  const Confetti = () => {
+    const colors = ['#2563EB', '#16A34A', '#FACC15', '#DC2626', '#8B5CF6'];
+    return (
+      <div className="fixed inset-0 pointer-events-none z-50">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="confetti-piece"
+            style={{
+              left: `${Math.random() * 100}%`,
+              backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   if (selectedQuiz && quizCompleted) {
-    const percentage = Math.round((score / 20) * 100);
+    const percentage = Math.round((score / questions.length) * 100);
     const passed = percentage >= 70;
 
     return (
-      <div className="font-montserrat min-h-screen py-12 px-4 flex items-center justify-center">
+      <div className="min-h-screen py-12 px-4 flex items-center justify-center">
+        {passed && <Confetti />}
+        
+        {/* Background glow */}
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+        
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-2xl w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-12 text-center border border-gray-200/20 dark:border-gray-700/20 shadow-2xl"
+          className="max-w-lg w-full bg-white/5 backdrop-blur-xl rounded-3xl p-8 text-center border border-white/10 shadow-2xl"
         >
-          <div className={`inline-flex p-6 rounded-full mb-6 ${passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-orange-100 dark:bg-orange-900/30'}`}>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+            className={`inline-flex p-6 rounded-3xl mb-6 ${passed ? 'bg-green-500/20' : 'bg-orange-500/20'}`}
+          >
             {passed ? (
-              <Award className="w-20 h-20 text-green-500" />
+              <Trophy className="w-16 h-16 text-green-400" />
             ) : (
-              <Clock className="w-20 h-20 text-orange-500" />
+              <Clock className="w-16 h-16 text-orange-400" />
             )}
-          </div>
+          </motion.div>
           
-          <h1 className="text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
             {passed ? 'Congratulations! 🎉' : 'Keep Practicing! 💪'}
           </h1>
           
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Your Score: <span className={`text-3xl ${passed ? 'text-green-500' : 'text-orange-500'}`}>{score}/20</span>
-            <span className="block mt-2">({percentage}%)</span>
+          <p className="text-gray-400 mb-6">
+            Your Score: <span className={`text-4xl font-bold ${passed ? 'text-green-400' : 'text-orange-400'}`}>{score}/{questions.length}</span>
+            <span className="block mt-2 text-lg">({percentage}%)</span>
           </p>
 
           {passed ? (
-            <p className="text-gray-700 dark:text-gray-300 mb-8">
+            <p className="text-gray-300 mb-8">
               Excellent work! You're ready for the real driving test. Keep up the great work!
             </p>
           ) : (
-            <p className="text-gray-700 dark:text-gray-300 mb-8">
+            <p className="text-gray-300 mb-8">
               You need 70% to pass. Review the materials and try again. You got this!
             </p>
           )}
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => {
-                setCurrentQuestion(0);
-                setScore(0);
-                setTimeLeft(1200);
-                setQuizCompleted(false);
-                setAnswered(false);
-                setSelectedAnswer(null);
-              }}
-              className="px-8 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl transition-all duration-300"
-            >
-              Try Again
-            </button>
+            {passed ? (
+              <button
+                onClick={() => navigate('/certificate')}
+                className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                🎓 Get Your Certificate
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setCurrentQuestion(0);
+                  setScore(0);
+                  setTimeLeft(1200);
+                  setQuizCompleted(false);
+                  setAnswered(false);
+                  setSelectedAnswer(null);
+                  setSelectedQuiz(null);
+                }}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                Try Again
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
             <button
               onClick={() => navigate('/leaderboard')}
-              className="px-8 py-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+              className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300"
             >
               View Leaderboard
             </button>
@@ -240,32 +312,50 @@ export default function Quiz() {
 
   if (!selectedQuiz) {
     return (
-      <div className="font-montserrat min-h-screen py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-gray-900 dark:text-white mb-6">Hitamo Ikizamini</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">Buri kizamini kigizwe n'ibibazo 20. </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="min-h-screen py-8 px-4">
+        <div className="max-w-7xl mx-auto pt-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
+              {t('quiz.title', 'Choose a Quiz')}
+            </h1>
+            <p className="text-gray-400">{t('quiz.subtitle', 'Each quiz contains 20 questions. Test your knowledge!')}</p>
+          </motion.div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {quizzes.map((q, idx) => (
               <motion.div
                 key={q.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow flex flex-col h-[220px]"
+                transition={{ delay: idx * 0.1 }}
               >
-                <img
-                  src={resolveQuizImage(idx)}
-                  alt="Quiz"
-                  className="w-full h-24 sm:h-28 object-cover"
-                />
-                <div className="p-3 flex flex-col flex-1">
-                  <h3 className="text-gray-900 dark:text-white mb-1 text-sm leading-snug">Ikizami</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">{q.category}</p>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-500">Ibibazo: {q.questionCount}</p>
-                  <button onClick={() => startQuiz(q)} className="mt-auto w-full px-3 py-2 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl text-xs">Tangira</button>
-                </div>
-                <div className="absolute top-2 right-2 bg-[#00A3AD]/10 text-[#00A3AD] rounded-full px-3 py-1 text-xs flex items-center gap-2">
-                  <span>🧑‍🏫</span>
-                  <span>Moto‑Sensei</span>
+                <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 group">
+                  <div className="h-32 overflow-hidden">
+                    <img
+                      src={resolveQuizImage(idx)}
+                      alt="Quiz"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 rounded-full text-blue-400 text-xs mb-3">
+                      <Sparkles className="w-3 h-3" />
+                      <span>{q.category}</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-1">{lang === 'en' ? 'Quiz' : 'Ikizamini'} {idx + 1}</h3>
+                    <p className="text-sm text-gray-400 mb-4">{q.questionCount} {lang === 'en' ? 'questions' : 'ibibazo'}</p>
+                    <button 
+                      onClick={() => startQuiz(q)} 
+                      className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      {lang === 'en' ? 'Start Quiz' : 'Tangira'}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -278,50 +368,54 @@ export default function Quiz() {
   const question = questions[currentQuestion];
 
   return (
-    <div className="font-montserrat min-h-screen py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-8 px-4">
+      <div className="max-w-3xl mx-auto pt-20">
         {/* Header with Timer and Progress */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/20 dark:border-gray-700/20 shadow-xl">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center justify-between gap-4">
               {/* Timer */}
-              <div className={`flex items-center space-x-3 ${isTimeRunningOut ? 'animate-pulse' : ''}`}>
-                <Clock className={`w-6 h-6 ${isTimeRunningOut ? 'text-[#FF6B6B]' : 'text-[#00A3AD]'}`} />
+              <div className={`flex items-center gap-3 ${isTimeRunningOut ? 'animate-pulse' : ''}`}>
+                <div className={`p-2 rounded-xl ${isTimeRunningOut ? 'bg-red-500/20' : 'bg-blue-500/20'}`}>
+                  <Clock className={`w-5 h-5 ${isTimeRunningOut ? 'text-red-400' : 'text-blue-400'}`} />
+                </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Time Left</p>
-                  <p className={`text-2xl ${isTimeRunningOut ? 'text-[#FF6B6B]' : 'text-gray-900 dark:text-white'}`}>
+                  <p className="text-xs text-gray-500">Time Left</p>
+                  <p className={`text-xl font-bold font-[family-name:var(--font-mono)] ${isTimeRunningOut ? 'text-red-400' : 'text-white'}`}>
                     {formatTime(timeLeft)}
                   </p>
                 </div>
               </div>
 
               {/* Progress */}
-              <div className="flex-1 max-w-md">
+              <div className="flex-1 max-w-xs">
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Progress</p>
-                  <p className="text-sm text-gray-900 dark:text-white">
-                    {currentQuestion + 1} of {questions.length}
+                  <p className="text-xs text-gray-500">Progress</p>
+                  <p className="text-xs text-white font-medium">
+                    {currentQuestion + 1}/{questions.length}
                   </p>
                 </div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-                    className="h-full bg-gradient-to-r from-[#00A3AD] to-[#008891]"
+                    animate={{ width: `${progressPercentage}%` }}
+                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
                   />
                 </div>
               </div>
 
               {/* Score */}
-              <div className="flex items-center space-x-3">
-                <Award className="w-6 h-6 text-[#00A3AD]" />
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-green-500/20">
+                  <Award className="w-5 h-5 text-green-400" />
+                </div>
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Score</p>
-                  <p className="text-2xl text-gray-900 dark:text-white">{score}</p>
+                  <p className="text-xs text-gray-500">Score</p>
+                  <p className="text-xl font-bold text-white font-[family-name:var(--font-mono)]">{score}</p>
                 </div>
               </div>
             </div>
@@ -335,65 +429,79 @@ export default function Quiz() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 border border-gray-200/20 dark:border-gray-700/20 shadow-2xl"
+            className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-2xl"
           >
             {/* Category Badge */}
-            <div className="inline-flex items-center space-x-2 px-4 py-2 bg-[#00A3AD]/10 dark:bg-[#00A3AD]/20 rounded-full mb-6">
-              <span className="text-sm text-[#00A3AD]">{selectedQuiz.category}</span>
-            </div>
-            <div className="flex items-center gap-3 mb-4 bg-[#00A3AD]/10 dark:bg-[#00A3AD]/20 rounded-xl p-3">
-              <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center text-lg">🧑‍🏫</div>
-              <div className="text-sm text-gray-900 dark:text-white">Ndi Moto‑Sensei. Twige hamwe kandi twishimye. #GerayoAmahoro 🚦</div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full mb-4">
+              <span className="text-sm text-blue-400 font-medium">{selectedQuiz.category}</span>
             </div>
 
             {/* Image (if provided) */}
             {question.image && (
               <div className="mb-6">
-                <img src={question.image as any} alt="Question" className="w-full max-h-64 object-contain rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" />
+                <img src={question.image as any} alt="Question" className="w-full max-h-48 object-contain rounded-xl border border-white/10 bg-white/5" />
               </div>
             )}
 
             {/* Question */}
-            <div className="mb-8">
-              <p className="text-gray-900 dark:text-white text-base">
+            <div className="mb-6">
+              <p className="text-white text-lg leading-relaxed">
                 {question.question}
               </p>
             </div>
 
             {/* Options */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {question.options.map((option, index) => {
                 const isSelected = selectedAnswer === index;
                 const isCorrect = option.isCorrect;
                 const showResult = answered && isSelected;
+                const showCorrect = answered && isCorrect;
 
                 return (
                   <motion.button
                     key={index}
-                    whileHover={{ scale: answered ? 1 : 1.01 }}
-                    whileTap={{ scale: answered ? 1 : 0.99 }}
+                    whileHover={{ scale: answered ? 1 : 1.02 }}
+                    whileTap={{ scale: answered ? 1 : 0.98 }}
                     onClick={() => handleAnswerSelect(index)}
                     disabled={answered}
                     className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
                       showResult
                         ? isCorrect
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
-                          : 'bg-red-50 dark:bg-red-900/20 border-red-500'
-                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-[#00A3AD]'
-                    } ${answered && 'cursor-not-allowed'}`}
+                          ? 'bg-green-500/20 border-green-500/50 shadow-lg shadow-green-500/20'
+                          : 'bg-red-500/20 border-red-500/50 shadow-lg shadow-red-500/20'
+                        : showCorrect
+                          ? 'bg-green-500/10 border-green-500/30'
+                          : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
+                    } ${answered && !showResult && !showCorrect ? 'opacity-50' : ''}`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p className="text-gray-900 dark:text-white mb-1 text-sm">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium ${
+                          showResult
+                            ? isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                            : showCorrect
+                              ? 'bg-green-500/30 text-green-400'
+                              : 'bg-white/10 text-gray-400'
+                        }`}>
+                          {String.fromCharCode(65 + index)}
+                        </span>
+                        <span className={`text-sm ${
+                          showResult
+                            ? isCorrect ? 'text-green-400' : 'text-red-400'
+                            : showCorrect
+                              ? 'text-green-400'
+                              : 'text-white'
+                        }`}>
                           {option.text}
-                        </p>
+                        </span>
                       </div>
                       {showResult && (
                         <div className="ml-4">
                           {isCorrect ? (
-                            <CheckCircle className="w-8 h-8 text-green-500" />
+                            <CheckCircle className="w-6 h-6 text-green-400" />
                           ) : (
-                            <XCircle className="w-8 h-8 text-red-500" />
+                            <XCircle className="w-6 h-6 text-red-400" />
                           )}
                         </div>
                       )}
@@ -407,21 +515,29 @@ export default function Quiz() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-8 flex items-center gap-3"
+              className="mt-6 flex items-center gap-3"
             >
               <button
                 onClick={handlePrev}
                 disabled={currentQuestion === 0}
-                className={`px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all text-sm ${currentQuestion === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-600'}`}
+                className={`px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white transition-all flex items-center gap-2 ${
+                  currentQuestion === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/10'
+                }`}
               >
-                Previous
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm">{lang === 'en' ? 'Previous' : 'Ibanza'}</span>
               </button>
               <button
                 onClick={handleNext}
                 disabled={!answered}
-                className={`flex-1 px-6 py-3 rounded-xl transition-all duration-300 text-sm ${!answered ? 'opacity-50 cursor-not-allowed bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300' : 'bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white hover:shadow-xl hover:shadow-[#00A3AD]/50'}`}
+                className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                  !answered 
+                    ? 'opacity-30 cursor-not-allowed bg-white/10 text-gray-400' 
+                    : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/30'
+                }`}
               >
-                {currentQuestion < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                {currentQuestion < questions.length - 1 ? (lang === 'en' ? 'Next Question' : 'Ibazo Rikurikira') : (lang === 'en' ? 'Finish Quiz' : 'Komeza')}
+                <ArrowRight className="w-4 h-4" />
               </button>
             </motion.div>
           </motion.div>
@@ -433,70 +549,67 @@ export default function Quiz() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowPaywall(false)}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl"
+            className="bg-[#111827] rounded-3xl p-8 max-w-md w-full border border-white/10 shadow-2xl"
           >
             <div className="text-center">
-              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4">
-                <Sparkles className="w-12 h-12 text-white" />
+              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+                <Sparkles className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-gray-900 dark:text-white mb-4">Unlock Pro Access</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                You've completed 6 free questions! Unlock all 20 questions, unlimited quizzes, 
-                and premium features for only <span className="text-[#00A3AD]">1,000 RWF</span>.
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Unlock Pro Access</h2>
+              <p className="text-gray-400 mb-6">
+                You've completed 6 free questions! Unlock all 20 questions and premium features for only{' '}
+                <span className="text-[#00A3AD] font-semibold">100 RWF</span> (testing) or{' '}
+                <span className="text-blue-400 font-semibold">1,000 RWF</span> in production.
               </p>
               
-              <div className="bg-[#00A3AD]/10 rounded-xl p-4 mb-6">
-                <h3 className="text-gray-900 dark:text-white mb-3">Pro Features:</h3>
-                <ul className="text-left space-y-2 text-gray-700 dark:text-gray-300">
-                  <li className="flex items-center">
-                    <Zap className="w-5 h-5 text-[#00A3AD] mr-2" />
-                    Unlimited quiz attempts
-                  </li>
-                  <li className="flex items-center">
-                    <Zap className="w-5 h-5 text-[#00A3AD] mr-2" />
-                    Full 3D simulation access
-                  </li>
-                  <li className="flex items-center">
-                    <Zap className="w-5 h-5 text-[#00A3AD] mr-2" />
-                    Unlimited AI assistant questions
-                  </li>
-                  <li className="flex items-center">
-                    <Zap className="w-5 h-5 text-[#00A3AD] mr-2" />
-                    Premium resources download
-                  </li>
+              <div className="bg-white/5 rounded-2xl p-4 mb-6 border border-white/10">
+                <h3 className="text-white font-semibold mb-3 text-left">Pro Features:</h3>
+                <ul className="text-left space-y-2">
+                  {[
+                    'Unlimited quiz attempts',
+                    'Full 3D simulation access',
+                    'Unlimited AI assistant questions',
+                    'Premium resources download'
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-center text-gray-300 text-sm">
+                      <Zap className="w-4 h-4 text-blue-400 mr-2 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               <div className="space-y-3">
                 <input
                   type="tel"
-                  placeholder="MTN phone (e.g. 0788xxxxxx)"
+                  placeholder="Phone number (e.g. 0788xxxxxx)"
                   value={payPhone}
                   onChange={(e) => setPayPhone(e.target.value)}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   onClick={async () => {
-                    if (!user) { navigate('/login'); return; }
+                    if (!user) { navigate('/auth'); return; }
                     if (!payPhone) { setPaymentError('Enter phone number'); return; }
                     try {
                       setPaying(true);
                       setPaymentError(null);
-                      const res = await paymentAPI.initiatePayment({ userId: user.id, amount: 1000, phone: payPhone, provider: 'mtn', product: 'pro' });
+                      // Use Paypack for payment collection
+                      const res = await paymentAPI.paypackCashin({ amount: 100, phone: payPhone, product: 'pro' });
                       setTxnId(res.transactionId);
                       setPaymentStatus('PENDING');
                       let tries = 0;
                       const iv = setInterval(async () => {
                         tries++;
                         try {
-                          const s = await paymentAPI.checkStatus(res.transactionId);
+                          const s = await paymentAPI.paypackStatus(res.transactionId);
                           setPaymentStatus(s.status);
                           if (s.status === 'SUCCESS') {
                             clearInterval(iv);
@@ -514,19 +627,20 @@ export default function Quiz() {
                       }, 3000);
                     } catch (e: any) {
                       setPaying(false);
-                      setPaymentError(e?.message || 'Payment failed');
+                      const errMsg = e?.message || 'Payment failed';
+                      setPaymentError(errMsg.includes('number not found') ? 'Your phone number is not approved on Paypack. Please add it on the Paypack dashboard → Approved Numbers.' : errMsg);
                     }
                   }}
                   disabled={paying}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                  className="w-full px-6 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#00A3AD]/30 transition-all duration-300 disabled:opacity-50"
                 >
-                  {paying ? 'Processing…' : 'Pay with MTN MoMo - 1,000 RWF'}
+                  {paying ? 'Processing...' : 'Pay with Mobile Money - 100 RWF'}
                 </button>
-                {paymentError && <div className="text-red-500 text-sm">{paymentError}</div>}
-                {txnId && paymentStatus === 'PENDING' && <div className="text-sm text-gray-600 dark:text-gray-400">Awaiting MoMo approval on your phone…</div>}
+                {paymentError && <div className="text-red-400 text-sm">{paymentError}</div>}
+                {txnId && paymentStatus === 'PENDING' && <div className="text-sm text-gray-400">📱 Check your phone for USSD prompt...</div>}
                 <button
                   onClick={() => setShowPaywall(false)}
-                  className="w-full px-6 py-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
                 >
                   Maybe Later
                 </button>

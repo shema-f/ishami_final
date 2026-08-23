@@ -103,6 +103,12 @@ export const authAPI = {
       body: JSON.stringify({ idToken }),
     });
   },
+  updateProfile: async (updates: { username?: string; currentPassword?: string; newPassword?: string }) => {
+    return apiCall('/api/auth/update-profile', {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
   forgotPassword: async (identifier: string) => {
     return apiCall('/api/auth/forgot', {
       method: 'POST',
@@ -151,11 +157,11 @@ export const quizAPI = {
   },
 
   /**
-   * Get quiz by ID (Kinyarwanda-only)
-   * Backend endpoint: GET /api/quiz/:quizId
+   * Get quiz by ID (supports 'en' or 'rw' language)
+   * Backend endpoint: GET /api/quiz/:quizId?lang=en|rw
    */
-  getQuiz: async (quizId: string) => {
-    return apiCall(`/api/quiz/${quizId}`);
+  getQuiz: async (quizId: string, lang: string = 'rw') => {
+    return apiCall(`/api/quiz/${quizId}?lang=${encodeURIComponent(lang)}`);
   },
 
   /**
@@ -200,12 +206,114 @@ export const aiAPI = {
       body: JSON.stringify({ prompt, sentiment, history }),
       signal,
     });
-    // Map backend response { response: string } to frontend expectation { text: string }
     return {
       text: response.response,
-      isPro: response.isPro
+      isPro: response.isPro,
+      structured: response.structured || null,
     };
   },
+  askAssistantStream: async (
+    prompt: string,
+    callbacks: {
+      onStart?: () => void;
+      onToken?: (chunk: string, meta?: any) => void;
+      onDone?: (final: { text: string; isPro: boolean; structured: any }) => void;
+      onError?: (err: Error) => void;
+    },
+    sentiment: string = 'neutral',
+    history: Array<{ role: string, content: string }> = [],
+    signal?: AbortSignal
+  ) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream',
+      };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      let resp: Response | null = null;
+      try {
+        resp = await fetch(`${PRIMARY_API_BASE}/api/ai/stream`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ prompt, sentiment, history }),
+          signal,
+        });
+      } catch (err: any) {
+        const isNetworkError = err && (err.name === 'TypeError' || /fetch/i.test(String(err)));
+        if (isNetworkError && PRIMARY_API_BASE.includes('localhost:5000')) {
+          resp = await fetch(`${FALLBACK_API_BASE}/api/ai/stream`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ prompt, sentiment, history }),
+            signal,
+          });
+        } else {
+          throw err;
+        }
+      }
+      if (!resp.ok || !resp.body) {
+        if (!resp.ok && resp.headers.get('content-type')?.includes('application/json')) {
+          const j = await resp.json();
+          throw new Error(j.message || `HTTP ${resp.status}`);
+        }
+        throw new Error(`Stream failed HTTP ${resp.status}`);
+      }
+      if (callbacks.onStart) callbacks.onStart();
+      const reader = resp.body.getReader();
+      const dec = new TextDecoder('utf-8');
+      let buffer = '';
+      let lastFinal: any = null;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(value, { stream: true });
+        const parts = buffer.split(/\n\n/);
+        buffer = parts.pop() || '';
+        for (const raw of parts) {
+          const block = raw.replace(/^data:\s*/gm, '').trim();
+          if (!block) continue;
+          try {
+            const obj = JSON.parse(block);
+            if (obj.event === 'token' && callbacks.onToken) {
+              callbacks.onToken(obj.chunk || '', obj.meta || obj);
+            } else if (obj.event === 'done') {
+              lastFinal = { text: obj.response, isPro: obj.isPro, structured: obj.structured || null };
+            } else if (obj.event === 'error') {
+              if (callbacks.onError) callbacks.onError(new Error(obj.message || 'Stream error'));
+            }
+          } catch {}
+        }
+      }
+      if (lastFinal && callbacks.onDone) callbacks.onDone(lastFinal);
+      if (!lastFinal && callbacks.onError) callbacks.onError(new Error('Stream completed without done event'));
+      return lastFinal;
+    } catch (e) {
+      if (callbacks.onError) callbacks.onError(e as Error);
+      throw e;
+    }
+  },
+  getStatus: async () => {
+    return apiCall('/api/ai/status');
+  },
+  simulatorEvent: async (event: string, context: any = {}) => {
+    return apiCall('/api/ai/simulator-event', {
+      method: 'POST',
+      body: JSON.stringify({ event, context })
+    });
+  },
+  examGenerate: async (params: { topic?: string | null; count?: number; language?: string; difficulty?: string } = {}) => {
+    return apiCall('/api/ai/exam/generate', {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+  },
+  examSubmit: async (quiz: any, submissions: Array<{ selectedIndex: number | null }>) => {
+    return apiCall('/api/ai/exam/submit', {
+      method: 'POST',
+      body: JSON.stringify({ quiz, submissions })
+    });
+  }
 };
 
 // ============================================
@@ -214,7 +322,7 @@ export const aiAPI = {
 
 export const paymentAPI = {
   /**
-   * Initiate payment
+   * Initiate payment (legacy MTN MoMo)
    * Backend endpoint: POST /api/payment/initiate
    */
   initiatePayment: async (data: {
@@ -231,11 +339,44 @@ export const paymentAPI = {
   },
 
   /**
-   * Check payment status
+   * Check payment status (legacy)
    * Backend endpoint: GET /api/payment/status/:transactionId
    */
   checkStatus: async (transactionId: string) => {
     return apiCall(`/api/payment/status/${transactionId}`);
+  },
+
+  // ── Paypack Integration ──────────────────────────────────
+
+  /**
+   * Initiate Paypack Cashin — sends USSD push to phone.
+   * Backend endpoint: POST /api/paypack/cashin
+   */
+  paypackCashin: async (data: {
+    amount: number;
+    phone: string;
+    product?: 'pro' | 'irembo';
+  }) => {
+    return apiCall('/api/paypack/cashin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Check Paypack payment status.
+   * Backend endpoint: GET /api/paypack/status/:transactionId
+   */
+  paypackStatus: async (transactionId: string) => {
+    return apiCall(`/api/paypack/status/${transactionId}`);
+  },
+
+  /**
+   * Test Paypack connection.
+   * Backend endpoint: GET /api/paypack/test
+   */
+  paypackTest: async () => {
+    return apiCall('/api/paypack/test');
   },
 };
 
@@ -514,6 +655,24 @@ export const adminAPI = {
    */
   deleteResource: async (resourceId: string) => {
     return apiCall(`/api/admin/resources/${resourceId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Get notifications
+   * Backend endpoint: GET /api/admin/notifications
+   */
+  getNotifications: async (page: number = 1, limit: number = 50) => {
+    return apiCall(`/api/admin/notifications?page=${page}&limit=${limit}`);
+  },
+
+  /**
+   * Delete notification
+   * Backend endpoint: DELETE /api/admin/notifications/:notificationId
+   */
+  deleteNotification: async (notificationId: string) => {
+    return apiCall(`/api/admin/notifications/${notificationId}`, {
       method: 'DELETE',
     });
   },

@@ -1,612 +1,1911 @@
-export default {
-  "ibyapa": [
-    {
-      "code": "A.1a",
-      "izina": "Ikoni ibumoso",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye ikoni ryateza ibyago ibumoso",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.1b",
-      "izina": "Ikoni iburyo",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye ikoni ryateza ibyago iburyo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.1c",
-      "izina": "Amakoni abiri",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Amakoni abiri cyangwa uruhererekane rw'amakoni arenga abiri irya mbere riri ibumoso",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.1d",
-      "izina": "Amakoni abiri",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Amakoni abiri cyangwa uruhererekane rw'amakoni arenga abiri irya mbere riri iburyo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.2",
-      "izina": "Akamanuko gashobora gutera ibyago",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Akamanuko gashobora gutera ibyago (Descente dangereuse)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.3",
-      "izina": "Akamanuko gashinze cyane",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Akamanuko gashinze cyane (Montée à forte inclination)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.4a",
-      "izina": "Ifungana ry'umuhanda",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ifungana ry'umuhanda (Retrécissement de la chaussée)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.4b",
-      "izina": "Ifungana ry'umuhanda",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ifungana ry'umuhanda n'akayira gasatira umuhanda ibumoso",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.4c",
-      "izina": "Ifungana ry'umuhanda",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ifungana ry'umuhanda (bitewe n'akayira gasatira umuhanda iburyo)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 3
-    },
-    {
-      "code": "A.5",
-      "izina": "Uguhinguka kumwaro",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Uguhinguka kumwaro cyangwa ku nkombe cyangwa ahegereye icyome",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.6",
-      "izina": "Umuhanda utaringaniye",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Umuhanda utaringaniye (ahegereye ibinogo, utununga cyangwa ahantu hameze nabi)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.7",
-      "izina": "Umuhanda unyerera",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Umuhanda unyerera (ahegereye igice cy'umuhanda ushobora kuba unyerera)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.8",
-      "izina": "Utubuye dutaruka",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Utubuye dutaruka mu muhanda (Projection de gravillons)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.9",
-      "izina": "Amabuye ahanuka",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Amabuye ahanuka (ahegereye igice cy'umuhanda ahari ibyago byaterwa n'amabuye ahanuka cyangwa amabuye ari mu muhanda)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.10",
-      "izina": "Abanyamaguru",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Iyerekana ry'akayira k'abanyamaguru",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.11",
-      "izina": "Abana",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Iyerekana ry'akayira k'abana, nk'igihe bavuye ku ishuri cyangwa ku kibuga cy'imikino",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.12",
-      "izina": "Aho abanyamagare bahingukira",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Iyerekana ry'aho abanyamagare binjirira mu muhanda cyangwa bawambukiranya",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.13",
-      "izina": "Akayira k'amatungo",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Iyerekana ry'igice cy'umuhanda gishobora kwambukiranywa kuburyo budasanzwe n'amatungo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.14",
-      "izina": "Akayira k'inyamaswa",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Iyerekana ry'igice cy'umuhanda gishobora kwambukiranywa ku buryo budasanzwe n'inyamaswa",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.15",
-      "izina": "Imirimo",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye igice cy'umuhanda gikorerwamo imirimo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.16",
-      "izina": "Ibimenyetso bimurika",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye akayira (uburyo bwo kugendera mu muhanda bugengwamo n'ikimenyetso cy'amatara y'amabara atatu)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.17",
-      "izina": "Ikibuga cy'indege",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahereye aho umuhanda ucibwa hejuru n'indege zarara igihe ziguruka cyangwa zigwa ku kibuga",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.18",
-      "izina": "Umuyaga w'intambike",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye igice cy'umuhanda gihuhwamo kenshi n'inkubi y'umuyaga w'intambike",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.19",
-      "izina": "Ukugendera mu muhanda ubisikanirwamo",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye igice cy'umuhanda kibisikanirwamo by'agateganyo cyangwa buri gihe, kandi ubundi mugice kibanza hagendwaga mucyerekezo kimwe",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 4
-    },
-    {
-      "code": "A.20",
-      "izina": "Inkomane",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Gutambuka mbere hakurikijwe amategeko rusange yo gutambuka mbere",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21a",
-      "izina": "Inkomane - ibumoso",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane aho umuhanda urasukira ibumoso mu mfuruka yenda kuba igororotse",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21b",
-      "izina": "Inkomane - iburyo",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane aho umuhanda umwe urasukira iburyo, mu mfuruka yenda kuba igororotse",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21c",
-      "izina": "Inkomane - ibumoso ifunganye",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane aho umuhanda umwe urasukira ibumoso mu mfuruka ifunganye mucyerekezo kerekanwa n'ikimenyetso",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21d",
-      "izina": "Inkomane - iburyo ifunganye",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane aho umuhanda umwe urasukira iburyo mu mfuruka ifunganye mu cyerekezo cyerekanwa n'ikimenyetso",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21e",
-      "izina": "Amasangano ameze nka T",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane aho umuhanda umwe ugana ibumoso n'iburyo, ariko umuhanda urimo utarenga iyo nkomane",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.21f",
-      "izina": "Amasangano ameze nka Y",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Inkomane igizwe n'umuhanda usatuyemo imihanda ibiri itandukanye",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 5
-    },
-    {
-      "code": "A.26",
-      "izina": "Amasangano y'inzira ya gariyamoshi ibambiye",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye amasangano y'inzira nyabagendwa n'inzira ya gari yamoshi ibambiye hose cyangwa mu cya kabiri cyayo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "A.27",
-      "izina": "Amasangano y'inzira ya gariyamoshi itabambiye",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye amasangano y'inzira nyabagendwa n'inzira ya gariyamoshi, iyo nkomane itabambiye hose cyangwa mu cya kabiri cyayo",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "A.29",
-      "izina": "Ibyago",
-      "uburyo": "biburira",
-      "icyo_gisobanura": "Ahegereye icyago kidasobanuwe ukundi",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.1",
-      "izina": "Tanga inzira",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Gitegeka umuyobozi wese ugeze ku inkomane, gutanga inzira ibinyabiziga mu muhanda yegera (Tanga inzira iburyo n'ibumoso)",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.2a",
-      "izina": "Hagarara akanya gato",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Gitegeka umuyobozi wese ugeze ku nkomane ahari ikimenyetso cyo guhagarara akanya gato mbere yo kwinjira mu nkomane no guha inzira ibindi binyabiziga bigenda mu muhanda yegera",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.2b",
-      "izina": "Hagarara akanya gato",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Gisobanura kimwe n'icyapa B2a nyamara ibyapa B2b bizasimburwa buhoro buhoro n'ibyapa B2a",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.3",
-      "izina": "N'umuhanda batambukamo mbere",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Ikimenyetso cyashizweho abagenda mu muhanda kibabwirako mu nkomane z'uwo muhanda n'iyindi abagenzi bagendamo, cg baturuka muri iyo mihanda yindi bagomba guha inzira abagenza bagendera mu muhanda uriho icyo cyapa",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.4",
-      "izina": "Iherezo ryo gutambuka mbere",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Ikimenyetso cyashyiriweho abagenda mu muhanda aho uwo muhanda ureka gutambukirwamo mbere y'iyindi",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.5",
-      "izina": "Gutambuka mbere kw'ibinyabiziga biturutse aho ujya",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Birabujijwe ku muyobozi wese wegera umuhanda ufunganye aho kubisikana biruhije cg bidashoboka kwinjira muri iyo mfunganwa",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 6
-    },
-    {
-      "code": "B.6",
-      "izina": "Gutambuka mbere y'ibinyabiziga biturutse imbere",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Ikimenyetso cyashiriweho umuyobozi agiye kwinjira mu mfunganwa kimwereka ko afite uburenganzira bwo gutambuka mbere y'ibinyabiziga biturutse aho ujya",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "B.7a",
-      "izina": "Inkomane y'inzira ya gariyamoshi",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Byerekana inkomane y'umuhanda n'inzira ya gariyamoshi",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "B.7b",
-      "izina": "Inkomane y'inzira ya gariyamoshi",
-      "uburyo": "gutambuka mbere",
-      "icyo_gisobanura": "Cyerekana ko inzira ya gariyamoshi ifite nibura amashami abiri",
-      "ishusho": "Mpandeshatu ifite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.1",
-      "izina": "Ntihanyurwa",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Nta kinyabiziga kihanyura",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.2a",
-      "izina": "Ntihanyurwa mu byerekezo byombi",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Habujijwe kunyurwa n'ikinyabiziga icyo ari cyo cyose",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.2b",
-      "izina": "Ntihanyurwa n'abandi uretse abahaturiye",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Nta kinyabiziga kihanyura uretse ibinyabiziga by'abahatuye n'ibindi binyabiziga bigomba guhagarara mu gice cy'inzira nyabagendwa giherwa n'ikimenyetso C.2b",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.3a",
-      "izina": "Ntihanyurwa n'ikinyabiziga gifite moteri",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ntihanyurwa n'ikinyabiziga icyo ari cyo cyose gifite moteri uretse amapikipiki adafite akanyamitende ko ku ruhande kimwe na za velomoteri",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.3b",
-      "izina": "Ntihanyurwa n'amapikipiki",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ntihanyurwa n'amapikipiki",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.3c",
-      "izina": "Ntihanyurwa n'ibinyamitende",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ntihanyurwa n'ibinyamitende",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.3d",
-      "izina": "Ntihanyurwa na za velomoteri",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ntihanyurwa na za velomoteri",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.3e",
-      "izina": "Ntihanyurwa n'ibinyabiziga bigenewe gutwara ibicuruzwa",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ntihanyurwa n'ibinyabiziga bigenewe gutwara ibicuruzwa",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 7
-    },
-    {
-      "code": "C.13a",
-      "izina": "Birabujijwe kunyura ku binyabiziga",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Birabujijwe kunyura ku binyabiziga byose uretse ibinyamitende",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 9
-    },
-    {
-      "code": "C.14",
-      "izina": "Umuvuduko ntarengwa",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Umuvuduko ntarengwa ugarukira ku werekanwa n'ikimenyetso (mu birometero ku isaha)",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 9
-    },
-    {
-      "code": "C.18",
-      "izina": "Birabujijwe guhagarara umwanya munini",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Cyerekana kuva aho ikinyabiziga gitangirira kubuzwa guhagarara umwanya munini",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 9
-    },
-    {
-      "code": "C.19",
-      "izina": "Birabujijwe guhagarara umwanya munini n'umuto",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Cyerekana kuva aho ikinyabiziga gitangira kubuzwa guhagarara umwanya muto kimwe no guhagarara umwanya munini",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 10
-    },
-    {
-      "code": "C.20a",
-      "izina": "Guhagarara umwanya munini - icyiciro cya mbere",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ikimenyetso C.20a cyerekana kuva aho batangira kubuzwa guhagarara umwanya munini mu ruhande ikimenyetso kirimo mu minsi cumi n'itanu ya mbere ya buri kwezi",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 10
-    },
-    {
-      "code": "C.20b",
-      "izina": "Guhagarara umwanya munini - icyiciro cya kabiri",
-      "uburyo": "bibuza",
-      "icyo_gisobanura": "Ikimenyetso C20b cyerekana kuva aho batangirira kubuzwa guhagarara umwanya munini mu ruhande icyo kimenyetso kirimo kuva ku munsi wa 16 kugeza ku mutsi wa nyuma w'u kwezi",
-      "ishusho": "Uruziga rufite umuzenguruko w'umutuku, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 10
-    },
-    {
-      "code": "D.1a",
-      "izina": "Icyerekezo gitegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Gitegeka buri kinyabiziga gukurikiza icyerekezo cyerekanwe n'uturanga-cyerekezo cyangwa kunyura muri kimwe mu byerekezo byerekanwe n'uturanga-cyerekezo",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 10
-    },
-    {
-      "code": "D.1b",
-      "izina": "Icyerekezo gitegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Bisobanura kimwe n'icyapa D.1a, ikimenyetso cy'akaranga byerekezo bibiri, kigakoreshwa nyamara kugirango cyerekane ko ibinyabiziga bishobora kunyura hirya no hino y'inkomyi iri mu nzira nyabagendwa",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 10
-    },
-    {
-      "code": "D.1c",
-      "izina": "Uguhigama",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Cyerekana mu nzira ifunganye igice cyagutse cy'inzira nyabagendwa gituma habaho guhagarika ikinyabiziga kugirango gihe umwanya ibinyabiziga biturutse imbere",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.2",
-      "izina": "Ugukikira bitegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Ikimenyetso gishyizwe ku buhungiro cyangwa imbere y'inkomyi gitegeka buri kinyabiziga kunyura mu ruhande rw'ubuhungiro cyangwa rw'inkomyi yerekanwe n'akaranga-yerekezo",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.3",
-      "izina": "Inkomane banyuramo bazengurutse",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Gitegeka buri kinyabiziga gukurikiza amategeko agenga inkomane banyuramo bazengurutse",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.4",
-      "izina": "Inzira y'ibinyamitende itegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Gitegeka buri kinyamitende cyangwa velomoteri, kugendera mu nzira y'ibinyamitende iteyeho icyo kimenyetso aho itangirira ibuza ku binyabiziga bindi byose gutira ako kayira",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.5",
-      "izina": "Inzira y'abanyamaguru itegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Gitegeka abanyamaguru kunyura mu nzira iriho icyo cyapa mu ntangiriro kikabuza abandi bagenzi banyura muri iyo nzira",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.6",
-      "izina": "Inzira y'abanyamafarasi itegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Kimenyesha abanyamafarasi ko bagomba kunyura mu nzira iriho icyo cyapa mu ntangiriro kikabuza abandi bagenzi kunyura muri iyo nzira",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.7",
-      "izina": "Inzira y'amatungo itegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Kimenyesha abayobozi b'amatungo ko bagomba kunyuza amatungo muri iyo nzira",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.8",
-      "izina": "Umuvuduko muto ntarengwa utegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Kimenyesha ko ibinyabiziga biri mu nzira iriho icyo cyapa mu ntangiriro bigomba kugira umuvuduko nibura ungana n'uwerekanwe (mu birometero)",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "D.9",
-      "izina": "Iherezo ry'umuvuduko muke ntarengwa utegetswe",
-      "uburyo": "bitegeka",
-      "icyo_gisobanura": "Cyerekana aho umuvuduko muke ntarengwa wategetswe mbere n'icyapa D.8 utagitegetswe",
-      "ishusho": "Uruziga rufite ubuso bw'ubururu, umuzenguruko w'ubururu, ikirango cy'umweru",
-      "urupapuro": 11
-    },
-    {
-      "code": "E.9",
-      "izina": "Kwinjira mu mudugudu",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Urugero rw'icyapa kimenyesha ko winjiye mu mudugudu",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 13
-    },
-    {
-      "code": "E.10",
-      "izina": "Iherezo ry'umudugudu",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Urugero rw'icyapa cyerekana iherezo ry'umudugudu",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 13
-    },
-    {
-      "code": "E.11",
-      "izina": "Inzira y'abanyamaguru",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Cyerekana abanyamaguru n'abayobozi aho inzira y'abanyamaguru itangirira",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 13
-    },
-    {
-      "code": "E.12",
-      "izina": "Ibitaro",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Cyereka abayobozi b'ibinyabiziga ko bakwiye kwitonda iyo bageze hafi y'amavuriro cyane cyane iyo bakirinda gutera urusaku bakoresheje amahoni cyangwa imyuka ivubuka muri moteri",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 13
-    },
-    {
-      "code": "E.19",
-      "izina": "Aho za otobisi zihagarara",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Cyerekana ahantu hagenewe guhagararwamo n'imodoka nini zagenewe gutwara abantu",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 14
-    },
-    {
-      "code": "E.20",
-      "izina": "Parikingi",
-      "uburyo": "biyobora",
-      "icyo_gisobanura": "Cyerekana ahantu ibinyabiziga byagenewe guhagarara umwanya munini",
-      "ishusho": "Urukiramende rufite umuzenguruko w'ubururu n'ubuso bw'ubururu, ikirango cy'umweru",
-      "urupapuro": 14
-    },
-    {
-      "code": "F.1",
-      "izina": "Intera y'ahantu hatera ibyago",
-      "uburyo": "nyongera",
-      "icyo_gisobanura": "Rwerekana intera iri hagati y'icyapa n'intangiriro y'ahantu hatera ibyago cyangwa ahantu amabwiriza y'icyo cyapa agomba gukurikizwa",
-      "ishusho": "Urukiramende rufite umuzenguruko w'umukara, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 15
-    },
-    {
-      "code": "F.2",
-      "izina": "Uburebure bw'igice cyatera ibyago",
-      "uburyo": "nyongera",
-      "icyo_gisobanura": "Rwerekana uburebure bw'igice cyatera ibyago cyangwa bw'ahantu amabwiriza y'icyo cyapa agomba gukurikizwa",
-      "ishusho": "Urukiramende rufite umuzenguruko w'umukara, ubuso bw'umweru, ikirango cy'umukara",
-      "urupapuro": 15
-    }
-  ]
+/**
+ * @typedef {Object} Sign
+ * @property {string} id
+ * @property {string} code
+ * @property {"Regulatory"|"Warning"|"Information"|"Mandatory"|"Supplementary"} category
+ * @property {string} nameEn
+ * @property {string} nameRw
+ * @property {string} descriptionEn
+ * @property {string} descriptionRw
+ * @property {"Circle"|"Triangle"|"Square"|"Rectangle"|"Pentagon"|"Octagon"|"Other"} shape
+ * @property {"red"|"blue"|"yellow"|"green"|"white"|"brown"} color
+ * @property {string[]} licenseClasses
+ * @property {string} imageUrl
+ */
+
+/** @type {Sign[]} */
+export const ROAD_SIGNS = [
+  // ========== REGULATORY (RED) - ~35 signs ==========
+  {
+    id: "stop",
+    code: "B.20",
+    category: "Regulatory",
+    nameEn: "Stop",
+    nameRw: "Hagarara rwose (STOP)",
+    descriptionEn: "Come to a complete stop before the stop line. Give way to pedestrians and other vehicles. Proceed only when the way is clear.",
+    descriptionRw: "Hagarara rwose mbere y'umurongo wo guhagarara. Heza icyubahiro abanyamaguru n'ibinyabiziga. Tangira gusa inzira isobanutse.",
+    shape: "Octagon",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=B.20"
+  },
+  {
+    id: "give-way-yield",
+    code: "B.1",
+    category: "Regulatory",
+    nameEn: "Give Way / Yield",
+    nameRw: "Tanga inzira",
+    descriptionEn: "Slow down and give way to vehicles in the intersection. Stop if necessary to let traffic pass.",
+    descriptionRw: "Genda buhoro kandi uhe inzira ibinyabiziga biri mu nkomane. Hagarara niba bikenewe kugirango ibinyabiziga bireke.",
+    shape: "Triangle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=B.1"
+  },
+  {
+    id: "no-entry",
+    code: "C.1",
+    category: "Regulatory",
+    nameEn: "No Entry",
+    nameRw: "Ntihanyurwa",
+    descriptionEn: "No vehicle may enter this road. Do not proceed past this sign.",
+    descriptionRw: "Nta kinyabiziga kishobora kwinjira mu muhanda. Ntugende kurusha icyo cyapa.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.1"
+  },
+  {
+    id: "no-left-turn",
+    code: "C.2a-L",
+    category: "Regulatory",
+    nameEn: "No Left Turn",
+    nameRw: "Ntibigenza ibumoso",
+    descriptionEn: "Turning to the left is prohibited. Continue straight or turn right only.",
+    descriptionRw: "Kugenda ibumoso ntibikorwa. Komeza cyangwa ugenge iburyo gusa.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.2a-L"
+  },
+  {
+    id: "no-right-turn",
+    code: "C.2a-R",
+    category: "Regulatory",
+    nameEn: "No Right Turn",
+    nameRw: "Ntibigenza iburyo",
+    descriptionEn: "Turning to the right is prohibited. Continue straight or turn left only.",
+    descriptionRw: "Kugenda iburyo ntibikorwa. Komeza cyangwa ugenge ibumoso gusa.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.2a-R"
+  },
+  {
+    id: "no-u-turn",
+    code: "C.2a-U",
+    category: "Regulatory",
+    nameEn: "No U-Turn",
+    nameRw: "Ntibishyira inyuma (U-Turn)",
+    descriptionEn: "Making a U-turn is prohibited at this location.",
+    descriptionRw: "Gusubira inyuma imbere (U-Turn) ntibikorwa aha.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.2a-U"
+  },
+  {
+    id: "no-overtaking",
+    code: "C.13a",
+    category: "Regulatory",
+    nameEn: "No Overtaking",
+    nameRw: "Ntibikinyurana",
+    descriptionEn: "Overtaking is prohibited on this stretch of road. Do not pass other vehicles.",
+    descriptionRw: "Kwanyuranaho ntibikorwa ku munsi w'umuhanda. Ntugende kurusha ibindi binyabiziga.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.13a"
+  },
+  {
+    id: "no-overtaking-trucks",
+    code: "C.13b",
+    category: "Regulatory",
+    nameEn: "No Overtaking by Trucks",
+    nameRw: "Ntibikinyurana n'ibinyabiziga bigenewe gutwara ibicuruzwa",
+    descriptionEn: "Trucks and heavy vehicles are not allowed to overtake other vehicles here.",
+    descriptionRw: "Ibinyabiziga bigenewe gutwara ibicuruzwa ntibikoreshwa kwanyuranaho aha.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.13b"
+  },
+  {
+    id: "no-parking",
+    code: "C.18",
+    category: "Regulatory",
+    nameEn: "No Parking",
+    nameRw: "Ntabwo gupaka",
+    descriptionEn: "Parking is not allowed at any time in this area.",
+    descriptionRw: "Gupaka imodoka ntibikorwa mu gihe cyose aha.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.18"
+  },
+  {
+    id: "no-stopping",
+    code: "C.19",
+    category: "Regulatory",
+    nameEn: "No Stopping",
+    nameRw: "Ntabwo guhagarara",
+    descriptionEn: "Stopping your vehicle, even temporarily, is not allowed. Keep moving.",
+    descriptionRw: "Guhagarara imodoka, nta mpamvu yo gusa, ntibikorwa. Komeza gukora.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.19"
+  },
+  {
+    id: "no-waiting",
+    code: "C.20a",
+    category: "Regulatory",
+    nameEn: "No Waiting",
+    nameRw: "Ntabwo gutegereza",
+    descriptionEn: "Waiting with your vehicle is prohibited on specified days.",
+    descriptionRw: "Gutegereza n'umwanya wo guhagarara ntibikorwa mu minsi tweretswe.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.20a"
+  },
+  {
+    id: "no-horn",
+    code: "C.HORN",
+    category: "Regulatory",
+    nameEn: "No Horn",
+    nameRw: "Ntabwo gukoresha umunezero",
+    descriptionEn: "Sounding the horn is prohibited in this zone, typically near hospitals or schools.",
+    descriptionRw: "Gukoresha umunezero ntibikorwa aha, cyane cyane hasa y'ibitaro cyangwa amashuri.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.HORN"
+  },
+  // Speed Limit signs
+  {
+    id: "speed-limit-20",
+    code: "C.14-20",
+    category: "Regulatory",
+    nameEn: "Speed Limit 20 km/h",
+    nameRw: "Umuvuduko ntarengwa 20 km/h",
+    descriptionEn: "Maximum speed is 20 kilometers per hour. Used in residential and school zones.",
+    descriptionRw: "Umuvuduko utazwi ni 20 km/h. Bikoreshwa mu mudugudu n'ahantu h'ishuri.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=20"
+  },
+  {
+    id: "speed-limit-30",
+    code: "C.14-30",
+    category: "Regulatory",
+    nameEn: "Speed Limit 30 km/h",
+    nameRw: "Umuvuduko ntarengwa 30 km/h",
+    descriptionEn: "Maximum speed is 30 km/h. Common near schools and built-up areas.",
+    descriptionRw: "Umuvuduko utazwi ni 30 km/h. Biri mu buryo bwuzuye hasa y'amashuri.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=30"
+  },
+  {
+    id: "speed-limit-40",
+    code: "C.14-40",
+    category: "Regulatory",
+    nameEn: "Speed Limit 40 km/h",
+    nameRw: "Umuvuduko ntarengwa 40 km/h",
+    descriptionEn: "Maximum speed is 40 km/h. Used in urban transition zones.",
+    descriptionRw: "Umuvuduko utazwi ni 40 km/h. Mu bice byo guhaguruka mu mujyi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=40"
+  },
+  {
+    id: "speed-limit-50",
+    code: "C.14-50",
+    category: "Regulatory",
+    nameEn: "Speed Limit 50 km/h",
+    nameRw: "Umuvuduko ntarengwa 50 km/h",
+    descriptionEn: "Maximum speed is 50 km/h. Standard built-up urban area limit.",
+    descriptionRw: "Umuvuduko utazwi ni 50 km/h. Uburyo bwuzuye mu mujyi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=50"
+  },
+  {
+    id: "speed-limit-60",
+    code: "C.14-60",
+    category: "Regulatory",
+    nameEn: "Speed Limit 60 km/h",
+    nameRw: "Umuvuduko ntarengwa 60 km/h",
+    descriptionEn: "Maximum speed is 60 km/h. Often used on arterial roads.",
+    descriptionRw: "Umuvuduko utazwi ni 60 km/h. Biri mu mihanda ikomeye y'umujyi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=60"
+  },
+  {
+    id: "speed-limit-70",
+    code: "C.14-70",
+    category: "Regulatory",
+    nameEn: "Speed Limit 70 km/h",
+    nameRw: "Umuvuduko ntarengwa 70 km/h",
+    descriptionEn: "Maximum speed is 70 km/h. Rural roads with some development.",
+    descriptionRw: "Umuvuduko utazwi ni 70 km/h. Umuhanda w'ekyaro ufite ibintu binshi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=70"
+  },
+  {
+    id: "speed-limit-80",
+    code: "C.14-80",
+    category: "Regulatory",
+    nameEn: "Speed Limit 80 km/h",
+    nameRw: "Umuvuduko ntarengwa 80 km/h",
+    descriptionEn: "Maximum speed is 80 km/h. Rural open roads.",
+    descriptionRw: "Umuvuduko utazwi ni 80 km/h. Umuhanda w'ekyaro utandukanye.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=80"
+  },
+  {
+    id: "speed-limit-90",
+    code: "C.14-90",
+    category: "Regulatory",
+    nameEn: "Speed Limit 90 km/h",
+    nameRw: "Umuvuduko ntarengwa 90 km/h",
+    descriptionEn: "Maximum speed is 90 km/h. Highways and main national roads.",
+    descriptionRw: "Umuvuduko utazwi ni 90 km/h. Umuhanda w'igihugu ufite ibinyabiziga byinshi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=90"
+  },
+  {
+    id: "speed-limit-100",
+    code: "C.14-100",
+    category: "Regulatory",
+    nameEn: "Speed Limit 100 km/h",
+    nameRw: "Umuvuduko ntarengwa 100 km/h",
+    descriptionEn: "Maximum speed is 100 km/h. Motorways and express highways.",
+    descriptionRw: "Umuvuduko utazwi ni 100 km/h. Umuhanda utandukanye cyane (highway).",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=100"
+  },
+  {
+    id: "end-speed-limit",
+    code: "C.14-END",
+    category: "Regulatory",
+    nameEn: "End of Speed Limit",
+    nameRw: "Iherezo ry'umuvuduko ntarengwa",
+    descriptionEn: "The posted speed limit restriction ends here. Apply the general limit for this road type.",
+    descriptionRw: "Umuvuduko ntarengwa washyizweho uhereza aha. Kurikiza umuvuduko ntarengwa rusange.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=END-SL"
+  },
+  // Vehicle Restrictions
+  {
+    id: "height-limit",
+    code: "C.3e-H",
+    category: "Regulatory",
+    nameEn: "Vehicle Height Limit",
+    nameRw: "Iherezo ry'obugero bw'ikinyabiziga (ubumwe)",
+    descriptionEn: "Vehicles exceeding this height may not pass. Measure your vehicle before proceeding.",
+    descriptionRw: "Ibinyabiziga bifite ubumwe butazwi ntibishobora kugenda. Pese ubumwe mbere yo kugenda.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=HEIGHT"
+  },
+  {
+    id: "width-limit",
+    code: "C.3e-W",
+    category: "Regulatory",
+    nameEn: "Vehicle Width Limit",
+    nameRw: "Iherezo ry'obugero bw'ikinyabiziga (uburyo)",
+    descriptionEn: "Vehicles exceeding this width may not pass.",
+    descriptionRw: "Ibinyabiziga bifite uburenganzira butazwi ntibishobora kugenda.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=WIDTH"
+  },
+  {
+    id: "weight-limit",
+    code: "C.3e-WT",
+    category: "Regulatory",
+    nameEn: "Vehicle Weight Limit",
+    nameRw: "Iherezo ry'ubusobetsu bw'ikinyabiziga",
+    descriptionEn: "Vehicles exceeding this weight are prohibited. Used for weak bridges and roads.",
+    descriptionRw: "Ibinyabiziga bifite ubusobetsu butazwi ntibikoreshwa. Biri hasa y'urwego rwiza ntabwo cyari.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=WEIGHT"
+  },
+  {
+    id: "no-motorcycles",
+    code: "C.3b",
+    category: "Regulatory",
+    nameEn: "No Motorcycles",
+    nameRw: "Ntibikoreshwa n'amapikipiki",
+    descriptionEn: "Motorcycles and mopeds are not allowed on this road.",
+    descriptionRw: "Amapikipiki n'ibinyabiziga vutse ntibikoreshwa ku muhanda.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.3b"
+  },
+  {
+    id: "no-trucks",
+    code: "C.3e",
+    category: "Regulatory",
+    nameEn: "No Trucks / Heavy Vehicles",
+    nameRw: "Ntibikoreshwa n'ibinyabiziga bigenewe gutwara ibicuruzwa",
+    descriptionEn: "Trucks, lorries and heavy goods vehicles are prohibited.",
+    descriptionRw: "Ibinyabiziga bigenewe gutwara ibicuruzwa n'ibindi bikomeye ntibikoreshwa.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.3e"
+  },
+  {
+    id: "no-pedestrians",
+    code: "C.5-PEDEST",
+    category: "Regulatory",
+    nameEn: "No Pedestrians",
+    nameRw: "Ntabwo abanyamaguru bagenda",
+    descriptionEn: "Pedestrians are not allowed on this road. Usually for highways or motorways.",
+    descriptionRw: "Abanyamaguru ntibagenda ku muhanda. Biri ku highway cyangwa umuhanda ufite ibinyabiziga byinshi.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=C.5-P"
+  },
+  // Directional Regulatory
+  {
+    id: "one-way-straight",
+    code: "C.OW-S",
+    category: "Regulatory",
+    nameEn: "One Way (Straight)",
+    nameRw: "Inzira imwe (Icyerekezo)",
+    descriptionEn: "Traffic may only travel straight ahead. No oncoming traffic.",
+    descriptionRw: "Ibinyabiziga bigenda icyerekezo kimwe gusa. Nta myanya igenda imbere.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=OW-S"
+  },
+  {
+    id: "one-way-left",
+    code: "C.OW-L",
+    category: "Regulatory",
+    nameEn: "One Way (Left)",
+    nameRw: "Inzira imwe (Ibumoso)",
+    descriptionEn: "Traffic may only travel to the left from this point.",
+    descriptionRw: "Ibinyabiziga bigenda ibumoso gusa kuva aha.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=OW-L"
+  },
+  {
+    id: "one-way-right",
+    code: "C.OW-R",
+    category: "Regulatory",
+    nameEn: "One Way (Right)",
+    nameRw: "Inzira imwe (Iburyo)",
+    descriptionEn: "Traffic may only travel to the right from this point.",
+    descriptionRw: "Ibinyabiziga bigenda iburyo gusa kuva aha.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=OW-R"
+  },
+  {
+    id: "priority-road",
+    code: "B.3",
+    category: "Regulatory",
+    nameEn: "Priority Road",
+    nameRw: "Umuhanda wo gutambuka mbere",
+    descriptionEn: "You are on a priority road. Vehicles from side roads must give way to you.",
+    descriptionRw: "Uri mu muhanda wo gutambuka mbere. Ibinyabiziga biturutse mu mihanda yindi zigomba kutoa inzira.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=B.3"
+  },
+  {
+    id: "end-priority",
+    code: "B.4",
+    category: "Regulatory",
+    nameEn: "End of Priority Road",
+    nameRw: "Iherezo ry'umuhanda wo gutambuka mbere",
+    descriptionEn: "The priority road ends here. Standard give-way rules apply at next intersections.",
+    descriptionRw: "Umuhanda wo gutambuka mbere uhereza aha. Amategeko y'ukureka abandi akurikizwa.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=B.4"
+  },
+  {
+    id: "give-way-oncoming",
+    code: "B.5",
+    category: "Regulatory",
+    nameEn: "Give Way to Oncoming Traffic",
+    nameRw: "Tega inzira ibinyabiziga biturutse imbere",
+    descriptionEn: "Oncoming vehicles have priority. You must wait for them to pass.",
+    descriptionRw: "Ibinyabiziga biturutse imbere bifite uburenganzira. Tegereza ibireke.",
+    shape: "Circle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=B.5"
+  },
+  {
+    id: "controlled-zone",
+    code: "C.CZ",
+    category: "Regulatory",
+    nameEn: "Controlled Zone",
+    nameRw: "Urwego rwo gushigikiriza",
+    descriptionEn: "All parking and stopping restrictions apply in this zone. Read supplementary signs.",
+    descriptionRw: "Amategeko yose yo guhagarara n'gupaka akurikizwa aha. Soma ibyapa birimo ibitekerezo.",
+    shape: "Rectangle",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=CTRL-ZONE"
+  },
+  {
+    id: "pedestrian-zone",
+    code: "C.PZ",
+    category: "Regulatory",
+    nameEn: "Pedestrian Zone",
+    nameRw: "Urwego rw'abanyamaguru",
+    descriptionEn: "Only pedestrians allowed. No vehicles except authorized access.",
+    descriptionRw: "Abanyamaguru gusa bagenda. Nta binyabiziga uretse bafite uburenganzira.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=PED-ZONE"
+  },
+  {
+    id: "school-zone",
+    code: "C.SZ",
+    category: "Regulatory",
+    nameEn: "School Zone",
+    nameRw: "Urwego rw'ishuri",
+    descriptionEn: "Reduced speed limit and watch for children. Usually active during school hours.",
+    descriptionRw: "Umuvuduko ntarengwa utoya kandi ube n'abana. Bikorwa mu gihe cyo kwiga.",
+    shape: "Pentagon",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=SCH-ZONE"
+  },
+  {
+    id: "clearway",
+    code: "C.CW",
+    category: "Regulatory",
+    nameEn: "Clearway No Stopping",
+    nameRw: "Umuhanda utazwi guhagarara",
+    descriptionEn: "No stopping at all. The road must remain clear for moving traffic.",
+    descriptionRw: "Guhagarara ntibikorwa cyose. Umuhanda ugomba kuba utazwi guhagarara.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=CLEARWAY"
+  },
+
+  // ========== WARNING (YELLOW / TRIANGLE) - ~40 signs ==========
+  {
+    id: "bend-left",
+    code: "A.1a",
+    category: "Warning",
+    nameEn: "Bend to Left",
+    nameRw: "Ikoni ibumoso",
+    descriptionEn: "A sharp left bend is approaching. Slow down and keep left.",
+    descriptionRw: "Ikoni ryiza ibumoso rihajyayo. Genda buhoro kandi ube ibumoso.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.1a"
+  },
+  {
+    id: "bend-right",
+    code: "A.1b",
+    category: "Warning",
+    nameEn: "Bend to Right",
+    nameRw: "Ikoni iburyo",
+    descriptionEn: "A sharp right bend is approaching. Slow down and keep right.",
+    descriptionRw: "Ikoni ryiza iburyo rihajyayo. Genda buhoro kandi ube iburyo.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.1b"
+  },
+  {
+    id: "double-bend-s",
+    code: "A.1c",
+    category: "Warning",
+    nameEn: "Double Bend (S-Shape)",
+    nameRw: "Amakoni abiri (S)",
+    descriptionEn: "Two bends in succession, first to the left then right. Reduce speed.",
+    descriptionRw: "Amakoni abiri, irya mbere riri ibumoso. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.1c"
+  },
+  {
+    id: "double-bend-z",
+    code: "A.1d",
+    category: "Warning",
+    nameEn: "Double Bend (Z-Shape)",
+    nameRw: "Amakoni abiri (Z)",
+    descriptionEn: "Two bends in succession, first to the right then left. Reduce speed.",
+    descriptionRw: "Amakoni abiri, irya mbere riri iburyo. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.1d"
+  },
+  {
+    id: "steep-hill-down",
+    code: "A.2",
+    category: "Warning",
+    nameEn: "Steep Hill Downward",
+    nameRw: "Akamanuko gashobora gutera ibyago",
+    descriptionEn: "A steep downward slope ahead. Use lower gear and test brakes.",
+    descriptionRw: "Akamanuko gakomeye gahajyayo. Koresha gear ntoya kandi ugene amabara.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.2"
+  },
+  {
+    id: "steep-hill-up",
+    code: "A.3",
+    category: "Warning",
+    nameEn: "Steep Hill Upward",
+    nameRw: "Akamanuko gashinze cyane",
+    descriptionEn: "A steep upward slope ahead. Change down gear for climbing power.",
+    descriptionRw: "Akamanuko gakomeye gahajyayo. Hindura gear kugirango ukore neza hejuru.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.3"
+  },
+  {
+    id: "uneven-road",
+    code: "A.6",
+    category: "Warning",
+    nameEn: "Uneven Road Surface",
+    nameRw: "Umuhanda utaringaniye",
+    descriptionEn: "The road surface ahead is uneven with bumps and potholes. Reduce speed.",
+    descriptionRw: "Umuhanda utazwi kubona ibinogo. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.6"
+  },
+  {
+    id: "speed-bump",
+    code: "A.HUMP",
+    category: "Warning",
+    nameEn: "Speed Bump / Hump",
+    nameRw: "Umuriro w'umuvuduko",
+    descriptionEn: "A speed bump is ahead. Slow down well before crossing it.",
+    descriptionRw: "Umuriro w'umuvuduko uri imbere. Genda buhoro neza mbere yo kugenda.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.HUMP"
+  },
+  {
+    id: "loose-gravel",
+    code: "A.8",
+    category: "Warning",
+    nameEn: "Loose Gravel / Chippings",
+    nameRw: "Utubuye dutaruka",
+    descriptionEn: "Loose stones on the road. Reduce speed and avoid sudden steering.",
+    descriptionRw: "Utubuye turi mu muhanda. Hebera umuvuduko kandi uthindure icyerekezo.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.8"
+  },
+  {
+    id: "slippery-road",
+    code: "A.7",
+    category: "Warning",
+    nameEn: "Slippery Road Surface",
+    nameRw: "Umuhanda unyerera",
+    descriptionEn: "Road surface can be slippery, especially when wet. Reduce speed, gentle inputs.",
+    descriptionRw: "Umuhanda ushobora kunyerera, cyane cyane mu mvura. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.7"
+  },
+  {
+    id: "falling-rocks",
+    code: "A.9",
+    category: "Warning",
+    nameEn: "Falling Rocks",
+    nameRw: "Amabuye ahanuka",
+    descriptionEn: "Rocks may fall onto the road ahead. Drive carefully and be prepared to stop.",
+    descriptionRw: "Amabuye ashobora kugwa mu muhanda. Twara neza kandi ukizwi guhagarara.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.9"
+  },
+  {
+    id: "potholes",
+    code: "A.POT",
+    category: "Warning",
+    nameEn: "Potholes",
+    nameRw: "Ibinogo",
+    descriptionEn: "Potholes on the road ahead. Slow down to avoid damage to your vehicle.",
+    descriptionRw: "Ibinogo biri mu muhanda. Hebera umuvuduko kugirango utababara imodoka.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.POT"
+  },
+  {
+    id: "pedestrian-crossing",
+    code: "A.10",
+    category: "Warning",
+    nameEn: "Pedestrian Crossing Ahead",
+    nameRw: "Ahantu habanyamaguru bambukaho",
+    descriptionEn: "A zebra crossing is ahead. Watch for pedestrians and be ready to stop.",
+    descriptionRw: "Ahantu habanyamaguru bambukaho hari imbere. Reba abanyamaguru kandi ukizwi guhagarara.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.10"
+  },
+  {
+    id: "school-crossing",
+    code: "A.11",
+    category: "Warning",
+    nameEn: "School Crossing",
+    nameRw: "Ahantu habana bavuyemo ishuri",
+    descriptionEn: "Children may be crossing to or from school. Reduce speed, extra caution.",
+    descriptionRw: "Abana bashobora kwambuka aho. Hebera umuvuduko kandi ukomeje kumenya neza.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.11"
+  },
+  {
+    id: "children-warning",
+    code: "A.CHILD",
+    category: "Warning",
+    nameEn: "Children",
+    nameRw: "Abana",
+    descriptionEn: "Children playing or gathering nearby. They may suddenly run onto the road.",
+    descriptionRw: "Abana bakina cyangwa babaho agasumba. Bashobora gusubiza mu muhanda.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.CHILD"
+  },
+  {
+    id: "elderly-warning",
+    code: "A.ELDER",
+    category: "Warning",
+    nameEn: "Elderly Pedestrians",
+    nameRw: "Abakuru b'umuryango",
+    descriptionEn: "Elderly people may cross slowly here. Reduce speed and exercise patience.",
+    descriptionRw: "Abakuru b'umuryango bashobora kwambuka buhoro. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.ELDER"
+  },
+  {
+    id: "disabled-warning",
+    code: "A.DIS",
+    category: "Warning",
+    nameEn: "Disabled People",
+    nameRw: "Abantu bafite ubumuga",
+    descriptionEn: "Disabled pedestrians may be present. Some may move slowly or use wheelchairs.",
+    descriptionRw: "Abantu bafite ubumuga bashobora kuba ho. Ube neza kandi usubize.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.DIS"
+  },
+  {
+    id: "cyclists-warning",
+    code: "A.12",
+    category: "Warning",
+    nameEn: "Cyclists",
+    nameRw: "Abanyamitende",
+    descriptionEn: "Watch for cyclists. They may wobble or change position suddenly.",
+    descriptionRw: "Reba abanyamitende. Bashobora guhindura icyerekezo icyo ari cyo cyose.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.12"
+  },
+  {
+    id: "cattle-crossing",
+    code: "A.13",
+    category: "Warning",
+    nameEn: "Cattle / Livestock",
+    nameRw: "Amatungo",
+    descriptionEn: "Farm animals may be crossing or on the road. Slow down and wait.",
+    descriptionRw: "Amatungo ashobora kwambuka cyangwa kuba mu muhanda. Genda buhoro kandi tegereza.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.13"
+  },
+  {
+    id: "horses-crossing",
+    code: "A.HORSE",
+    category: "Warning",
+    nameEn: "Horses / Riders",
+    nameRw: "Infarasi n'abanyamafarasi",
+    descriptionEn: "Horses and riders may be on the road. Pass slowly with wide clearance.",
+    descriptionRw: "Infarasi n'abanyamafarasi bashobora kuba ho. Jya buhoro kandi ugabane.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.HORSE"
+  },
+  {
+    id: "animals-crossing",
+    code: "A.ANIMAL",
+    category: "Warning",
+    nameEn: "Domestic Animals Crossing",
+    nameRw: "Inzara z'umuryango",
+    descriptionEn: "Domestic animals like goats or dogs may wander onto the road.",
+    descriptionRw: "Inzara z'umuryango zibonye zina mu muhanda. Twara neza.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.ANIMAL"
+  },
+  {
+    id: "wild-animals",
+    code: "A.14",
+    category: "Warning",
+    nameEn: "Wild Animals",
+    nameRw: "Inyamaswa",
+    descriptionEn: "Wild animals may cross the road, especially at dawn and dusk. Be alert.",
+    descriptionRw: "Inyamaswa zishobora kwambuka mu muhanda, cyane cyane mu gitondo n'ijoro. Reba neza.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.14"
+  },
+  {
+    id: "traffic-signals-ahead",
+    code: "A.16",
+    category: "Warning",
+    nameEn: "Traffic Signals Ahead",
+    nameRw: "Ibimenyetso bimurika bifite imbere",
+    descriptionEn: "Traffic lights are ahead. Be prepared to stop if they change.",
+    descriptionRw: "Amatara y'umuhanda ari imbere. Ubwizwe guhagarara niba agenda guhindura.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.16"
+  },
+  {
+    id: "give-way-ahead",
+    code: "A.GIVE-AHEAD",
+    category: "Warning",
+    nameEn: "Give Way Sign Ahead",
+    nameRw: "Icyapa cyo kutega inzira bifite imbere",
+    descriptionEn: "A give way sign is at the next intersection. Prepare to slow or stop.",
+    descriptionRw: "Icyapa cyo kutega inzira hari ku nkomane ikurikira. Tegereza kugenda buhoro.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.GVA"
+  },
+  {
+    id: "roundabout-ahead",
+    code: "A.20",
+    category: "Warning",
+    nameEn: "Roundabout Ahead",
+    nameRw: "Inkomane y'umuhanda banyuramo bazengurutse",
+    descriptionEn: "A roundabout is ahead. Traffic coming from your left has priority.",
+    descriptionRw: "Inkomane y'urwego rwo kuzinga hari imbere. Ibinyabiziga biturutse ibumoso bifite uburenganzira.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.20"
+  },
+  {
+    id: "crossroads",
+    code: "A.CROSS",
+    category: "Warning",
+    nameEn: "Crossroads",
+    nameRw: "Inkomane igizwe n'imihanda ine",
+    descriptionEn: "A 4-way intersection is ahead. Watch for traffic from all directions.",
+    descriptionRw: "Inkomane y'imihanda ine iri imbere. Reba ibinyabiziga byose ku buryo bwa 4.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.CROSS"
+  },
+  {
+    id: "t-junction-left",
+    code: "A.21e-L",
+    category: "Warning",
+    nameEn: "T-Junction (Side Road Left)",
+    nameRw: "Inkomane ya T - ibumoso",
+    descriptionEn: "A side road joins from the left. Watch for vehicles emerging.",
+    descriptionRw: "Umuhanda umwe ukomeye ujya ibumoso. Reba ibinyabiziga biturutse ibumoso.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.21e-L"
+  },
+  {
+    id: "t-junction-right",
+    code: "A.21e-R",
+    category: "Warning",
+    nameEn: "T-Junction (Side Road Right)",
+    nameRw: "Inkomane ya T - iburyo",
+    descriptionEn: "A side road joins from the right. Watch for vehicles emerging.",
+    descriptionRw: "Umuhanda umwe ukomeye ujya iburyo. Reba ibinyabiziga biturutse iburyo.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.21e-R"
+  },
+  {
+    id: "y-junction",
+    code: "A.21f",
+    category: "Warning",
+    nameEn: "Y-Junction",
+    nameRw: "Inkomane igizwe nka Y",
+    descriptionEn: "Road splits into two branches ahead. Decide your direction early.",
+    descriptionRw: "Umuhanda ukomerekeza ibiri imbere. Hitamo icyerekezo cyo mbere.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.21f"
+  },
+  {
+    id: "staggered-junctions",
+    code: "A.STAG",
+    category: "Warning",
+    nameEn: "Staggered Junctions",
+    nameRw: "Amasangano atandukaniye",
+    descriptionEn: "Two side roads in sequence — one left then one right. Check both directions.",
+    descriptionRw: "Imihanda ibiri mu mburabuzi — ibumoso cyose iburyo. Reba iburyo ibiri.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.STAG"
+  },
+  {
+    id: "narrow-road",
+    code: "A.4a",
+    category: "Warning",
+    nameEn: "Road Narrows (Both Sides)",
+    nameRw: "Ifungana ry'umuhanda",
+    descriptionEn: "The road narrows from both sides. Reduce speed and give way to oncoming traffic.",
+    descriptionRw: "Umuhanda ugabanuka ku buryo ibiri. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.4a"
+  },
+  {
+    id: "narrow-bridge",
+    code: "A.NB",
+    category: "Warning",
+    nameEn: "Narrow Bridge",
+    nameRw: "Urugo rutoya",
+    descriptionEn: "A narrow bridge is ahead. Only one vehicle may pass at a time.",
+    descriptionRw: "Urwego rutoya rw'umuhanda hari imbere. Imodoka imwe gusa ishobora kugenda.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.NB"
+  },
+  {
+    id: "road-narrows-left",
+    code: "A.4b",
+    category: "Warning",
+    nameEn: "Road Narrows from Left",
+    nameRw: "Ifungana ry'umuhanda ibumoso",
+    descriptionEn: "Road narrows on your left side. Keep right and allow extra space.",
+    descriptionRw: "Umuhanda ugabanuka ibumoso. Komeza iburyo kandi ube.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.4b"
+  },
+  {
+    id: "road-narrows-right",
+    code: "A.4c",
+    category: "Warning",
+    nameEn: "Road Narrows from Right",
+    nameRw: "Ifungana ry'umuhanda iburyo",
+    descriptionEn: "Road narrows on your right side. Keep left and allow extra space.",
+    descriptionRw: "Umuhanda ugabanuka iburyo. Komeza ibumoso kandi ube.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.4c"
+  },
+  {
+    id: "dual-carriageway-ends",
+    code: "A.DC-END",
+    category: "Warning",
+    nameEn: "Dual Carriageway Ends",
+    nameRw: "Iherezo ry'umuhanda ufite amashami abiri",
+    descriptionEn: "The divided road ends ahead. Two-way traffic resumes.",
+    descriptionRw: "Umuhanda ufite amashami abiri uhereza imbere. Ibinyabiziga bigenda iburi ryose biratangira.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.DC-END"
+  },
+  {
+    id: "two-way-traffic",
+    code: "A.19",
+    category: "Warning",
+    nameEn: "Two-Way Traffic",
+    nameRw: "Ukugendagenda kw'iburyo ibiri",
+    descriptionEn: "Two-way traffic ahead. Oncoming vehicles share the same road.",
+    descriptionRw: "Ibinyabiziga bigenda iburyo ibiri. Ibinyabiziga biturutse imbere bihamagara nawe.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.19"
+  },
+  {
+    id: "queuing-traffic",
+    code: "A.QUEUE",
+    category: "Warning",
+    nameEn: "Queuing Traffic",
+    nameRw: "Ibinyabiziga bigenda kumurongo",
+    descriptionEn: "Traffic queues likely ahead. Reduce speed early and maintain safe distance.",
+    descriptionRw: "Ibinyabiziga bisobanura kumurongo imbere. Hebera umuvuduko.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.QUEUE"
+  },
+  {
+    id: "road-works",
+    code: "A.15",
+    category: "Warning",
+    nameEn: "Road Works Ahead",
+    nameRw: "Imirimo mu muhanda",
+    descriptionEn: "Construction or maintenance ahead. Reduce speed and follow detours.",
+    descriptionRw: "Imirimo y'umuhanda hari imbere. Hebera umuvuduko kandi urikiza ibyapa.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.15"
+  },
+  {
+    id: "traffic-cone-barrier",
+    code: "A.CONE",
+    category: "Warning",
+    nameEn: "Traffic Cone / Barrier",
+    nameRw: "Ibara ry'umuhanda / Akayunguruko",
+    descriptionEn: "Temporary traffic barriers are ahead. Reduce speed and watch for workers.",
+    descriptionRw: "Ibara ry'umuhanda ryari mu buryo bw'umwanya. Hebera umuvuduko.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.CONE"
+  },
+  {
+    id: "diversion-left",
+    code: "A.DIV-L",
+    category: "Warning",
+    nameEn: "Diversion to Left",
+    nameRw: "Kuzunguruka ibumoso",
+    descriptionEn: "Follow the diversion to the left around the obstacle.",
+    descriptionRw: "Kuzunguruka ibumoso kugirango ukomeze.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.DIV-L"
+  },
+  {
+    id: "diversion-right",
+    code: "A.DIV-R",
+    category: "Warning",
+    nameEn: "Diversion to Right",
+    nameRw: "Kuzunguruka iburyo",
+    descriptionEn: "Follow the diversion to the right around the obstacle.",
+    descriptionRw: "Kuzunguruka iburyo kugirango ukomeze.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.DIV-R"
+  },
+  {
+    id: "level-crossing-gates",
+    code: "A.27",
+    category: "Warning",
+    nameEn: "Level Crossing with Gates",
+    nameRw: "Amasangano y'umuhanda n'inyambara y'umuhanda ufite amabara",
+    descriptionEn: "A railway crossing with gates is ahead. Obey signals and stop if gates close.",
+    descriptionRw: "Inzira y'igare y'umuhanda yifite ibara. Kurikiza ibimenyetso.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.27"
+  },
+  {
+    id: "level-crossing-no-gates",
+    code: "A.26",
+    category: "Warning",
+    nameEn: "Level Crossing without Gates",
+    nameRw: "Amasangano y'umuhanda n'inyambara y'umuhanda ntibabara",
+    descriptionEn: "Railway crossing without gates. Look and listen for trains before crossing.",
+    descriptionRw: "Inzira y'igare y'umuhanda ntibabara. Reba kandi umvire amajwi y'igare mbere yo kwambuka.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.26"
+  },
+  {
+    id: "soft-verge",
+    code: "A.SV",
+    category: "Warning",
+    nameEn: "Soft Verge",
+    nameRw: "Urubanza rw'umuhanda rutari rwiza",
+    descriptionEn: "The shoulder of the road is soft. Avoid driving on it — you may get stuck.",
+    descriptionRw: "Urubanza rw'umuhanda rutari rwiza. Ntugende ho — ushobora kuba umugo.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.SV"
+  },
+  {
+    id: "low-flying-aircraft",
+    code: "A.17",
+    category: "Warning",
+    nameEn: "Low Flying Aircraft",
+    nameRw: "Indege zikura hejuru y'umuhanda",
+    descriptionEn: "Low-flying planes or helicopters. Near an airport. Be prepared to stop.",
+    descriptionRw: "Indege zikura hejuru. Hasa y'ibuga ry'indege. Ubwizwe guhagarara.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.17"
+  },
+  {
+    id: "tram-crossing",
+    code: "A.TRAM",
+    category: "Warning",
+    nameEn: "Tram Crossing",
+    nameRw: "Ahantu habanyamagare bafite inzira yayo",
+    descriptionEn: "Tram line crosses or shares the road. Check for trams in both directions.",
+    descriptionRw: "Inzira y'umwagati w'umuhanda ifite ibara. Reba umwagati wese iburyo ibiri.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.TRAM"
+  },
+  {
+    id: "other-danger",
+    code: "A.29",
+    category: "Warning",
+    nameEn: "Other Danger",
+    nameRw: "Ibyago byindi",
+    descriptionEn: "General danger warning. Usually combined with a supplementary plate.",
+    descriptionRw: "Urwego rw'ibyago nyayo. Bifata hamwe n'ibyapa birimo ibitekerezo.",
+    shape: "Triangle",
+    color: "yellow",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=A.29"
+  },
+
+  // ========== MANDATORY (BLUE CIRCLE) - ~10 signs ==========
+  {
+    id: "mandatory-turn-left",
+    code: "D.1a-L",
+    category: "Mandatory",
+    nameEn: "Must Turn Left",
+    nameRw: "Bitekereza kugena ibumoso",
+    descriptionEn: "Drivers must turn left at this intersection.",
+    descriptionRw: "Abayobozi bagomba kugena ibumoso ku nkomane.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.1a-L"
+  },
+  {
+    id: "mandatory-turn-right",
+    code: "D.1a-R",
+    category: "Mandatory",
+    nameEn: "Must Turn Right",
+    nameRw: "Bitekereza kugena iburyo",
+    descriptionEn: "Drivers must turn right at this intersection.",
+    descriptionRw: "Abayobozi bagomba kugena iburyo ku nkomane.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.1a-R"
+  },
+  {
+    id: "mandatory-go-straight",
+    code: "D.1a-S",
+    category: "Mandatory",
+    nameEn: "Must Go Straight Ahead",
+    nameRw: "Bitekereza kugenda icyerekezo",
+    descriptionEn: "Drivers must continue straight. No turning left or right.",
+    descriptionRw: "Abayobozi bagomba komeza icyerekezo. Ntabwo bagomba kugena.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.1a-S"
+  },
+  {
+    id: "keep-left",
+    code: "D.2-L",
+    category: "Mandatory",
+    nameEn: "Keep Left",
+    nameRw: "Beza ibumoso",
+    descriptionEn: "Pass to the left of the obstruction or island.",
+    descriptionRw: "Genda ibumoso ku bice butandukaniye n'ibara.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.2-L"
+  },
+  {
+    id: "keep-right",
+    code: "D.2-R",
+    category: "Mandatory",
+    nameEn: "Keep Right",
+    nameRw: "Beza iburyo",
+    descriptionEn: "Pass to the right of the obstruction or island.",
+    descriptionRw: "Genda iburyo ku bice butandukaniye n'ibara.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.2-R"
+  },
+  {
+    id: "pass-left",
+    code: "D.PL",
+    category: "Mandatory",
+    nameEn: "Pass on Left Side",
+    nameRw: "Gusubiza ibumoso",
+    descriptionEn: "When overtaking, pass other vehicles only on their left side.",
+    descriptionRw: "Ushyize inde, genda ibumoso ku binyabiziga.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.PL"
+  },
+  {
+    id: "pass-right",
+    code: "D.PR",
+    category: "Mandatory",
+    nameEn: "Pass on Right Side",
+    nameRw: "Gusubiza iburyo",
+    descriptionEn: "Pass other vehicles on their right side (rare, for specific road layouts).",
+    descriptionRw: "Gusubiza iburyo (mu myanya isanzwe yo mu mihanda isanzwe).",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.PR"
+  },
+  {
+    id: "minimum-speed",
+    code: "D.8",
+    category: "Mandatory",
+    nameEn: "Minimum Speed Limit",
+    nameRw: "Umuvuduko muto ntarengwa",
+    descriptionEn: "Maintain at least this minimum speed. Used on highways to improve flow.",
+    descriptionRw: "Komeza umuvuduko utazwi. Biri ku highway kugirango ibinyabiziga bigende neza.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.8"
+  },
+  {
+    id: "mandatory-direction",
+    code: "D.1b",
+    category: "Mandatory",
+    nameEn: "Mandatory Direction Choice",
+    nameRw: "Icyerekezo gitegetswe",
+    descriptionEn: "Must proceed in one of the allowed directions shown.",
+    descriptionRw: "Genda mu buryo bwimwe mu byerekezo byerekwe.",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.1b"
+  },
+  {
+    id: "roundabout-mandatory",
+    code: "D.3",
+    category: "Mandatory",
+    nameEn: "Roundabout Direction (Keep Right)",
+    nameRw: "Kuzinga ku roundabout (iburyo)",
+    descriptionEn: "Navigate the roundabout keeping to the right (clockwise).",
+    descriptionRw: "Zinga ku roundabout ukomeza iburyo (isaha y'igisoro).",
+    shape: "Circle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=D.3"
+  },
+  {
+    id: "bus-lane",
+    code: "D.BUS",
+    category: "Mandatory",
+    nameEn: "Bus Lane",
+    nameRw: "Inzira y'otobisi",
+    descriptionEn: "This lane is reserved for buses and public service vehicles.",
+    descriptionRw: "Uru rubanda rwategetse n'otobisi n'ibinyabiziga bigenera abantu.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["D"],
+    imageUrl: "https://placehold.co/240x240?text=D.BUS"
+  },
+  {
+    id: "cycle-lane",
+    code: "D.4",
+    category: "Mandatory",
+    nameEn: "Cycle Lane",
+    nameRw: "Inzira y'ibinyamitende",
+    descriptionEn: "This lane is reserved for bicycles and motorcycles of low speed.",
+    descriptionRw: "Uru rubanda rwategetse n'ibinyamitende n'amapikipiki.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A"],
+    imageUrl: "https://placehold.co/240x240?text=D.4"
+  },
+
+  // ========== INFORMATION / GUIDE (BLUE/GREEN/SQUARE) - ~30 signs ==========
+  {
+    id: "hospital",
+    code: "E.12",
+    category: "Information",
+    nameEn: "Hospital",
+    nameRw: "Ibitaro",
+    descriptionEn: "Hospital with accident and emergency services is on the indicated side.",
+    descriptionRw: "Ibitaro bifite serivisi z'umugambi n'akiza bihari.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.12"
+  },
+  {
+    id: "police-station",
+    code: "E.POL",
+    category: "Information",
+    nameEn: "Police Station",
+    nameRw: "Ishami ry'Polisi",
+    descriptionEn: "Police station is ahead. Report accidents and seek assistance.",
+    descriptionRw: "Ishami ry'Polisi ryari imbere. Tangaza ibyago n'ibitekerezo.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.POL"
+  },
+  {
+    id: "fire-station",
+    code: "E.FIRE",
+    category: "Information",
+    nameEn: "Fire Station",
+    nameRw: "Aho hari abakoresha umuriro",
+    descriptionEn: "Fire station location. Pull over to the left if fire trucks leave.",
+    descriptionRw: "Aho hari abakora umuriro. Genda ibumoso niba motoka y'umuriro isohoka.",
+    shape: "Square",
+    color: "red",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.FIRE"
+  },
+  {
+    id: "breakdown-recovery",
+    code: "E.TOW",
+    category: "Information",
+    nameEn: "Breakdown Recovery Service",
+    nameRw: "Serivisi yo kuzungura imodoka yagozwe",
+    descriptionEn: "Vehicle breakdown recovery service located ahead.",
+    descriptionRw: "Serivisi yo kuzungura imodoka yagozwe hari imbere.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.TOW"
+  },
+  {
+    id: "telephone-emergency",
+    code: "E.PHONE",
+    category: "Information",
+    nameEn: "Emergency Telephone",
+    nameRw: "Telefone y'Ibiza",
+    descriptionEn: "An emergency telephone is nearby. Call 112 for any emergency.",
+    descriptionRw: "Telefone y'ibiza iri hafi. Hamagara 112 ku byago byose.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.PHONE"
+  },
+  {
+    id: "first-aid",
+    code: "E.FAID",
+    category: "Information",
+    nameEn: "First Aid Station",
+    nameRw: "Ibiza bya mbere",
+    descriptionEn: "First aid station ahead. Minor medical assistance available.",
+    descriptionRw: "Aho bafata ibiza bya mbere hari imbere.",
+    shape: "Square",
+    color: "green",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.FAID"
+  },
+  {
+    id: "toilet",
+    code: "E.TOIL",
+    category: "Information",
+    nameEn: "Public Toilet / WC",
+    nameRw: "Aho bategerejweho gukora",
+    descriptionEn: "Public toilet facilities in the indicated direction.",
+    descriptionRw: "Amazi yo gukora abantu bose hari.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.TOIL"
+  },
+  {
+    id: "picnic-site",
+    code: "E.PICNIC",
+    category: "Information",
+    nameEn: "Picnic Site",
+    nameRw: "Aho kurya ishusho",
+    descriptionEn: "A place suitable for resting and eating outdoors.",
+    descriptionRw: "Ahantu kwikiza kandi ukore ishusho hanze.",
+    shape: "Square",
+    color: "green",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.PICNIC"
+  },
+  {
+    id: "camping",
+    code: "E.CAMP",
+    category: "Information",
+    nameEn: "Camping Site",
+    nameRw: "Aho kigwa camping",
+    descriptionEn: "Designated area for overnight camping.",
+    descriptionRw: "Ahantu bafite uburenganzira bwo kugwa kamwe.",
+    shape: "Square",
+    color: "brown",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.CAMP"
+  },
+  {
+    id: "hotel-lodging",
+    code: "E.HOTEL",
+    category: "Information",
+    nameEn: "Hotel / Lodging",
+    nameRw: "Hoteli / Aho batora",
+    descriptionEn: "Hotel or guesthouse accommodation available.",
+    descriptionRw: "Hoteli cyangwa aho batora hari.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.HOTEL"
+  },
+  {
+    id: "restaurant-cafe",
+    code: "E.FOOD",
+    category: "Information",
+    nameEn: "Restaurant / Cafe",
+    nameRw: "Inzu yo gurya / Caffe",
+    descriptionEn: "Place to eat or drink ahead.",
+    descriptionRw: "Aho kurya cyangwa kunywa hari imbere.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.FOOD"
+  },
+  {
+    id: "petrol-station",
+    code: "E.GAS",
+    category: "Information",
+    nameEn: "Petrol / Fuel Station",
+    nameRw: "Aho bishyuza umuriro",
+    descriptionEn: "Fuel station ahead. Petrol, diesel, and lubricants available.",
+    descriptionRw: "Aho bishyuza umuriro hari imbere.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.GAS"
+  },
+  {
+    id: "repairs-garage",
+    code: "E.GARAGE",
+    category: "Information",
+    nameEn: "Repairs / Garage",
+    nameRw: "Aho banyweho imodoka",
+    descriptionEn: "Vehicle repair workshop or garage.",
+    descriptionRw: "Aho banyweho imodoka bagira urugero.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.GARAGE"
+  },
+  {
+    id: "car-wash",
+    code: "E.WASH",
+    category: "Information",
+    nameEn: "Car Wash",
+    nameRw: "Aho banyuza imodoka",
+    descriptionEn: "Vehicle washing facility available.",
+    descriptionRw: "Aho banyuza imodoka hari.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.WASH"
+  },
+  {
+    id: "parking-general",
+    code: "E.20",
+    category: "Information",
+    nameEn: "Parking (General)",
+    nameRw: "Ahantu h'imodoka (rusange)",
+    descriptionEn: "Designated place to leave your vehicle parked.",
+    descriptionRw: "Ahantu hateguwe guhagarara imodoka hari.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.20"
+  },
+  {
+    id: "parking-cars",
+    code: "E.P-CAR",
+    category: "Information",
+    nameEn: "Parking for Cars Only",
+    nameRw: "Ahantu h'imodoka gusa",
+    descriptionEn: "Parking area reserved for passenger cars.",
+    descriptionRw: "Ahantu hihagararamo imodoka abantu gusa.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["B"],
+    imageUrl: "https://placehold.co/240x240?text=E.P-CAR"
+  },
+  {
+    id: "parking-motorcycles",
+    code: "E.P-MOTO",
+    category: "Information",
+    nameEn: "Parking for Motorcycles",
+    nameRw: "Ahantu h'amapikipiki",
+    descriptionEn: "Parking reserved for motorcycles only.",
+    descriptionRw: "Ahantu hihagararamo amapikipiki gusa.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A"],
+    imageUrl: "https://placehold.co/240x240?text=E.P-MOTO"
+  },
+  {
+    id: "parking-disabled",
+    code: "E.P-DIS",
+    category: "Information",
+    nameEn: "Parking for Disabled",
+    nameRw: "Ahantu h'abantu bafite ubumuga",
+    descriptionEn: "Parking reserved for vehicles displaying a disabled badge.",
+    descriptionRw: "Ahantu hihagararamo imodoka z'abantu bafite ubumuga gusa.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.P-DIS"
+  },
+  {
+    id: "parking-buses",
+    code: "E.19",
+    category: "Information",
+    nameEn: "Bus Parking / Stop",
+    nameRw: "Aho za otobisi zihagarara",
+    descriptionEn: "Area reserved for buses parking or stopping.",
+    descriptionRw: "Ahantu za otobisi zihagarara gusa.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["D"],
+    imageUrl: "https://placehold.co/240x240?text=E.19"
+  },
+  {
+    id: "parking-multi-story",
+    code: "E.P-MULTI",
+    category: "Information",
+    nameEn: "Multi-story Car Park",
+    nameRw: "Imbuga y'imodoka ifite amabara menshi",
+    descriptionEn: "An enclosed parking structure with multiple levels.",
+    descriptionRw: "Imbuga y'imodoka ifite amabara menshi.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.P-MULTI"
+  },
+  {
+    id: "parking-underground",
+    code: "E.P-UNDER",
+    category: "Information",
+    nameEn: "Underground Parking",
+    nameRw: "Imbuga y'imodoka isigaye hasi",
+    descriptionEn: "An underground parking facility.",
+    descriptionRw: "Imbuga y'imodoka isigaye hasi y'umuhanda.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.P-UNDER"
+  },
+  {
+    id: "bus-stop",
+    code: "E.19-BUS",
+    category: "Information",
+    nameEn: "Bus Stop",
+    nameRw: "Aho za otobisi zihagarara abagenzi",
+    descriptionEn: "Place where buses stop to pick up and set down passengers.",
+    descriptionRw: "Ahantu za otobisi zihagarara kugira zabate abagenzi.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=BUS-STOP"
+  },
+  {
+    id: "taxi-rank",
+    code: "E.TAXI",
+    category: "Information",
+    nameEn: "Taxi Rank / Stand",
+    nameRw: "Aho za matatu zihagarara",
+    descriptionEn: "Place where taxis wait for passengers.",
+    descriptionRw: "Ahantu za matatu zitegereza abagenzi.",
+    shape: "Square",
+    color: "yellow",
+    licenseClasses: ["B", "D"],
+    imageUrl: "https://placehold.co/240x240?text=E.TAXI"
+  },
+  {
+    id: "railway-station",
+    code: "E-RAIL",
+    category: "Information",
+    nameEn: "Railway Station",
+    nameRw: "Ishami ry'Igare",
+    descriptionEn: "A railway station for passenger trains.",
+    descriptionRw: "Ishami ry'Igare ry'abagenzi.",
+    shape: "Square",
+    color: "white",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-RAIL"
+  },
+  {
+    id: "airport",
+    code: "E.AIR",
+    category: "Information",
+    nameEn: "Airport",
+    nameRw: "Ibuga ry'Indege",
+    descriptionEn: "An airport with passenger flights.",
+    descriptionRw: "Ibuga ry'Indege ry'urwego rw'ibindi bihugu.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.AIR"
+  },
+  {
+    id: "ferry-terminal",
+    code: "E.FERRY",
+    category: "Information",
+    nameEn: "Ferry Terminal",
+    nameRw: "Ishami ry'Inywa",
+    descriptionEn: "A place where a ferry (boat carrying vehicles) docks.",
+    descriptionRw: "Ahantu haba n'inywa ibinyabiziga zikoresha.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.FERRY"
+  },
+  {
+    id: "pedestrian-subway",
+    code: "E-SUB",
+    category: "Information",
+    nameEn: "Pedestrian Subway",
+    nameRw: "Inzira isigaye hasi y'abanyamaguru",
+    descriptionEn: "An underpass for pedestrians to cross under the road.",
+    descriptionRw: "Inzira y'abanyamaguru igenda hasi y'umuhanda.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-SUB"
+  },
+  {
+    id: "footbridge",
+    code: "E-FOOTBR",
+    category: "Information",
+    nameEn: "Footbridge",
+    nameRw: "Ururabo rw'abanyamaguru",
+    descriptionEn: "A bridge for pedestrians to cross the road.",
+    descriptionRw: "Ururabo rw'abanyamaguru rwo kwambuka ku muhanda.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-FOOTBR"
+  },
+  {
+    id: "tourist-information",
+    code: "E.INFO",
+    category: "Information",
+    nameEn: "Tourist Information",
+    nameRw: "Amakuru y'abasogokera",
+    descriptionEn: "Information office for tourists and visitors.",
+    descriptionRw: "Umutekano w'amakuru abasogokera.",
+    shape: "Square",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.INFO"
+  },
+  {
+    id: "place-of-interest",
+    code: "E-POI",
+    category: "Information",
+    nameEn: "Place of Interest / Tourist Site",
+    nameRw: "Ahantu bafite ibitekerezo",
+    descriptionEn: "A place of local interest or tourist attraction.",
+    descriptionRw: "Ahantu bafite amakuru abantu benshi bakunda kugera.",
+    shape: "Square",
+    color: "brown",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-POI"
+  },
+  {
+    id: "main-road-sign",
+    code: "E-MAIN",
+    category: "Information",
+    nameEn: "Main Road / Route Confirmation",
+    nameRw: "Umuhanda Mukuru",
+    descriptionEn: "Indicates the main numbered road ahead with destinations.",
+    descriptionRw: "Kumenyesha ko umuhanda uwo mukuru uri imbere.",
+    shape: "Rectangle",
+    color: "green",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-MAIN"
+  },
+  {
+    id: "route-confirmation",
+    code: "E-ROUTE",
+    category: "Information",
+    nameEn: "Route Confirmation Sign",
+    nameRw: "Gusubizamo inzira",
+    descriptionEn: "Confirms the route number and confirms you are on the correct road.",
+    descriptionRw: "Gusubizamo niba inzira uriwayo ni yako.",
+    shape: "Rectangle",
+    color: "green",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-ROUTE"
+  },
+  {
+    id: "exit-sign",
+    code: "E-EXIT",
+    category: "Information",
+    nameEn: "Exit Sign",
+    nameRw: "Gusohoka mu mahanga",
+    descriptionEn: "Shows the way off the highway / motorway at the next exit.",
+    descriptionRw: "Kubonera icyerekezo cyo gusohoka ku highway.",
+    shape: "Rectangle",
+    color: "green",
+    licenseClasses: ["B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-EXIT"
+  },
+  {
+    id: "pre-signal-lane",
+    code: "E-LANE",
+    category: "Information",
+    nameEn: "Pre-signal Lane Assignment",
+    nameRw: "Imyanya igena imbere y'ikibazo",
+    descriptionEn: "Indicates lane usage for each direction ahead of an intersection.",
+    descriptionRw: "Kubonera icyerekezo cy'umushami imbere y'inkomane.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-LANE"
+  },
+  {
+    id: "map-direction",
+    code: "E-MAP",
+    category: "Information",
+    nameEn: "Map-type Direction Sign",
+    nameRw: "Ibyapa by'umupangagutabo",
+    descriptionEn: "Large map-type sign showing multiple routes and destinations.",
+    descriptionRw: "Ibyapa byinshi byerekana ibyo hose ku buryo bw'umupangagutabo.",
+    shape: "Rectangle",
+    color: "green",
+    licenseClasses: ["B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E-MAP"
+  },
+
+  // ========== SUPPLEMENTARY / RESIDENTIAL ZONE - ~5 signs ==========
+  {
+    id: "enter-residential",
+    code: "E.9",
+    category: "Supplementary",
+    nameEn: "Entering Residential Zone",
+    nameRw: "Kwinjira mu mudugudu",
+    descriptionEn: "You are entering a residential area. Reduced speed and vigilance for children.",
+    descriptionRw: "Urinjira mu mudugudu. Hebera umuvuduko kandi urebe abana.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.9"
+  },
+  {
+    id: "end-residential",
+    code: "E.10",
+    category: "Supplementary",
+    nameEn: "End of Residential Zone",
+    nameRw: "Iherezo ry'umudugudu",
+    descriptionEn: "The residential zone ends here. General speed limits apply.",
+    descriptionRw: "Umudugudu uhereza aha. Umuvuduko ntarengwa rusange akurikizwa.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.10"
+  },
+  {
+    id: "pedestrian-zone-end",
+    code: "E.11-END",
+    category: "Supplementary",
+    nameEn: "End of Pedestrian Zone",
+    nameRw: "Iherezo ry'urwego rw'abanyamaguru",
+    descriptionEn: "The pedestrian-only zone ends. Normal traffic may now resume.",
+    descriptionRw: "Urwego rw'abanyamaguru gusa rwihara. Ibinyabiziga biratangira kugenda.",
+    shape: "Rectangle",
+    color: "blue",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=E.11-END"
+  },
+  {
+    id: "distance-warning",
+    code: "F.1",
+    category: "Supplementary",
+    nameEn: "Distance to Hazard / Object",
+    nameRw: "Intera y'ahantu hatera ibyago",
+    descriptionEn: "Indicates the distance in meters to the hazard or restriction.",
+    descriptionRw: "Kubonera intera ku myaturo igihe ugeze aho byago.",
+    shape: "Rectangle",
+    color: "white",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=F.1"
+  },
+  {
+    id: "length-restriction-zone",
+    code: "F.2",
+    category: "Supplementary",
+    nameEn: "Length of Restriction Zone",
+    nameRw: "Uburebure bw'ahantu amategeko akurikizwa",
+    descriptionEn: "Indicates the length of road over which the sign's rules apply.",
+    descriptionRw: "Kubonera uburebure bw'umuhanda amategeko y'icyapa akwiye gukurikizwa.",
+    shape: "Rectangle",
+    color: "white",
+    licenseClasses: ["A", "B", "C", "D", "E"],
+    imageUrl: "https://placehold.co/240x240?text=F.2"
+  },
+];
+
+/**
+ * @param {string} id
+ * @returns {Sign|undefined}
+ */
+export function getSignById(id) {
+  return ROAD_SIGNS.find(s => s.id === id);
 }
+
+/**
+ * @param {string} keyword
+ * @returns {Sign[]}
+ */
+export function searchSigns(keyword) {
+  const kw = keyword.toLowerCase().trim();
+  if (!kw) return [];
+  return ROAD_SIGNS.filter(s =>
+    s.nameEn.toLowerCase().includes(kw) ||
+    s.nameRw.toLowerCase().includes(kw) ||
+    s.descriptionEn.toLowerCase().includes(kw) ||
+    s.descriptionRw.toLowerCase().includes(kw) ||
+    s.code.toLowerCase().includes(kw) ||
+    s.category.toLowerCase().includes(kw) ||
+    s.id.toLowerCase().includes(kw)
+  );
+}
+
+/**
+ * @param {Sign["category"]} category
+ * @returns {Sign[]}
+ */
+export function getSignsByCategory(category) {
+  return ROAD_SIGNS.filter(s => s.category === category);
+}
+
+/**
+ * @param {number} [count]
+ * @returns {Sign[]}
+ */
+export function getRandomSigns(count = 5) {
+  const shuffled = [...ROAD_SIGNS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.max(1, Math.min(count, ROAD_SIGNS.length)));
+}
+
+// Category metadata with counts
+export const SIGN_CATEGORIES = [
+  {
+    id: "Regulatory",
+    idRW: "Bibaza",
+    color: "red",
+    nameEn: "Regulatory Signs",
+    nameRw: "Ibyapa byo Gusubiza",
+    descriptionEn: "Prohibitions and obligations backed by law. Violations carry penalties.",
+    descriptionRw: "Ibyapa bisobanura amategeko yo Gusubiza n'ukureka. Ibitekerezo byo Gusubiza bishobora guhuma.",
+    count: ROAD_SIGNS.filter(s => s.category === "Regulatory").length,
+  },
+  {
+    id: "Warning",
+    idRW: "Biburira",
+    color: "yellow",
+    nameEn: "Warning Signs",
+    nameRw: "Ibyapa byo Gusobanura",
+    descriptionEn: "Triangle signs alerting you to hazards ahead so you can prepare early.",
+    descriptionRw: "Ibyapa bitandukaniye mu myanya ishusho byerekana ibyago imbere.",
+    count: ROAD_SIGNS.filter(s => s.category === "Warning").length,
+  },
+  {
+    id: "Mandatory",
+    idRW: "Bitegeka",
+    color: "blue",
+    nameEn: "Mandatory Signs",
+    nameRw: "Ibyapa byo Gitegeka",
+    descriptionEn: "Blue circular signs — you MUST follow what they say (lanes, turning, minimum speed).",
+    descriptionRw: "Ibyapa byiza by'umweru — ukoreshwa bikenewe kubera icyerekezo.",
+    count: ROAD_SIGNS.filter(s => s.category === "Mandatory").length,
+  },
+  {
+    id: "Information",
+    idRW: "Biyobora",
+    color: "green",
+    nameEn: "Information / Guide Signs",
+    nameRw: "Ibyapa byo Kumenyesha",
+    descriptionEn: "Blue, green or brown square/rectangle signs giving directions and services.",
+    descriptionRw: "Ibyapa byiza by'umweru, by'ihinduka, by'umweru bisobanura ibintu bisigaye.",
+    count: ROAD_SIGNS.filter(s => s.category === "Information").length,
+  },
+  {
+    id: "Supplementary",
+    idRW: "Nyongera",
+    color: "white",
+    nameEn: "Supplementary Plates",
+    nameRw: "Ibyapa byo Gusubizamo",
+    descriptionEn: "Placed below the main sign to add distance, time or day of validity.",
+    descriptionRw: "Biri hasi y'icyapa cyo Gusubiza kugirango bisobanure intera cyangwa igihe.",
+    count: ROAD_SIGNS.filter(s => s.category === "Supplementary").length,
+  },
+];
+
+// Default export for knowledgeRetriever.js compatibility
+export default { ibyapa: ROAD_SIGNS };

@@ -89,7 +89,8 @@ export default function Irembo() {
     try {
       setProcessing(true);
       setPaymentError(null);
-      const init = await paymentAPI.initiatePayment({ userId: user.id, amount: 5500, phone: paymentPhone, provider: 'mtn', product: 'irembo' });
+      // Use Paypack for payment — 100 RWF in test mode
+      const init = await paymentAPI.paypackCashin({ amount: 100, phone: paymentPhone, product: 'irembo' });
       setTxnId(init.transactionId);
       setPaymentStatus('PENDING');
       
@@ -99,14 +100,14 @@ export default function Irembo() {
         const iv = setInterval(async () => {
           tries++;
           try {
-            const st = await paymentAPI.checkStatus(init.transactionId);
+            const st = await paymentAPI.paypackStatus(init.transactionId);
             setPaymentStatus(st.status);
             if (st.status === 'SUCCESS' || st.status === 'FAILED') {
                finalStatus = st.status;
                clearInterval(iv); 
                resolve(); 
             }
-            if (tries > 40) { 
+            if (tries > 40) {
                 finalStatus = 'TIMEOUT';
                 clearInterval(iv); 
                 resolve(); 
@@ -216,7 +217,7 @@ export default function Irembo() {
 
             {paymentStatus === 'PENDING' && (
               <div className="mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
-                <p className="text-gray-900 dark:text-white">Awaiting MTN MoMo approval on your phone…</p>
+                <p className="text-gray-900 dark:text-white">📱 Check your phone for USSD prompt to confirm payment...</p>
               </div>
             )}
             {paymentError && (
@@ -232,7 +233,7 @@ export default function Irembo() {
                 <div className="text-left">
                   <h4 className="text-orange-900 dark:text-orange-100 mb-2">Important:</h4>
                   <ul className="text-orange-800 dark:text-orange-200 text-sm space-y-1">
-                    <li>• Approve the MTN MoMo prompt within 8 hours</li>
+                    <li>• Approve the payment prompt within 8 hours</li>
                     <li>• If payment is not completed, your slot will be released</li>
                     <li>• You will receive an SMS confirmation after payment</li>
                     <li>• If no SMS within 2 hours, contact us at support@ishami.rw</li>

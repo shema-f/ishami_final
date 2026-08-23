@@ -1,12 +1,15 @@
 import { motion } from 'motion/react';
-import { Trophy, Medal, TrendingUp, Crown, Zap, Share2, Link as LinkIcon, Copy, Facebook } from 'lucide-react';
+import { Trophy, Medal, TrendingUp, Crown, Zap, Share2, Link as LinkIcon, Copy, Facebook, ArrowRight, Award, Shield, CheckCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { leaderboardAPI } from '../services/api';
+import { Link } from 'react-router';
+import { useTranslation } from '../contexts/I18nContext';
 
 type LeaderboardEntry = { userId: string; username: string; bestScore: number; quizCount: number; totalMarks: number; totalQuestions: number };
 const formatName = (name: string) => name || 'Unknown';
 
 export default function Leaderboard() {
+  const { lang } = useTranslation();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,10 +28,8 @@ export default function Leaderboard() {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    return () => { mounted = false; };
+  });
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -43,39 +44,15 @@ export default function Leaderboard() {
       setTimeout(() => setCopied(false), 1500);
     } catch {}
   };
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Crown className="w-6 h-6 text-yellow-500" />;
-      case 2:
-        return <Medal className="w-6 h-6 text-gray-400" />;
-      case 3:
-        return <Medal className="w-6 h-6 text-orange-600" />;
-      default:
-        return <span className="text-gray-600 dark:text-gray-400">#{rank}</span>;
-    }
-  };
-
-  const getRankBgColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return 'bg-gradient-to-r from-yellow-400 to-yellow-600';
-      case 2:
-        return 'bg-gradient-to-r from-gray-300 to-gray-500';
-      case 3:
-        return 'bg-gradient-to-r from-orange-400 to-orange-600';
-      default:
-        return 'bg-white dark:bg-gray-800';
-    }
-  };
 
   const top3 = entries.slice(0, 3);
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A3AD] mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading leaderboard...</p>
+          <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading leaderboard...</p>
         </div>
       </div>
     );
@@ -83,29 +60,29 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+      {/* Background glow */}
+      <div className="fixed top-1/3 left-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none" />
+      
+      <div className="max-w-6xl mx-auto pt-16">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4">
-            <Trophy className="w-12 h-12 text-white" />
+          <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+            <Trophy className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
             Leaderboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-400 text-lg">
             Top performers in Rwanda Traffic Rules mastery
-            <span className="block mt-1 text-[#00A3AD]">
-              Abanyeshuri Batanguye Mu Kumenya Amategeko
-            </span>
           </p>
         </motion.div>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200 px-4 py-3">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
             {error}
           </div>
         )}
@@ -115,20 +92,20 @@ export default function Leaderboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-r from-[#00A3AD] to-[#008891] rounded-2xl p-6 mb-8 text-white"
+          className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-6 mb-8 text-white"
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
               <Zap className="w-8 h-8" />
               <div>
-                <h3 className="mb-1">Climb the Rankings!</h3>
-                <p className="text-white/80">
+                <h3 className="font-semibold mb-1">Climb the Rankings!</h3>
+                <p className="text-blue-100 text-sm">
                   Complete quizzes daily to maintain your streak and earn badges
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-6 h-6" />
+            <div className="flex items-center gap-2 text-blue-100">
+              <TrendingUp className="w-5 h-5" />
               <span className="text-sm">Updated in real-time</span>
             </div>
           </div>
@@ -139,19 +116,19 @@ export default function Leaderboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 border border-gray-200/20 dark:border-gray-700/20 shadow-xl mb-8"
+          className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 mb-8"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Share2 className="w-5 h-5 text-[#00A3AD]" />
-              <span className="text-gray-900 dark:text-white">Share this leaderboard</span>
+              <Share2 className="w-5 h-5 text-blue-400" />
+              <span className="text-white text-sm">Share this leaderboard</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent('ISHAMI App Leaderboard — Can you beat me?')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-700"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-500 transition-colors"
               >
                 <Facebook className="w-4 h-4" />
                 Facebook
@@ -160,36 +137,17 @@ export default function Leaderboard() {
                 href={`https://wa.me/?text=${encodeURIComponent('ISHAMI App Leaderboard — Can you beat me? ' + shareUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-500 text-white text-xs hover:bg-green-600"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white text-xs hover:bg-green-500 transition-colors"
               >
-                <span className="font-semibold">WA</span>
                 WhatsApp
-              </a>
-              <a
-                href={`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent('ISHAMI App Leaderboard — Can you beat me?')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-sky-500 text-white text-xs hover:bg-sky-600"
-              >
-                <span className="font-semibold">TG</span>
-                Telegram
               </a>
               <button
                 onClick={doCopy}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white text-xs hover:bg-gray-300 dark:hover:bg-gray-600"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-white text-xs hover:bg-white/20 transition-colors"
               >
                 <Copy className="w-4 h-4" />
                 {copied ? 'Copied!' : 'Copy Link'}
               </button>
-              <a
-                href={shareUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs"
-              >
-                <LinkIcon className="w-4 h-4" />
-                Open Link
-              </a>
             </div>
           </div>
         </motion.div>
@@ -205,14 +163,16 @@ export default function Leaderboard() {
           <div className="order-1 pt-12">
             <motion.div
               whileHover={{ y: -8 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 border-2 border-gray-300 dark:border-gray-600 text-center"
+              className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center"
             >
-              <Medal className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <h3 className="text-gray-900 dark:text-white mb-1">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gray-500/20 rounded-full flex items-center justify-center">
+                <Medal className="w-6 h-6 text-gray-400" />
+              </div>
+              <h3 className="text-white font-semibold mb-1">
                 {formatName(top3[1]?.username || '')}
               </h3>
-              <p className="text-2xl text-[#00A3AD]">{top3[1]?.bestScore ?? '-'}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">best score</p>
+              <p className="text-2xl font-bold text-blue-400 font-[family-name:var(--font-mono)]">{top3[1]?.bestScore ?? '-'}</p>
+              <p className="text-xs text-gray-500">best score</p>
             </motion.div>
           </div>
 
@@ -220,15 +180,15 @@ export default function Leaderboard() {
           <div className="order-2">
             <motion.div
               whileHover={{ y: -8 }}
-              className="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl p-6 border-2 border-yellow-300 text-center relative"
+              className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 text-center relative shadow-lg shadow-yellow-500/30"
             >
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-full p-2">
-                <Crown className="w-6 h-6 text-yellow-500" />
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#111827] rounded-full p-2">
+                <Crown className="w-6 h-6 text-yellow-400" />
               </div>
-              <h3 className="text-white mb-1">
+              <h3 className="text-white font-bold mb-1 mt-2">
                 {formatName(top3[0]?.username || '')}
               </h3>
-              <p className="text-3xl text-white">{top3[0]?.bestScore ?? '-'}</p>
+              <p className="text-3xl font-bold text-white font-[family-name:var(--font-mono)]">{top3[0]?.bestScore ?? '-'}</p>
               <p className="text-sm text-yellow-100">best score</p>
             </motion.div>
           </div>
@@ -237,14 +197,16 @@ export default function Leaderboard() {
           <div className="order-3 pt-12">
             <motion.div
               whileHover={{ y: -8 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 border-2 border-orange-400 dark:border-orange-600 text-center"
+              className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-center"
             >
-              <Medal className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-              <h3 className="text-gray-900 dark:text-white mb-1">
+              <div className="w-12 h-12 mx-auto mb-3 bg-orange-500/20 rounded-full flex items-center justify-center">
+                <Medal className="w-6 h-6 text-orange-400" />
+              </div>
+              <h3 className="text-white font-semibold mb-1">
                 {formatName(top3[2]?.username || '')}
               </h3>
-              <p className="text-2xl text-[#00A3AD]">{top3[2]?.bestScore ?? '-'}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">best score</p>
+              <p className="text-2xl font-bold text-orange-400 font-[family-name:var(--font-mono)]">{top3[2]?.bestScore ?? '-'}</p>
+              <p className="text-xs text-gray-500">best score</p>
             </motion.div>
           </div>
         </motion.div>
@@ -253,20 +215,19 @@ export default function Leaderboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/20 dark:border-gray-700/20 shadow-xl overflow-hidden"
+          transition={{ delay: 0.5 }}
+          className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden"
         >
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                <tr>
-                  <th className="px-6 py-4 text-left text-gray-900 dark:text-white">Rank</th>
-                  <th className="px-6 py-4 text-left text-gray-900 dark:text-white">User</th>
-                  <th className="px-6 py-4 text-center text-gray-900 dark:text-white">Best Score</th>
-                  <th className="px-6 py-4 text-center text-gray-900 dark:text-white">Total Quizzes</th>
-                  <th className="px-6 py-4 text-center text-gray-900 dark:text-white">Total Marks</th>
-                  <th className="px-6 py-4 text-center text-gray-900 dark:text-white">Total Questions</th>
-                  <th className="px-6 py-4 text-center text-gray-900 dark:text-white">Average Score</th>
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">Rank</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">User</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400">Best Score</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden sm:table-cell">Quizzes</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">Total Marks</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">Average</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,43 +236,41 @@ export default function Leaderboard() {
                     key={entry.userId}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + index * 0.05 }}
-                    className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                      index + 1 <= 3 ? getRankBgColor(index + 1) : ''
+                    transition={{ delay: 0.6 + index * 0.03 }}
+                    className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
+                      index < 3 ? 'bg-white/5' : ''
                     }`}
                   >
                     <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        {getRankIcon(index + 1)}
+                      <div className="flex items-center">
+                        {index === 0 && <Crown className="w-5 h-5 text-yellow-400" />}
+                        {index === 1 && <Medal className="w-5 h-5 text-gray-400" />}
+                        {index === 2 && <Medal className="w-5 h-5 text-orange-400" />}
+                        {index > 2 && <span className="text-gray-500 text-sm font-medium ml-1">#{index + 1}</span>}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`${index + 1 <= 3 ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                      <span className={`font-medium ${index < 3 ? 'text-white' : 'text-gray-300'}`}>
                         {formatName(entry.username)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className={`text-lg ${index + 1 <= 3 ? 'text-white' : 'text-[#00A3AD]'}`}>
+                      <span className={`text-lg font-bold font-[family-name:var(--font-mono)] ${
+                        index === 0 ? 'text-yellow-400' : 
+                        index === 1 ? 'text-gray-300' : 
+                        index === 2 ? 'text-orange-400' : 'text-blue-400'
+                      }`}>
                         {entry.bestScore}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`${index + 1 <= 3 ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
-                        {entry.quizCount}
-                      </span>
+                    <td className="px-6 py-4 text-center hidden sm:table-cell">
+                      <span className="text-gray-400">{entry.quizCount}</span>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`${index + 1 <= 3 ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
-                        {entry.totalMarks}
-                      </span>
+                    <td className="px-6 py-4 text-center hidden md:table-cell">
+                      <span className="text-gray-400">{entry.totalMarks}</span>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`${index + 1 <= 3 ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
-                        {entry.totalQuestions}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`${index + 1 <= 3 ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                    <td className="px-6 py-4 text-center hidden lg:table-cell">
+                      <span className="text-gray-400">
                         {Math.round((entry.totalMarks / Math.max(1, entry.totalQuestions)) * 100)}%
                       </span>
                     </td>
@@ -322,23 +281,85 @@ export default function Leaderboard() {
           </div>
         </motion.div>
 
+        {/* Certification CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-12"
+        >
+          <div
+            className="relative overflow-hidden rounded-3xl p-8 sm:p-10"
+            style={{
+              background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 40%, #0f2340 70%, #0a1628 100%)',
+            }}
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600" />
+            <div className="absolute inset-0 opacity-5">
+              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="cert-lb-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M20 0L40 20L20 40L0 20Z" fill="none" stroke="#c9a84c" strokeWidth="0.5" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#cert-lb-pattern)" />
+              </svg>
+            </div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-[100px]" />
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-4">
+                  <Award className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm text-yellow-400 font-medium">Earn Your Certificate</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 font-[family-name:var(--font-heading)]">
+                  Ready to Get Certified?
+                </h3>
+                <p className="text-slate-400 max-w-lg">
+                  Top the leaderboard and earn your official ISHAMI Certificate of Completion.
+                  Share it with employers or verify it online.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/quiz"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/25 transition-all duration-300"
+                >
+                  <Trophy className="w-5 h-5" />
+                  <span>Take a Quiz</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/certificate"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300"
+                >
+                  <Shield className="w-5 h-5 text-yellow-400" />
+                  <span>View Certificate</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Call to Action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-12 text-center"
+          className="mt-8 text-center"
         >
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-400 mb-4">
             Think you can make it to the top?
           </p>
-          <a
-            href="/quiz"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl hover:shadow-[#00A3AD]/50 transition-all duration-300 space-x-2"
+          <Link
+            to="/quiz"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300"
           >
             <Trophy className="w-5 h-5" />
             <span>Start Climbing</span>
-          </a>
+            <ArrowRight className="w-5 h-5" />
+          </Link>
         </motion.div>
       </div>
     </div>

@@ -1,15 +1,18 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
-import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail } from 'lucide-react';
-import { useState } from 'react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2 } from 'lucide-react';
+import { useState, lazy, Suspense } from 'react';
 import { newsletterAPI } from '../services/api';
+import { toast } from 'sonner';
+import { useTranslation } from '../contexts/I18nContext';
 import FlipCard from '../components/FlipCard';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 
-import { toast } from 'sonner';
+// Lazy-load the hero — the 3D scene + GSAP + three.js are code-split into a separate chunk
+const CinematicHero = lazy(() => import('../components/hero/CinematicHero'));
 
 export default function Home() {
+  const { t, lang } = useTranslation();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -20,7 +23,7 @@ export default function Home() {
       if (res?.success) {
         setSubscribed(true);
         setEmail('');
-        toast.success('Welcome to our newsletter! Thanks for subscribing.');
+        toast.success('Welcome to our newsletter!');
       }
     } catch {
       toast.error('Subscription failed. Please try again.');
@@ -29,230 +32,109 @@ export default function Home() {
 
   const features = [
     {
-      icon: <Zap className="w-8 h-8" />,
+      icon: <Zap className="w-6 h-6" />,
       title: 'Interactive Quizzes',
       titleKiny: 'Ibizamini Bihuza',
-      description: 'Test your knowledge with 20-minute timed quizzes based on real Rwanda traffic rules.',
+      description: 'Test your knowledge with timed quizzes based on real Rwanda traffic rules.',
       link: '/quiz',
-      color: 'from-[#00A3AD] to-[#008891]'
+      color: 'from-blue-500 to-blue-600',
+      glow: 'shadow-blue-500/25'
     },
     {
-      icon: <Car className="w-8 h-8" />,
+      icon: <Car className="w-6 h-6" />,
       title: '3D Driving Simulation',
       titleKiny: 'Imyitozo yo Gutwara',
       description: 'Practice real-world scenarios in immersive 3D environments.',
       link: '/simulation',
-      color: 'from-purple-500 to-purple-700'
+      color: 'from-purple-500 to-purple-600',
+      glow: 'shadow-purple-500/25'
     },
     {
-      icon: <Brain className="w-8 h-8" />,
+      icon: <Brain className="w-6 h-6" />,
       title: 'AI Assistant - Moto-Sensei',
       titleKiny: 'Umufasha wa AI',
       description: 'Get instant answers from your friendly Rwandan driving instructor.',
       link: '/ai-assistant',
-      color: 'from-orange-500 to-orange-700'
+      color: 'from-emerald-500 to-emerald-600',
+      glow: 'shadow-emerald-500/25'
     },
     {
-      icon: <BookOpen className="w-8 h-8" />,
+      icon: <BookOpen className="w-6 h-6" />,
       title: 'Download Resources',
       titleKiny: 'Kuramo Ibyatanzwe',
       description: 'Access PDFs, videos, and images of traffic signs and rules.',
       link: '/resources',
-      color: 'from-green-500 to-green-700'
+      color: 'from-amber-500 to-amber-600',
+      glow: 'shadow-amber-500/25'
     }
+  ];
+
+  const stats = [
+    { value: '10K+', label: 'Students', icon: <Target className="w-5 h-5" /> },
+    { value: '500+', label: 'Questions', icon: <BookOpen className="w-5 h-5" /> },
+    { value: '95%', label: 'Pass Rate', icon: <Trophy className="w-5 h-5" /> },
   ];
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 sm:py-20 px-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00A3AD]/10 to-purple-500/10 dark:from-[#00A3AD]/20 dark:to-purple-500/20"></div>
-        
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-            <motion.div
-              className="order-2 lg:order-1"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-gray-900 dark:text-white mb-4 sm:mb-6 text-balance">
-                <span className="inline-block">KORA RIMWE - UTSINDE </span>
-                <span className="block text-[#00A3AD] mt-2 text-balance">
-                  Haranira kubona provisoire na permis mu gihe gito
-                </span>
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base">
-                Tandukana no guta umwanya mu ma auto ecole wiga kuko ISHAMI APP ikwigisha amategeko y'umuhanda Neza kandi vuba 
-                Mu gihe gito. 
-              </p>
-              
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4">
-                <Link
-                  to="/quiz"
-                  className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl hover:shadow-[#00A3AD]/50 transition-all duration-300 flex items-center justify-center space-x-2 group"
-                >
-                  <span>Tangira imyitozo</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                
-                <Link
-                  to="/ai-assistant"
-                  className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 flex items-center justify-center space-x-2"
-                >
-                  <Brain className="w-5 h-5" />
-                  <span>Baza Moto‑Sensei</span>
-                </Link>
-              </div>
-            </motion.div>
+      {/* Cinematic 3D Hero Section (lazy-loaded) */}
+      <Suspense
+        fallback={
+          <section className="relative min-h-screen bg-[#0a0e14] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+              <span className="text-slate-400 text-sm tracking-wider">Loading...</span>
+            </div>
+          </section>
+        }
+      >
+        <CinematicHero />
+      </Suspense>
 
-            <motion.div
-              className="order-1 lg:order-2 relative"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1641295437952-092f7e8b65ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxSd2FuZGElMjB0cmFmZmljJTIwcm9hZHxlbnwxfHx8fDE3NjQzNjM1MjF8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                  alt="Rwanda traffic road"
-                  className="w-full h-[400px] object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              </div>
-              
-              {/* Floating Stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="absolute -bottom-6 left-6 right-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl p-6 rounded-xl shadow-xl border border-gray-200/20 dark:border-gray-700/20"
-              >
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-[#00A3AD]">10K+</div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">Students</div>
-                  </div>
-                  <div>
-                    <div className="text-[#00A3AD]">500+</div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">Questions</div>
-                  </div>
-                  <div>
-                    <div className="text-[#00A3AD]">95%</div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">Pass Rate</div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Sticky CTA (Mobile) */}
-      <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-700 p-3 z-40">
-        <div className="max-w-7xl mx-auto flex gap-3">
-          <Link
-            to="/quiz"
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl text-center"
-          >
-            Tangira imyitozo
-          </Link>
-          <Link
-            to="/ai-assistant"
-            className="flex-1 px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 text-center"
-          >
-            Baza Moto‑Sensei
-          </Link>
-        </div>
-      </div>
-
-      {/* Moto‑Sensei Intro Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-[#00A3AD]/10 to-transparent">
+      {/* Features Section */}
+      <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-gray-200/20 dark:border-gray-700/20 shadow-2xl"
+            className="text-center mb-16"
           >
-            <div className="flex flex-col lg:flex-row items-center gap-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#00A3AD]/10 dark:bg-[#00A3AD]/20 flex items-center justify-center text-2xl">🧑‍🏫</div>
-              <div className="flex-1 text-center lg:text-left">
-                <h2 className="text-gray-900 dark:text-white mb-2 text-balance">Moto‑Sensei: Umwarimu wa AI (Artificial Intelligence) ugufasha kwiga 
-                  amategeko y’umuhanda</h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Koresha Moto Sensei ubaza ibibazo bijyanye n'amategeko y'umuhanda	usobanukirwe  kandi ugere ku ntego yawe yo kubona Permi.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
-                  <Link
-                    to="/ai-assistant"
-                    className="px-6 py-3 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl transition-all duration-300 text-center"
-                  >
-                    Baza Moto‑Sensei
-                  </Link>
-                  <Link
-                    to="/quiz"
-                    className="px-6 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border border-gray-200 dark:border-gray-600 text-center"
-                  >
-                    Tangira imyitozo
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-3 gap-4 mt-6">
-              <div className="bg-white dark:bg-gray-700 rounded-2xl p-4 border border-gray-200 dark:border-gray-600">
-                <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-[#00A3AD] to-[#008891] text-white mb-3"><Zap className="w-6 h-6" /></div>
-                <p className="text-gray-900 dark:text-white">Moto Sensei igufasha Kwiga vuba</p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Ibibazo bifasha kumenya aho ukeneye kongera imbaraga.</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-2xl p-4 border border-gray-200 dark:border-gray-600">
-                <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white mb-3"><Star className="w-6 h-6" /></div>
-                <p className="text-gray-900 dark:text-white">Moto Sensei Igufasha Kwihugura neza</p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Iguha Inyigisho zisobanutse mu Kinyarwanda, ku rwego rwawe.</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-2xl p-4 border border-gray-200 dark:border-gray-600">
-                <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-green-500 to-green-700 text-white mb-3"><Trophy className="w-6 h-6" /></div>
-                <p className="text-gray-900 dark:text-white">Igufasha Gutsinda</p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Intego: iyo ukoreshaje ai utsinda ikizami cya provisoire bwa mbere ugikora .</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-gray-900 dark:text-white mb-4">Everything You Need to Pass</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Comprehensive tools designed for effective learning
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {t('home.features.title')}
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              {t('home.features.sub')}
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
               >
                 <Link
                   to={feature.link}
-                  className="block h-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl border border-gray-200/20 dark:border-gray-700/20 hover:shadow-2xl transition-all duration-300 group"
+                  className="block group"
                 >
-                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white mb-4 group-hover:scale-110 transition-transform`}>
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-gray-900 dark:text-white mb-2">{feature.title}</h3>
-                  <p className="text-[#00A3AD] text-sm mb-2">{feature.titleKiny}</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">{feature.description}</p>
-                  <div className="mt-4 flex items-center text-[#00A3AD] group-hover:translate-x-2 transition-transform">
-                    <span className="text-sm">Learn more</span>
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                  <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 h-full hover:bg-white/15 hover:border-white/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10">
+                    {/* Icon */}
+                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white mb-4 shadow-lg ${feature.glow} group-hover:scale-110 transition-transform`}>
+                      {feature.icon}
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-white mb-1">{feature.title}</h3>
+                    <p className="text-sm text-blue-400 mb-2 font-medium">{feature.titleKiny}</p>
+                    <p className="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
+                    
+                    <div className="mt-4 flex items-center text-blue-400 group-hover:text-blue-300">
+                      <span className="text-sm font-medium">Learn more</span>
+                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </Link>
               </motion.div>
@@ -261,36 +143,202 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Flip Cards Section - Interactive Learning */}
-      <section className="py-20 px-4 bg-gradient-to-b from-transparent to-[#00A3AD]/5">
+      {/* AI Assistant CTA */}
+      <section className="py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#111827] to-[#030712] p-8 sm:p-12 border border-white/15 shadow-xl shadow-black/30"
+          >
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px]" />
+            
+            {/* Imigongo decorative corner */}
+            <svg className="absolute top-0 right-0 w-32 h-32 opacity-20" viewBox="0 0 100 100">
+              <path d="M100 0L100 100L0 100" fill="none" stroke="#F59E0B" strokeWidth="2"/>
+              <path d="M100 20L100 100L20 100" fill="none" stroke="#F59E0B" strokeWidth="1" opacity="0.5"/>
+            </svg>
+            
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8">
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+                  <Brain className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm text-emerald-400 font-medium">AI-Powered Learning</span>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+                  Meet Moto-Sensei
+                </h2>
+                <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
+                  Your friendly AI driving instructor. Ask questions in Kinyarwanda, 
+                  get instant explanations, and master traffic rules faster.
+                </p>
+                
+                <Link
+                  to="/ai-assistant"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  <span>Chat with Moto-Sensei</span>
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
+              
+              {/* Chat Preview */}
+              <div className="w-full lg:w-auto lg:max-w-sm">
+                <div className="bg-[#030712]/70 rounded-2xl p-4 border border-white/15">
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                        <Brain className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-200 border border-white/15">
+                        Muraho! I'm Moto-Sensei. What would you like to learn today?
+                      </div>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <div className="bg-blue-500 rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white">
+                        What does a red triangle sign mean?
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Flip Cards Section */}
+      <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 dark:text-white mb-4">Test Your Knowledge</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Flip the cards to reveal answers - Hindura amakarita urebe ibisubizo
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {t('home.flip.title')}
+            </h2>
+            <p className="text-slate-400">
+              {t('home.flip.subtitle')}
             </p>
           </div>
-
           <FlipCard />
         </div>
       </section>
 
+      {/* Certification CTA Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl p-8 sm:p-12"
+            style={{
+              background: 'linear-gradient(135deg, #0a1628 0%, #0d1f3c 40%, #0f2340 70%, #0a1628 100%)',
+            }}
+          >
+            {/* Gold accent lines */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600" />
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-500" />
+
+            {/* Pattern overlay */}
+            <div className="absolute inset-0 opacity-5">
+              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="cert-home-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M20 0L40 20L20 40L0 20Z" fill="none" stroke="#c9a84c" strokeWidth="0.5" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#cert-home-pattern)" />
+              </svg>
+            </div>
+
+            {/* Glow orbs */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-500/5 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[100px]" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10">
+              {/* Left content */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6">
+                  <Award className="w-4 h-4 text-yellow-400" />
+                  <span className="text-sm text-yellow-400 font-medium">Earn Your Certificate</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+                  Get Your Official
+                  <span className="text-yellow-400"> ISHAMI Certificate</span>
+                </h2>
+                <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
+                  Complete the Traffic Rules & Road Safety quiz and earn an official certificate.
+                  Share it with employers, print it, or verify it online. Prove your driving knowledge!
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <Link
+                    to="/quiz"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-bold hover:shadow-xl hover:shadow-yellow-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                  >
+                    <Trophy className="w-5 h-5" />
+                    <span>Take a Quiz</span>
+                  </Link>
+                  <Link
+                    to="/certificate"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300"
+                  >
+                    <span>View Certificate</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right: Mini certificate preview */}
+              <div className="w-full lg:w-80 shrink-0">
+                <div className="bg-gradient-to-br from-[#0f2340] to-[#0a1628] rounded-2xl p-6 border border-yellow-500/20 shadow-2xl shadow-black/30">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden">
+                      <img src="/apple-touch-icon.png" alt="ISHAMI" className="w-6 h-6 object-contain" />
+                    </div>
+                    <span className="text-sm font-bold text-white">ISHAMI</span>
+                  </div>
+                  <p className="text-[10px] text-yellow-500 uppercase tracking-widest mb-2 font-bold">Certificate of Completion</p>
+                  <div className="h-2 w-20 bg-yellow-500/30 rounded-full mb-4" />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-2xl font-bold text-white">87%</p>
+                      <p className="text-[10px] text-slate-500">Final Score</p>
+                    </div>
+                    <div className="p-3 rounded-full bg-yellow-500/20">
+                      <Shield className="w-6 h-6 text-yellow-400" />
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    <span className="text-xs text-slate-400">Electronically verifiable</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Testimonials Section */}
-      <section className="py-20 px-4">
+      <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-gray-900 dark:text-white mb-4">What Our Students Say</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Join thousands of successful learners - Twinjire mu banyeshuri babishoboye
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {t('home.testimonials.title')}
+            </h2>
+            <p className="text-slate-400">
+              {lang === 'en' ? 'Join thousands of successful learners' : 'Jya mu bwenge bw\'abiga benshi'}
             </p>
           </div>
-
           <TestimonialCarousel />
         </div>
       </section>
 
       {/* Irembo Service CTA */}
-      <section className="py-20 px-4">
+      <section className="py-24 px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -298,24 +346,29 @@ export default function Home() {
             viewport={{ once: true }}
             className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-purple-800 p-8 md:p-12"
           >
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"></div>
-            
+            {/* Imigongo geometric overlay */}
+            <div 
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='white' stroke-width='1'/%3E%3C/svg%3E")`,
+                backgroundSize: '60px 60px'
+              }}
+            />
             <div className="relative z-10 text-center text-white">
               <Trophy className="w-16 h-16 mx-auto mb-6" />
-              <h2 className="mb-4">Need Help with Irembo Registration?</h2>
+              <h2 className="text-3xl font-bold mb-4 font-[family-name:var(--font-heading)]">{lang === 'en' ? 'Need Help with Irembo Registration?' : 'Ushaka Ubufasha mu Kwiyandikisha kuri Irembo?'}</h2>
               <p className="mb-8 text-purple-100">
-                We can help you get your exam code through Irembo services. 
-                Fast, reliable, and secure assistance.
+                {lang === 'en' ? 'We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.' : 'Twe dushobora kukugufasha kubona nomero y\'ikizamini cyawe kuri serivisi za Irembo. Bufasha bw\'agaciro, bwizewe kandi bw\'umutekano.'}
               </p>
               <Link
                 to="/irembo"
-                className="inline-flex items-center px-8 py-4 bg-white text-purple-600 rounded-xl hover:bg-gray-100 transition-all duration-300 space-x-2 group"
+                className="inline-flex items-center px-8 py-4 bg-white text-purple-700 rounded-xl font-semibold hover:bg-slate-100 transition-all duration-300 gap-2 hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span>Get Irembo Help</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span>{lang === 'en' ? 'Get Irembo Help' : 'Shyira Ubufasha wa Irembo'}</span>
+                <ChevronRight className="w-5 h-5" />
               </Link>
               <p className="mt-4 text-sm text-purple-200">
-                Service Fee: 5,500 RWF | Processing Time: Within 8 hours
+                {lang === 'en' ? 'Service Fee: 5,500 RWF | Processing Time: Within 8 hours' : 'Igiciro cya Serivisi: 5,500 RWF | Igihe cyo gutunganya: Mu minsi 8'}
               </p>
             </div>
           </motion.div>
@@ -323,66 +376,85 @@ export default function Home() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl">
+      <section className="py-24 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <Mail className="w-12 h-12 mx-auto mb-6 text-[#00A3AD]" />
-          <h2 className="text-gray-900 dark:text-white mb-4">Stay Updated</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Get the latest traffic rules updates, study tips, and exclusive offers delivered to your inbox.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Mail className="w-12 h-12 mx-auto mb-6 text-blue-400" />
+            <h2 className="text-3xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {t('home.newsletter.title')}
+            </h2>
+            <p className="text-slate-400 mb-8">
+              {t('home.newsletter.desc')}
+            </p>
 
-          {subscribed ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
-            >
-              <p className="text-green-600 dark:text-green-400">
-                ✓ Thank you for subscribing! Check your email for confirmation.
-              </p>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                className="flex-1 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
-              />
-              <button
-                type="submit"
-                className="px-8 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl hover:shadow-[#00A3AD]/50 transition-all duration-300"
+            {subscribed ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl"
               >
-                Subscribe
-              </button>
-            </form>
-          )}
+                <p className="text-emerald-400">
+                  ✓ Thank you for subscribing! Check your email for confirmation.
+                </p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input
+                  type="email"
+                  name="email"
+                  aria-label="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="flex-1 px-6 py-4 bg-white/5 border border-white/15 rounded-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500 transition-all"
+                />
+                <button
+                  type="submit"
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-[14px] font-semibold hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  {t('home.newsletter.sub')}
+                </button>
+              </form>
+            )}
+          </motion.div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4">
+      <section className="py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-br from-[#00A3AD] to-[#008891] p-12 rounded-3xl text-white relative overflow-hidden"
+            className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 p-12 rounded-3xl text-white"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+            {/* Imigongo geometric overlay */}
+            <div 
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/svg%3E")`,
+                backgroundSize: '40px 40px'
+              }}
+            />
             <div className="relative z-10">
-              <h2 className="mb-4">Ready to Master Traffic Rules?</h2>
-              <p className="mb-8 text-lg">
-                Join over 10,000 students who passed their driving test with ISHAMI
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 font-[family-name:var(--font-heading)]">
+                {t('home.cta.title')}
+              </h2>
+              <p className="text-lg text-blue-100 mb-8">
+                {t('home.cta.subtitle')}
               </p>
               <Link
                 to="/auth"
-                className="inline-flex items-center px-10 py-5 bg-white text-[#00A3AD] rounded-xl hover:bg-gray-100 transition-all duration-300 space-x-2 group"
+                className="inline-flex items-center gap-2 px-10 py-5 bg-white text-blue-600 rounded-xl font-bold text-lg hover:bg-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span>Get Started Free</span>
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span>{t('home.cta.start')}</span>
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </motion.div>

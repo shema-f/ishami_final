@@ -1,10 +1,14 @@
 import { Outlet } from 'react-router';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import AnimatedBackground from './AnimatedBackground';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Download, X } from 'lucide-react';
+import { useTranslation } from '../contexts/I18nContext';
 
 export default function Root() {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
@@ -43,43 +47,57 @@ export default function Root() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F9] dark:bg-[#1A1A2E] transition-colors duration-300">
+    <div className="min-h-screen">
+      <AnimatedBackground />
       <Navigation />
-      <main className="pt-20">
+      <main>
         <Outlet />
       </main>
       <Footer />
 
       <AnimatePresence>
         {!installed && showInstall && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.9, opacity: 0 }} 
-              className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+              className="w-full max-w-sm bg-[#111827]/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/15 overflow-hidden"
             >
-              <div className="p-6 text-center">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#00A3AD] to-[#008891] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#00A3AD]/30">
-                  <img src="/android-chrome-192x192.png" alt="ISHAMI" className="w-12 h-12 rounded-xl" />
+              <div className="relative p-6 text-center">
+                {/* Close button */}
+                <button
+                  onClick={handleDismiss}
+                  className="absolute top-4 right-4 p-2 rounded-lg bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-700/60 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {/* Logo using favicon */}
+                <div className="mx-auto w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-white/20 shadow-lg shadow-blue-500/25 mb-6 bg-white flex items-center justify-center">
+                  <img src="/apple-touch-icon.png" alt="ISHAMI Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Install ISHAMI App</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Get the best experience by installing our app on your device. Works offline!
+                
+                <h3 className="text-xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
+                  {t('root.installTitle')}
+                </h3>
+                <p className="text-slate-400 mb-6 text-sm">
+                  {t('root.installDesc')}
                 </p>
                 
                 <div className="space-y-3">
                   <button 
                     onClick={installApp} 
-                    className="w-full py-3 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl font-medium shadow-lg hover:shadow-[#00A3AD]/50 transition-all"
+                    className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all hover:-translate-y-0.5"
                   >
-                    Install Now
+                    <Download className="w-5 h-5" />
+                    {t('root.installNow')}
                   </button>
                   <button 
                     onClick={handleDismiss} 
-                    className="w-full py-3 bg-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium transition-colors"
+                    className="w-full py-3 text-slate-400 hover:text-white font-medium transition-colors"
                   >
-                    Maybe Later
+                    {t('root.maybeLater')}
                   </button>
                 </div>
               </div>

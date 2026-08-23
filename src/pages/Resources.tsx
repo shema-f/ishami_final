@@ -1,8 +1,9 @@
 import { motion } from 'motion/react';
-import { FileText, Video, Image as ImageIcon, Download, Lock, Play } from 'lucide-react';
+import { FileText, Video, Image as ImageIcon, Download, Lock, Play, Search, Filter, Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { resourcesAPI } from '../services/api';
+import { useTranslation } from '../contexts/I18nContext';
 
 interface Resource {
   id: string;
@@ -54,6 +55,7 @@ const mockResources: Resource[] = [
 
 export default function Resources() {
   const { user } = useAuth();
+  const { t, lang } = useTranslation();
   const [filter, setFilter] = useState<'All' | 'PDF' | 'Video' | 'Image'>('All');
   const [showPaywall, setShowPaywall] = useState(false);
   const [resources, setResources] = useState<Resource[]>([]);
@@ -130,12 +132,15 @@ export default function Resources() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-gray-900 dark:text-white mb-4">
+          <div className="inline-flex p-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-red-500/30">
+            <FileText className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
             Learning Resources
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-400 text-lg">
             Download study materials, videos, and reference images
-            <span className="block mt-1 text-[#00A3AD]">
+            <span className="block mt-1 text-green-400">
               Kuramo Ibikoresho byo Kwiga
             </span>
           </p>
@@ -149,17 +154,19 @@ export default function Resources() {
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
           {['All', 'PDF', 'Video', 'Image'].map((filterOption) => (
-            <button
+            <motion.button
               key={filterOption}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setFilter(filterOption as typeof filter)}
-              className={`px-6 py-3 rounded-xl transition-all duration-300 ${
+              className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                 filter === filterOption
-                  ? 'bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white shadow-lg shadow-[#00A3AD]/50'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#00A3AD]'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'bg-white/5 backdrop-blur-xl text-gray-300 border border-white/10 hover:border-blue-500/30 hover:text-white hover:bg-white/10'
               }`}
             >
               {filterOption}
-            </button>
+            </motion.button>
           ))}
         </motion.div>
 
@@ -172,7 +179,7 @@ export default function Resources() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -8 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden border border-gray-200/20 dark:border-gray-700/20 shadow-xl group"
+              className="bg-white/5 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/10 shadow-xl group hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-2"
             >
               {/* Thumbnail or Icon Header */}
               <div className={`relative h-48 bg-gradient-to-br ${getTypeColor(resource.type)} flex items-center justify-center`}>
@@ -205,20 +212,20 @@ export default function Resources() {
               {/* Content */}
               <div className="p-6">
                 <div className="mb-2">
-                  <span className="text-xs text-[#00A3AD] uppercase tracking-wide">
+                  <span className="text-xs text-blue-400 uppercase tracking-wide font-medium">
                     {resource.category}
                   </span>
                 </div>
                 
-                <h3 className="text-gray-900 dark:text-white mb-2">
+                <h3 className="text-white mb-2 font-semibold">
                   {resource.title_en}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                <p className="text-gray-400 text-sm mb-4">
                   {resource.title_kiny}
                 </p>
 
                 {resource.size && (
-                  <p className="text-gray-500 dark:text-gray-500 text-xs mb-4">
+                  <p className="text-gray-500 text-xs mb-4">
                     Size: {resource.size}
                   </p>
                 )}
@@ -226,12 +233,12 @@ export default function Resources() {
                 <button
                   onClick={() => handleDownload(resource)}
                   disabled={!resource.fileUrl || (resource.isPremium && !user?.isPro)}
-                  className={`w-full px-6 py-3 rounded-xl flex items-center justify-center space-x-2 transition-all duration-300 ${
+                  className={`w-full px-6 py-3 rounded-xl flex items-center justify-center space-x-2 transition-all duration-300 font-semibold ${
                     !resource.fileUrl
-                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                      ? 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
                       : resource.isPremium && !user?.isPro
-                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white hover:shadow-xl hover:shadow-[#00A3AD]/50'
+                        ? 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5'
                   }`}
                 >
                   {!resource.fileUrl ? (
@@ -272,7 +279,8 @@ export default function Resources() {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <p className="text-gray-600 dark:text-gray-400">
+            <FileText className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+            <p className="text-gray-400">
               No resources found for this filter.
             </p>
           </motion.div>
@@ -291,24 +299,24 @@ export default function Resources() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl"
+            className="bg-[#111827] rounded-3xl p-8 max-w-md w-full border border-white/10 shadow-2xl"
           >
             <div className="text-center">
-              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4">
-                <Lock className="w-12 h-12 text-white" />
+              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+                <Lock className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-gray-900 dark:text-white mb-4">Premium Resource</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Premium Resource</h2>
+              <p className="text-gray-400 mb-6">
                 This resource is only available to Pro members. 
-                Upgrade for only <span className="text-[#00A3AD]">100 RWF</span> to access all premium content.
+                Upgrade for only <span className="text-blue-400 font-semibold">100 RWF</span> to access all premium content.
               </p>
               <div className="space-y-3">
-                <button className="w-full px-6 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl transition-all duration-300">
+                <button className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300">
                   Upgrade to Pro - 100 RWF
                 </button>
                 <button
                   onClick={() => setShowPaywall(false)}
-                  className="w-full px-6 py-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
                 >
                   Browse Free Resources
                 </button>

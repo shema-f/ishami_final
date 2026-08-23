@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, Brain } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth as firebaseAuth } from '../lib/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { authAPI } from '../services/api';
 import { useNavigate } from 'react-router';
+import { useTranslation } from '../contexts/I18nContext';
 
 export default function Auth() {
+  const { t, lang } = useTranslation();
+  const features = [
+    lang === 'rw' ? 'Ibazo nshya n\'ibyo kuri EXAM' : 'Interactive Quizzes with real exam questions',
+    lang === 'rw' ? 'AI musigati igihe ukoresheje' : 'AI Assistant for instant answers',
+    lang === 'rw' ? 'Kumenya ibintu ukurikiranaho n\'abandi' : 'Track Progress and compete with others',
+    lang === 'rw' ? '3D Simulation yo gutwara imodoka' : '3D Driving Simulations',
+  ];
   const [isSignIn, setIsSignIn] = useState(true);
   const [email, setEmail] = useState('');
   const [identifier, setIdentifier] = useState('');
@@ -74,33 +82,24 @@ export default function Auth() {
   };
 
   const handleGoogleFirebaseSignIn = async () => {
-    console.log('Starting Google Sign-In...');
     try {
       setError('');
       setLoading(true);
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      
-      console.log('Opening popup...');
       const cred = await signInWithPopup(firebaseAuth, provider);
-      console.log('Popup finished, got credential:', cred.user.uid);
-      
       const oauthCred = GoogleAuthProvider.credentialFromResult(cred);
       const idToken = oauthCred?.idToken;
       
       if (!idToken) {
-        console.error('No ID token found in result');
         setError('Google sign-in did not return an ID token');
         setLoading(false);
         return;
       }
       
-      console.log('Exchange with backend...');
       await firebaseLogin(idToken);
-      console.log('Login successful, navigating...');
       navigate('/');
     } catch (e: any) {
-      console.error('Google Sign-In Error:', e);
       if (e?.code === 'auth/popup-blocked') {
         setError('Popup was blocked. Please allow popups for this site.');
       } else if (e?.code === 'auth/popup-closed-by-user') {
@@ -113,87 +112,29 @@ export default function Auth() {
     }
   };
 
-  const handleGoogleGisSignIn = async () => {
-    try {
-      setError('');
-      setLoading(true);
-      if (!(window as any).google) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = 'https://accounts.google.com/gsi/client';
-          s.async = true;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error('Failed to load Google script'));
-          document.head.appendChild(s);
-        });
-      }
-      const google = (window as any).google;
-      let handled = false;
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: async (response: any) => {
-          try {
-            if (response?.credential && !handled) {
-              handled = true;
-              await googleIdTokenLogin(response.credential);
-              navigate('/');
-            }
-          } catch (e: any) {
-            setError(e?.message || 'Google sign-in failed');
-          } finally {
-            setLoading(false);
-          }
-        },
-      });
-      const container = document.createElement('div');
-      container.style.display = 'none';
-      document.body.appendChild(container);
-      google.accounts.id.renderButton(container, { theme: 'outline', size: 'large' });
-      container.querySelector('div')?.dispatchEvent(new Event('click'));
-    } catch (e: any) {
-      setError(e?.message || 'Google sign-in failed');
-      setLoading(false);
-    }
-  };
-
   const handleFacebookFirebaseSignIn = async () => {
-    console.log('Starting Facebook Sign-In...');
     try {
       setError('');
       setLoading(true);
       const provider = new FacebookAuthProvider();
-      
-      console.log('Opening popup...');
       const cred = await signInWithPopup(firebaseAuth, provider);
-      console.log('Popup finished, got credential:', cred.user.uid);
-      
       const oauthCred = FacebookAuthProvider.credentialFromResult(cred);
       const accessToken = oauthCred?.accessToken;
       
       if (!accessToken) {
-        console.error('No Access token found in result');
         setError('Facebook sign-in did not return an Access token');
         setLoading(false);
         return;
       }
       
-      // Note: Backend verification for Facebook token might be different or use the same firebaseLogin flow if it verifies ID token.
-      // Firebase client SDK handles the OAuth flow and signs in to Firebase.
-      // If we need to sync with our backend user, we might need to get the ID token from the User object.
       const idToken = await cred.user.getIdToken();
-      
-      console.log('Exchange with backend...');
       await firebaseLogin(idToken);
-      console.log('Login successful, navigating...');
       navigate('/');
     } catch (e: any) {
-      console.error('Facebook Sign-In Error:', e);
       if (e?.code === 'auth/popup-blocked') {
         setError('Popup was blocked. Please allow popups for this site.');
       } else if (e?.code === 'auth/popup-closed-by-user') {
         setError('Sign-in cancelled.');
-      } else if (e?.code === 'auth/account-exists-with-different-credential') {
-        setError('An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.');
       } else {
         setError(e?.message || 'Facebook sign-in failed');
       }
@@ -257,8 +198,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 flex items-center justify-center">
-      <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-8 items-center">
+    <div className="min-h-screen flex items-center justify-center px-4 py-20">
+      {/* Background glow */}
+      <div className="fixed top-1/2 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-64 h-64 bg-green-500/10 rounded-full blur-[100px] pointer-events-none" />
+      
+      <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-12 items-center">
         {/* Left Side - Branding */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
@@ -270,61 +215,40 @@ export default function Auth() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-to-br from-[#00A3AD]/20 to-purple-500/20 rounded-full blur-3xl"
+              className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"
             />
             
-            <div className="relative z-10 text-center p-12">
-              <motion.img
-                src="/android-chrome-192x192.png"
-                alt="ISHAMI"
+            <div className="relative z-10">
+              <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="inline-flex w-24 h-24 rounded-3xl mb-8 shadow-2xl"
-              />
+                className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-black/20 ring-2 ring-white/40 overflow-hidden"
+              >
+                <img src="/apple-touch-icon.png" alt="ISHAMI Logo" className="w-full h-full object-contain" />
+              </motion.div>
               
-              <h1 className="text-gray-900 dark:text-white mb-4">
-                Welcome to ISHAMI
+              <h1 className="text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+                {t('auth.welcome')}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
-                Master Rwanda Traffic Rules with AI-powered learning
+              <p className="text-gray-400 text-lg mb-8">
+                {t('auth.tagline')}
               </p>
               
-              <div className="space-y-4 text-left bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-[#00A3AD]/20 rounded-full flex items-center justify-center">
-                    <span className="text-[#00A3AD]">✓</span>
-                  </div>
-                  <div>
-                    <h4 className="text-gray-900 dark:text-white">Interactive Quizzes</h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Test your knowledge with real exam questions
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-[#00A3AD]/20 rounded-full flex items-center justify-center">
-                    <span className="text-[#00A3AD]">✓</span>
-                  </div>
-                  <div>
-                    <h4 className="text-gray-900 dark:text-white">AI Assistant</h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Get instant answers from Moto-Sensei
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-[#00A3AD]/20 rounded-full flex items-center justify-center">
-                    <span className="text-[#00A3AD]">✓</span>
-                  </div>
-                  <div>
-                    <h4 className="text-gray-900 dark:text-white">Track Progress</h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      Monitor your learning journey and compete
-                    </p>
-                  </div>
-                </div>
+              <div className="space-y-4">
+                {features.map((feature, index) => (
+                  <motion.div
+                    key={feature}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                    </div>
+                    <span className="text-gray-300">{feature}</span>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </div>
@@ -334,114 +258,114 @@ export default function Auth() {
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/20 dark:border-gray-700/20 shadow-2xl"
+          className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
         >
+          {/* Logo for mobile */}
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center overflow-hidden ring-2 ring-white/20">
+              <img src="/apple-touch-icon.png" alt="ISHAMI Logo" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-xl font-bold text-white font-[family-name:var(--font-heading)]">ISHAMI</span>
+          </div>
+
           {/* Toggle Buttons */}
-          <div className="flex space-x-2 mb-8 bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
+          <div className="flex space-x-2 mb-8 bg-white/5 rounded-xl p-1">
             <button
-              onClick={() => {
-                setIsSignIn(true);
-                setError('');
-              }}
-              className={`flex-1 py-3 rounded-lg transition-all duration-300 ${
+              onClick={() => { setIsSignIn(true); setError(''); }}
+              className={`flex-1 py-3 rounded-lg transition-all duration-300 font-medium ${
                 isSignIn
-                  ? 'bg-white dark:bg-gray-600 shadow-md text-gray-900 dark:text-white'
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'bg-white/10 text-white shadow-md'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              Sign In
+              {t('auth.signIn')}
             </button>
             <button
-              onClick={() => {
-                setIsSignIn(false);
-                setError('');
-              }}
-              className={`flex-1 py-3 rounded-lg transition-all duration-300 ${
+              onClick={() => { setIsSignIn(false); setError(''); }}
+              className={`flex-1 py-3 rounded-lg transition-all duration-300 font-medium ${
                 !isSignIn
-                  ? 'bg-white dark:bg-gray-600 shadow-md text-gray-900 dark:text-white'
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'bg-white/10 text-white shadow-md'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              Sign Up
+              {t('auth.signUp')}
             </button>
           </div>
 
-          
-
-          <h2 className="text-gray-900 dark:text-white mb-2">
-            {isSignIn ? 'Welcome Back!' : 'Create Account'}
+          <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
+            {isSignIn ? t('auth.welcomeBack') : t('auth.createAccount')}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-gray-400 mb-8">
             {isSignIn
-              ? 'Sign in to continue your learning journey'
-              : 'Join thousands of successful learners'}
+              ? t('auth.signInTo')
+              : t('auth.createAcc')}
           </p>
 
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400"
+              className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm"
             >
               {error}
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {!isSignIn && (
               <div>
-                <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-gray-300 mb-2 text-sm font-medium">
                   Username
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
                     required={!isSignIn}
-                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
+                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-300 mb-2 text-sm font-medium">
                 Email or Phone
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
                   type="text"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Enter email or phone (e.g., name@example.com or +2507xxxxxxx)"
+                  placeholder="name@example.com or +2507xxxxxxx"
                   required
-                  className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
+                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-gray-300 mb-2 text-sm font-medium">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   required
-                  className="w-full pl-12 pr-12 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
+                  className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -450,14 +374,14 @@ export default function Auth() {
 
             {isSignIn && (
               <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-[#00A3AD] border-gray-300 rounded focus:ring-[#00A3AD]"
+                    className="w-4 h-4 text-blue-500 border-white/20 rounded focus:ring-blue-500 bg-white/5"
                   />
-                  <span className="text-gray-600 dark:text-gray-400 text-sm">Remember me</span>
+                  <span className="text-gray-400 text-sm">Remember me</span>
                 </label>
-                <button type="button" onClick={() => setShowForgot(true)} className="text-[#00A3AD] text-sm hover:underline">
+                <button type="button" onClick={() => setShowForgot(true)} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">
                   Forgot password?
                 </button>
               </div>
@@ -466,22 +390,35 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl hover:shadow-[#00A3AD]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Please wait...' : isSignIn ? 'Sign In' : 'Create Account'}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Please wait...
+                </span>
+              ) : (
+                <>
+                  {isSignIn ? 'Sign In' : 'Create Account'}
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
             </button>
           </form>
 
           {showForgot && (
             <div className="mt-6 space-y-4">
               <div>
-                <label className="block text-gray-700 dark:text-gray-300 mb-2">Email or Phone</label>
+                <label className="block text-gray-300 mb-2 text-sm font-medium">Email or Phone</label>
                 <input
                   type="text"
                   value={forgotIdentifier}
                   onChange={(e) => setForgotIdentifier(e.target.value)}
                   placeholder="Enter email or phone"
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
                 />
               </div>
               <button
@@ -494,32 +431,32 @@ export default function Auth() {
                     setForgotStatus(e?.message || 'Request failed');
                   }
                 }}
-                className="w-full py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="w-full py-3 bg-white/10 text-white rounded-xl hover:bg-white/15 transition-colors font-medium"
               >
                 Send Reset Link
               </button>
               <div className="text-center">
                 <button 
                   onClick={() => setShowForgot(false)}
-                  className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
               </div>
               {forgotStatus && (
-                <div className="text-center text-sm text-gray-600 dark:text-gray-400">{forgotStatus}</div>
+                <div className="text-center text-sm text-gray-400">{forgotStatus}</div>
               )}
             </div>
           )}
 
-          {/* Social Login Placeholders */}
+          {/* Social Login */}
           <div className="mt-8">
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                <span className="px-4 bg-[#111827] text-gray-400">
                   Or continue with
                 </span>
               </div>
@@ -528,7 +465,7 @@ export default function Auth() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => handleGoogleFirebaseSignIn()}
-                className="flex items-center justify-center space-x-2 py-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center space-x-2 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">
                   <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.6 32.4 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c10.7 0 19.6-8.3 20-19v-4.5z"/>
@@ -536,27 +473,27 @@ export default function Auth() {
                   <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.3l-6.2-5.1c-2 1.7-4.7 2.7-7.4 2.7-5.1 0-9.4-3.3-11-7.9l-6.6 5.1C9.9 39.8 16.5 44 24 44z"/>
                   <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.5 5.7-6.5 7.2l6.2 5.1C37.8 37.7 44 32.9 44 24c0-1.2-.1-2.3-.4-3.5z"/>
                 </svg>
-                <span className="text-gray-700 dark:text-gray-300">Google</span>
+                <span className="text-gray-300">Google</span>
               </button>
               <button
                 onClick={() => handleFacebookFirebaseSignIn()}
-                className="flex items-center justify-center space-x-2 py-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center space-x-2 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2">
                   <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.093 10.125 24v-8.437H7.078V12.07h3.047V9.41c0-3.008 1.792-4.668 4.533-4.668 1.313 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.953.93-1.953 1.887v2.253h3.328l-.532 3.493h-2.796V24C19.612 23.093 24 18.1 24 12.073z"/>
                 </svg>
-                <span className="text-gray-700 dark:text-gray-300">Facebook</span>
+                <span className="text-gray-300">Facebook</span>
               </button>
             </div>
           </div>
 
-          <p className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
+          <p className="mt-6 text-center text-gray-500 text-sm">
             By continuing, you agree to our{' '}
-            <a href="#" className="text-[#00A3AD] hover:underline">
+            <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
               Terms of Service
             </a>{' '}
             and{' '}
-            <a href="#" className="text-[#00A3AD] hover:underline">
+            <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
               Privacy Policy
             </a>
           </p>
