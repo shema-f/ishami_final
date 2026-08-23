@@ -29,13 +29,29 @@ function collectAllQuizQuestions() {
     if (Array.isArray(arr)) {
       for (const q of arr) {
         if (q && q.question) {
+          // Include both Kinyarwanda and English versions
           out.push({
             bundle: k,
             question: q.question,
+            questionEn: q.questionEn || '',
             options: Array.isArray(q.options) ? q.options : [],
+            optionsEn: Array.isArray(q.optionsEn) ? q.optionsEn : [],
             correctAnswer: q.correctAnswer || null,
-            image: q.imagePlaceholder || q.imageUrl || null
+            correctAnswerEn: q.correctAnswerEn || null,
+            image: q.imagePlaceholder || q.imageUrl || null,
+            lang: 'rw'
           });
+          // Add English version as separate entry for search
+          if (q.questionEn) {
+            out.push({
+              bundle: k,
+              question: q.questionEn,
+              options: Array.isArray(q.optionsEn) && q.optionsEn.length > 0 ? q.optionsEn.map(o => typeof o === 'string' ? o : o.text) : (Array.isArray(q.options) ? q.options : []),
+              correctAnswer: q.correctAnswerEn || q.correctAnswer || null,
+              image: q.imagePlaceholder || q.imageUrl || null,
+              lang: 'en'
+            });
+          }
         }
       }
     }
