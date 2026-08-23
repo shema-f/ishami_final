@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import * as quizSource from './data.js';
+import { RW_TO_EN_FULL } from './translations.js';
 import nodemailer from 'nodemailer';
 import { welcomeEmail, resetPasswordEmail, newsletterThanksEmail, logoAttachment } from './services/emailTemplates.js';
 import fs from 'fs';
@@ -289,12 +290,12 @@ async function seed() {
           } else {
             // Translate each option using RW_TO_EN_MAP
             optionsEn = (Array.isArray(q.options) ? q.options : []).map(o => ({
-              text: (typeof RW_TO_EN_MAP !== 'undefined' && RW_TO_EN_MAP[o]) || o,
+              text: lookupTranslation(o, RW_TO_EN_MAP),
               isCorrect: String(o) === String(q.correctAnswer)
             }));
           }
           // Build questionEn — use provided or translate
-          const questionEn = q.questionEn || (typeof RW_TO_EN_MAP !== 'undefined' && RW_TO_EN_MAP[q.question]) || '';
+          const questionEn = q.questionEn || lookupTranslation(q.question, RW_TO_EN_MAP) || '';
           return {
             quizId: quiz._id,
             category: b.category,
@@ -512,9 +513,9 @@ await seed();
     console.log(`[Translate] Auto-translating ${untrans.length} questions to English...`);
     let count = 0;
     for (const q of untrans) {
-      const questionEn = RW_TO_EN_MAP[q.question] || '';
+      const questionEn = lookupTranslation(q.question, RW_TO_EN_MAP) || '';
       const optionsEn = (q.options || []).map(opt => ({
-        text: RW_TO_EN_MAP[opt.text] || opt.text,
+        text: lookupTranslation(opt.text, RW_TO_EN_MAP) || opt.text,
         isCorrect: opt.isCorrect
       }));
       if (questionEn || optionsEn.some((o, i) => o.text !== (q.options || [])[i]?.text)) {
@@ -2763,6 +2764,34 @@ const RW_TO_EN_MAP = {
   "ubuso bw'amabara akurikira": "surface with the following colors",
 };
 
+// Merge comprehensive translations dictionary
+Object.assign(RW_TO_EN_MAP, RW_TO_EN_FULL);
+
+// Normalization: strip special characters for more flexible dictionary lookup
+function normalizeForLookup(s) {
+  return (s || '')
+    .replace(/\$\\frac\{1\}\{2\}\$/g, '1/2')
+    .replace(/\$y\^{\\prime}i\$/g, "yi")
+    .replace(/\$cy\^{\\prime}\$/g, "cy'")
+    .replace(/\u00e7/g, 'c')
+    .replace(/\u2018|\u2019|\u201a|\u201b|\u2032/g, "'")
+    .replace(/\u201c|\u201d|\u201e|\u201f/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function lookupTranslation(text, map) {
+  if (!text) return text;
+  if (map[text]) return map[text];
+  const norm = normalizeForLookup(text);
+  if (map[norm]) return map[norm];
+  // Try replacing curly quotes
+  const straight = text.replace(/\u2019|\u2018/g, "'");
+  if (map[straight]) return map[straight];
+  if (map[normalizeForLookup(straight)]) return map[normalizeForLookup(straight)];
+  return text;
+}
+
 app.post('/api/admin/translate-questions', authMiddleware, adminOnly, async (req, res) => {
   try {
     const questions = await Question.find({}).lean();
@@ -2771,9 +2800,9 @@ app.post('/api/admin/translate-questions', authMiddleware, adminOnly, async (req
     let fallback = 0;
     for (const q of questions) {
       if (q.questionEn && q.questionEn.trim() && q.optionsEn && q.optionsEn.length > 0) { skipped++; continue; }
-      const questionEn = RW_TO_EN_MAP[q.question] || '';
+      const questionEn = lookupTranslation(q.question, RW_TO_EN_MAP) || '';
       let optionsEn = (q.options || []).map(opt => ({
-        text: RW_TO_EN_MAP[opt.text] || opt.text,
+        text: lookupTranslation(opt.text, RW_TO_EN_MAP) || opt.text,
         isCorrect: opt.isCorrect
       }));
       if (questionEn) {
