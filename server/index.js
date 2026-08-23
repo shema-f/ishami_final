@@ -282,25 +282,26 @@ async function seed() {
       const docs = b.arr
         .filter(q => q && q.question && q.options)
         .map(q => {
-          // Build English options from correctAnswerEn if available
-          const enCorrect = q.correctAnswerEn || '';
+          // Build English options — use provided optionsEn, or translate via dictionary
           let optionsEn = [];
-          if (q.optionsEn && Array.isArray(q.optionsEn)) {
+          if (q.optionsEn && Array.isArray(q.optionsEn) && q.optionsEn.length) {
             optionsEn = q.optionsEn;
-          } else if (q.questionEn && enCorrect) {
-            // Generate English options by translating the Rwanda ones
-            optionsEn = (Array.isArray(q.options) ? q.options : []).map(o => {
-              // Try to match by position to find English equivalent
-              return { text: o, isCorrect: String(o) === String(q.correctAnswer) };
-            });
+          } else {
+            // Translate each option using RW_TO_EN_MAP
+            optionsEn = (Array.isArray(q.options) ? q.options : []).map(o => ({
+              text: (typeof RW_TO_EN_MAP !== 'undefined' && RW_TO_EN_MAP[o]) || o,
+              isCorrect: String(o) === String(q.correctAnswer)
+            }));
           }
+          // Build questionEn — use provided or translate
+          const questionEn = q.questionEn || (typeof RW_TO_EN_MAP !== 'undefined' && RW_TO_EN_MAP[q.question]) || '';
           return {
             quizId: quiz._id,
             category: b.category,
             question: q.question,
-            questionEn: q.questionEn || '',
+            questionEn,
             options: (Array.isArray(q.options) ? q.options : []).map(o => ({ text: o, isCorrect: String(o) === String(q.correctAnswer) })),
-            optionsEn: optionsEn,
+            optionsEn,
             licenseClass: q.licenseClass || ['A','B','C','D'],
             image: q.imagePlaceholder || q.imageUrl || null
           };
@@ -501,6 +502,34 @@ await Promise.all([
   Certificate.syncIndexes()
 ]);
 await seed();
+
+// ─── Auto-translate existing questions to English ─────────
+// Runs once on startup to ensure all questions have English translations
+(async () => {
+  try {
+    const untrans = await Question.find({ $or: [{ questionEn: '' }, { questionEn: { $exists: false } }, { optionsEn: { $size: 0 } }] }).lean();
+    if (untrans.length === 0) return;
+    console.log(`[Translate] Auto-translating ${untrans.length} questions to English...`);
+    let count = 0;
+    for (const q of untrans) {
+      const questionEn = RW_TO_EN_MAP[q.question] || '';
+      const optionsEn = (q.options || []).map(opt => ({
+        text: RW_TO_EN_MAP[opt.text] || opt.text,
+        isCorrect: opt.isCorrect
+      }));
+      if (questionEn || optionsEn.some((o, i) => o.text !== (q.options || [])[i]?.text)) {
+        const update = {};
+        if (questionEn) update.questionEn = questionEn;
+        update.optionsEn = optionsEn;
+        await Question.findByIdAndUpdate(q._id, update);
+        count++;
+      }
+    }
+    console.log(`[Translate] Updated ${count} questions with English translations`);
+  } catch (e) {
+    console.error('[Translate] Auto-translate error:', e?.message);
+  }
+})();
 
 // File uploads for admin resources
 const upload = multer({ dest: 'server/uploads/' });
