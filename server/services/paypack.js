@@ -47,11 +47,17 @@ export async function getPaypackAccessToken() {
   }
 
   cachedToken = data.access;
-  // Token expires in `expires` field (usually 15 min = 900000ms)
-  const expiresIn = data.expires ? parseInt(data.expires, 10) * 1000 : 900000;
-  cachedExpiry = now() + expiresIn;
+  // Token expires in `expires` field — could be seconds (e.g. 900) or milliseconds
+  let expiresIn = 900000; // default 15 min
+  if (data.expires) {
+    const val = parseInt(data.expires, 10);
+    // If value > 10000, it's likely already in ms; otherwise it's seconds
+    expiresIn = val > 10000 ? val : val * 1000;
+  }
+  // Use 80% of actual expiry to be safe
+  cachedExpiry = now() + Math.floor(expiresIn * 0.8);
 
-  console.log('[Paypack] Authenticated successfully');
+  console.log(`[Paypack] Authenticated successfully, token valid for ${Math.floor(expiresIn / 60000)}min`);
   return cachedToken;
 }
 
@@ -74,8 +80,12 @@ export async function refreshPaypackToken(refreshToken) {
   }
 
   cachedToken = data.access;
-  const expiresIn = data.expires ? parseInt(data.expires, 10) * 1000 : 900000;
-  cachedExpiry = now() + expiresIn;
+  let expiresIn = 900000;
+  if (data.expires) {
+    const val = parseInt(data.expires, 10);
+    expiresIn = val > 10000 ? val : val * 1000;
+  }
+  cachedExpiry = now() + Math.floor(expiresIn * 0.8);
 
   return data;
 }
@@ -88,25 +98,52 @@ export async function refreshPaypackToken(refreshToken) {
  * @returns {{ ref, status, amount, kind, created_at }}
  */
 export async function paypackCashin(phone, amount, webhookMode = 'development') {
-  const token = await getPaypackAccessToken();
+  let token = await getPaypackAccessToken();
 
-  const res = await axios.post(
-    `${PAYPACK_BASE_URL}/transactions/cashin`,
-    {
-      amount: Number(amount),
-      number: phone,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
-        'X-Webhook-Mode': webhookMode,
+  try {
+    const res = await axios.post(
+      `${PAYPACK_BASE_URL}/transactions/cashin`,
+      {
+        amount: Number(amount),
+        number: phone,
       },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+          'X-Webhook-Mode': webhookMode,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    // If token expired, clear cache and retry once
+    const msg = err?.response?.data?.message || err?.message || '';
+    if (msg.includes('expired') || err?.response?.status === 401) {
+      console.log('[Paypack] Token expired, refreshing...');
+      cachedToken = null;
+      cachedExpiry = 0;
+      token = await getPaypackAccessToken();
+      const retryRes = await axios.post(
+        `${PAYPACK_BASE_URL}/transactions/cashin`,
+        {
+          amount: Number(amount),
+          number: phone,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'X-Webhook-Mode': webhookMode,
+          },
+        }
+      );
+      return retryRes.data;
     }
-  );
-
-  return res.data;
+    throw err;
+  }
 }
 
 /**
@@ -115,20 +152,41 @@ export async function paypackCashin(phone, amount, webhookMode = 'development') 
  * @returns {{ ref, status, amount, kind, client, fee, merchant, timestamp }}
  */
 export async function paypackFindTransaction(ref) {
-  const token = await getPaypackAccessToken();
+  let token = await getPaypackAccessToken();
 
-  const res = await axios.get(
-    `${PAYPACK_BASE_URL}/transactions/find/${ref}`,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+  try {
+    const res = await axios.get(
+      `${PAYPACK_BASE_URL}/transactions/find/${ref}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    const msg = err?.response?.data?.message || err?.message || '';
+    if (msg.includes('expired') || err?.response?.status === 401) {
+      console.log('[Paypack] Token expired on find, refreshing...');
+      cachedToken = null;
+      cachedExpiry = 0;
+      token = await getPaypackAccessToken();
+      const retryRes = await axios.get(
+        `${PAYPACK_BASE_URL}/transactions/find/${ref}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return retryRes.data;
     }
-  );
-
-  return res.data;
+    throw err;
+  }
 }
 
 /**

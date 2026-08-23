@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 import { Shield, Trophy, Download, ArrowLeft, CheckCircle2, Calendar, Hash, BarChart3, Award, FileText } from 'lucide-react';
 import { useTranslation } from '../contexts/I18nContext';
+import directorSignature from '../assets/ferrivox.png';
 
 interface CertificateData {
   id: string;
@@ -13,6 +14,7 @@ interface CertificateData {
   totalQuestions: number;
   quizTitle: string;
   issuedAt: string;
+  expiresAt?: string;
   certificateNo: string;
   passed: boolean;
 }
@@ -101,6 +103,11 @@ export default function Certificate() {
   const passed = certData?.passed ?? percentage >= 70;
   const quizTitle = certData?.quizTitle || 'Traffic Rules & Road Safety Understanding';
   const issuedDate = certData?.issuedAt || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const expiresDate = certData?.expiresAt || (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  })();
   const displayName = certData?.username || user.username;
 
   const areasOfUnderstanding = [
@@ -312,6 +319,17 @@ export default function Certificate() {
                       <p className="text-sm font-semibold text-white">{issuedDate}</p>
                     </div>
                   </div>
+
+                  {/* Valid Until */}
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                    <div className="p-2 rounded-lg bg-red-500/20">
+                      <Calendar className="w-5 h-5 text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Valid Until</p>
+                      <p className="text-sm font-semibold text-white">{expiresDate}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -323,52 +341,60 @@ export default function Certificate() {
                   <Shield className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest">Verification</p>
-                  <p className="text-sm text-slate-300">Certificate ID: <span className="text-white font-[family-name:var(--font-mono)]">{certificateNo}</span></p>
-                  <p className="text-xs text-slate-400 mt-1">Scan to verify:</p>
+                  <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest">Certificate Verification</p>
+                  <p className="text-sm text-slate-300">Certificate ID: <span className="text-white font-[family-name:var(--font-mono)] font-bold">{certificateNo}</span></p>
+                  <p className="text-xs text-slate-400 mt-1">Scan QR code or visit link to verify authenticity:</p>
                   <a
                     href={`https://ishami.rw/verify/${certificateNo}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-blue-400 hover:text-blue-300 font-[family-name:var(--font-mono)] underline underline-offset-2"
                   >
-                    ishami.rw/verify/{certificateNo}
+                    https://ishami.rw/verify/{certificateNo}
                   </a>
                 </div>
               </div>
 
-              {/* QR Code placeholder */}
-              <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center p-2">
-                <div className="w-full h-full bg-slate-800 rounded-lg flex items-center justify-center">
-                  <div className="grid grid-cols-5 gap-0.5 p-2">
-                    {Array.from({ length: 25 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-2.5 h-2.5 ${Math.random() > 0.4 ? 'bg-white' : 'bg-slate-800'}`}
-                      />
-                    ))}
-                  </div>
+              {/* Real QR Code */}
+              <div className="text-center">
+                <div className="w-28 h-28 bg-white rounded-xl flex items-center justify-center p-2 shadow-lg">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`https://ishami.rw/verify/${certificateNo}`)}&bgcolor=FFFFFF&color=000000&margin=10`}
+                    alt="Certificate QR Code"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      // Fallback: generate a simple SVG QR-like pattern
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
                 </div>
+                <p className="text-[9px] text-slate-400 mt-2 uppercase tracking-wider">Scan to Verify</p>
               </div>
             </div>
 
             {/* Authorized Signatures */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-8 pt-6 border-t border-white/10">
               <div className="text-center">
-                <div className="mb-2">
-                  <svg viewBox="0 0 120 40" className="w-28 h-10 mx-auto">
-                    <path d="M10 30 Q30 5 50 25 T90 15 Q100 10 110 20" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
-                  </svg>
+                <div className="mb-2 h-16 flex items-center justify-center">
+                  <img
+                    src={directorSignature}
+                    alt="Managing Director Signature"
+                    className="h-14 w-auto object-contain filter brightness-0 invert opacity-80"
+                  />
                 </div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Training Director</p>
+                <div className="h-px w-28 bg-white/30 mx-auto mb-2" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Managing Director</p>
+                <p className="text-[9px] text-slate-400">ISHAMI Platform</p>
               </div>
 
               {/* ISHAMI Official Seal */}
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full border-2 border-yellow-500/50 flex items-center justify-center mx-auto mb-2">
+                <div className="w-20 h-20 rounded-full border-2 border-yellow-500/50 flex items-center justify-center mx-auto mb-2 bg-yellow-500/5">
                   <div className="text-center">
-                    <Award className="w-6 h-6 text-yellow-500 mx-auto" />
-                    <span className="text-[6px] text-yellow-500 uppercase tracking-widest font-bold">ISHAMI</span>
+                    <Award className="w-8 h-8 text-yellow-500 mx-auto" />
+                    <span className="text-[7px] text-yellow-500 uppercase tracking-widest font-bold block mt-1">ISHAMI</span>
+                    <span className="text-[6px] text-yellow-400/70 uppercase tracking-widest">CERTIFIED</span>
                   </div>
                 </div>
                 <p className="text-[9px] text-slate-400">Safe Roads, Safe Lives</p>
@@ -376,12 +402,14 @@ export default function Certificate() {
               </div>
 
               <div className="text-center">
-                <div className="mb-2">
-                  <svg viewBox="0 0 120 40" className="w-28 h-10 mx-auto">
-                    <path d="M15 25 Q25 10 45 30 T85 10 Q95 8 105 18" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
+                <div className="mb-2 h-16 flex items-center justify-center">
+                  <svg viewBox="0 0 140 40" className="w-32 h-12 mx-auto">
+                    <path d="M10 32 C20 8, 35 35, 50 15 C60 5, 75 30, 90 12 C100 2, 115 28, 130 18" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest">Assessment Officer</p>
+                <div className="h-px w-28 bg-white/30 mx-auto mb-2" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Assessment Officer</p>
+                <p className="text-[9px] text-slate-400">ISHAMI Platform</p>
               </div>
             </div>
 

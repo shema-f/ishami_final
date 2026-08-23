@@ -91,6 +91,20 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     order: 3,
   },
   {
+    id: 'reverse_driving',
+    title: 'Reverse / Backup Driving',
+    titleRW: 'Gutwara Inyuma (Backup)',
+    description: 'Master the art of reversing safely. Practice straight-line reversing, reversing around corners, and reverse parking.',
+    descriptionRW: 'Menya neza uburyo bwo gutwara inyuma. Jya mu gihe usubira inyuma neza mu mihanda.',
+    difficulty: 'BEGINNER',
+    estimatedTime: '5-7 min',
+    location: 'Kigali — Stadium Parking Zone',
+    locationRW: 'Kigali — Ahantu h\'Imodoka y\'Ukwirakwiza',
+    xpReward: 400,
+    icon: '↩️',
+    order: 4,
+  },
+  {
     id: 'parallel_parking',
     title: 'Parallel Parking',
     titleRW: 'Guhagarika Uburiri',
@@ -102,7 +116,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'imodoka mu mujyi',
     xpReward: 500,
     icon: '🅿️',
-    order: 4,
+    order: 5,
   },
   {
     id: 'hill_start',
@@ -116,7 +130,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Igitambara c\'Nyarutarama',
     xpReward: 450,
     icon: '⛰️',
-    order: 5,
+    order: 6,
   },
   {
     id: 'roundabout',
@@ -130,7 +144,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Roundabout ya Kacyiru',
     xpReward: 500,
     icon: '🔄',
-    order: 6,
+    order: 7,
   },
   {
     id: 'highway_driving',
@@ -144,7 +158,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Urwego',
     xpReward: 700,
     icon: '🛣️',
-    order: 7,
+    order: 8,
   },
   {
     id: 'night_driving',
@@ -158,7 +172,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda waJsonValue',
     xpReward: 800,
     icon: '🌙',
-    order: 8,
+    order: 9,
   },
   {
     id: 'rain_driving',
@@ -172,7 +186,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Imvura',
     xpReward: 800,
     icon: '🌧️',
-    order: 9,
+    order: 10,
   },
   {
     id: 'pedestrian_crossing',
@@ -186,7 +200,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Isoko ya Kimironko',
     xpReward: 300,
     icon: '🚶',
-    order: 10,
+    order: 11,
   },
   {
     id: 'emergency_stop',
@@ -200,7 +214,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu ho kujyana',
     xpReward: 350,
     icon: '🚨',
-    order: 11,
+    order: 12,
   },
   {
     id: 'school_zone',
@@ -214,7 +228,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'Ecole Belge',
     xpReward: 350,
     icon: '🏫',
-    order: 12,
+    order: 13,
   },
   {
     id: 'overtaking_practice',
@@ -228,7 +242,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda wa KN 3',
     xpReward: 500,
     icon: '🏎️',
-    order: 13,
+    order: 14,
   },
   {
     id: 'perpendicular_parking',
@@ -242,7 +256,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'imodoka mu isoko',
     xpReward: 450,
     icon: '🅿️',
-    order: 14,
+    order: 15,
   },
   {
     id: 't_intersection',
@@ -256,7 +270,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ihuriro rya Remera',
     xpReward: 300,
     icon: '➕',
-    order: 15,
+    order: 16,
   },
   {
     id: 'four_way_junction',
@@ -270,7 +284,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ihuriro ry\'Imbazo',
     xpReward: 450,
     icon: '🚦',
-    order: 16,
+    order: 17,
   },
   {
     id: 'tunnel_driving',
@@ -284,7 +298,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Umucuma',
     xpReward: 500,
     icon: '🚇',
-    order: 17,
+    order: 18,
   },
   {
     id: 'railway_crossing',
@@ -298,7 +312,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'amagare',
     xpReward: 450,
     icon: '🚂',
-    order: 18,
+    order: 19,
   },
   {
     id: 'construction_zone',
@@ -312,7 +326,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'akorwa mu muhanda',
     xpReward: 500,
     icon: '🚧',
-    order: 19,
+    order: 20,
   },
   {
     id: 'mountain_road',
@@ -326,7 +340,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Igitambara c\'Nyarugenge',
     xpReward: 800,
     icon: '⛰️',
-    order: 20,
+    order: 21,
   },
   {
     id: 'parking_garage',
@@ -340,7 +354,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Garaje ya KCC',
     xpReward: 500,
     icon: '🏢',
-    order: 21,
+    order: 22,
   },
   {
     id: 'bus_lane_navigation',
@@ -354,7 +368,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Amagare',
     xpReward: 450,
     icon: '🚌',
-    order: 22,
+    order: 23,
   },
   {
     id: 'fog_driving',
@@ -368,7 +382,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda w\'Amagambo',
     xpReward: 800,
     icon: '🌫️',
-    order: 23,
+    order: 24,
   },
   {
     id: 'loading_zone',
@@ -382,7 +396,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Aho amahera y\'ibicuruzwa',
     xpReward: 300,
     icon: '📦',
-    order: 24,
+    order: 25,
   },
   {
     id: 'roundabout_multi_exit',
@@ -396,7 +410,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Roundabout ya Mulindi',
     xpReward: 700,
     icon: '🔄',
-    order: 25,
+    order: 26,
   },
   {
     id: 'motorcycle_lane',
@@ -410,7 +424,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ahantu h\'inzira y\'amapikipiki',
     xpReward: 350,
     icon: '🏍️',
-    order: 26,
+    order: 27,
   },
   {
     id: 'hill_descend',
@@ -424,7 +438,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Ihejuru ry\'Nyarutarama',
     xpReward: 700,
     icon: '⛰️',
-    order: 27,
+    order: 28,
   },
   {
     id: 'night_pedestrian',
@@ -438,7 +452,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Isoko y\'ijoro',
     xpReward: 800,
     icon: '🌙',
-    order: 28,
+    order: 29,
   },
   {
     id: 'speed_calming',
@@ -452,7 +466,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Urwego rw\'abatuye',
     xpReward: 300,
     icon: '🐢',
-    order: 29,
+    order: 30,
   },
   {
     id: 'dual_carriageway',
@@ -466,7 +480,7 @@ export const ALL_SCENARIOS: ScenarioDefinition[] = [
     locationRW: 'Kigali — Umuhanda wa KN 1',
     xpReward: 750,
     icon: '🛣️',
-    order: 30,
+    order: 31,
   },
 ];
 

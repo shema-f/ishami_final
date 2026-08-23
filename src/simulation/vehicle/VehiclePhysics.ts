@@ -161,17 +161,26 @@ export class VehiclePhysics {
       this._smoothSpeed *= 0.9;
     }
 
-    // Reverse protection
-    if (gear === 'R' && this._smoothSpeed > 2) {
-      this._smoothSpeed = THREE.MathUtils.lerp(this._smoothSpeed, 0, dt * 2);
+    // Reverse gear limits
+    if (gear === 'R') {
+      // Prevent going forward in reverse gear
+      if (this._smoothSpeed > 2) {
+        this._smoothSpeed = THREE.MathUtils.lerp(this._smoothSpeed, 0, dt * 2);
+      }
+      // Cap reverse speed to ~15 km/h (~4.2 m/s)
+      if (this._smoothSpeed < -4.2) {
+        this._smoothSpeed = THREE.MathUtils.lerp(this._smoothSpeed, -4.2, dt * 3);
+      }
     }
 
     const speedKmh = Math.abs(this._smoothSpeed * 3.6);
 
     // ═══════════════════════════════════════════════════════
     // STEERING — Works even when stationary!
+    // When reversing, steering direction is inverted (rear swings)
     // ═══════════════════════════════════════════════════════
-    const steerInput = state.steeringAngle; // -1 to 1
+    const isReversing = gear === 'R' && this._smoothSpeed < -0.1;
+    const steerInput = isReversing ? -state.steeringAngle : state.steeringAngle; // -1 to 1 (inverted when reversing)
 
     if (speedKmh < 1) {
       // STATIONARY: Direct steering — A/D turns wheels immediately

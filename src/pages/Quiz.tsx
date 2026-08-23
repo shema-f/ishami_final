@@ -189,6 +189,8 @@ export default function Quiz() {
         // Save certificate data if passed
         if (passed) {
           const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+          const expiryDate = new Date();
+          expiryDate.setFullYear(expiryDate.getFullYear() + 1);
           localStorage.setItem('latestCertificate', JSON.stringify({
             userId: user.id,
             username: user.username,
@@ -196,6 +198,7 @@ export default function Quiz() {
             totalQuestions: questions.length,
             quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
             issuedAt: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+            expiresAt: expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
             certificateNo: certNo,
             passed: true,
           }));

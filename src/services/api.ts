@@ -356,6 +356,15 @@ export const paymentAPI = {
     amount: number;
     phone: string;
     product?: 'pro' | 'irembo';
+    iremboData?: {
+      fullName: string;
+      nationalId: string;
+      email: string;
+      language: string;
+      testMode: string;
+      district: string;
+      testDate: string;
+    };
   }) => {
     return apiCall('/api/paypack/cashin', {
       method: 'POST',

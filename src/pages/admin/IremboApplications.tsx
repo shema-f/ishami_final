@@ -15,7 +15,7 @@ interface IremboApplication {
   testMode: string;
   district: string;
   testDate: string;
-  status: 'PENDING' | 'PROCESSING' | 'SUBMITTED_TO_IREMBO' | 'COMPLETED' | 'BLOCKED';
+  status: 'PENDING_PAYMENT' | 'PENDING' | 'PROCESSING' | 'SUBMITTED_TO_IREMBO' | 'COMPLETED' | 'BLOCKED';
   adminNotes?: string;
   createdAt?: string;
 }
@@ -72,6 +72,7 @@ export default function AdminIremboApplications() {
 
   const getStatusBadge = (status: string) => {
     const styles = {
+      PENDING_PAYMENT: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
       PENDING: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
       PROCESSING: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
       SUBMITTED_TO_IREMBO: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
@@ -117,7 +118,7 @@ export default function AdminIremboApplications() {
 
         {/* Stats */}
         <div className="grid md:grid-cols-5 gap-4 mb-8">
-          {['PENDING', 'PROCESSING', 'SUBMITTED_TO_IREMBO', 'COMPLETED', 'BLOCKED'].map((status, index) => {
+          {['PENDING_PAYMENT', 'PENDING', 'PROCESSING', 'SUBMITTED_TO_IREMBO', 'COMPLETED', 'BLOCKED'].map((status, index) => {
             const count = applications.filter(app => app.status === status).length;
             return (
               <motion.div
@@ -271,6 +272,7 @@ export default function AdminIremboApplications() {
                     onChange={(e) => setSelectedApp({ ...selectedApp, status: e.target.value as any })}
                     className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
                   >
+                    <option value="PENDING_PAYMENT">Awaiting Payment</option>
                     <option value="PENDING">Pending</option>
                     <option value="PROCESSING">Processing</option>
                     <option value="SUBMITTED_TO_IREMBO">Submitted to Irembo</option>

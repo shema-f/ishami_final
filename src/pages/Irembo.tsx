@@ -84,13 +84,26 @@ export default function Irembo() {
   };
 
   const handlePaymentConfirm = async () => {
-    setShowPaymentDialog(false);
-    if (!user) return;
+    setShowPaymentDialog(false);    if (!user) return;
     try {
       setProcessing(true);
       setPaymentError(null);
       // Use Paypack for payment — 100 RWF in test mode
-      const init = await paymentAPI.paypackCashin({ amount: 100, phone: paymentPhone, product: 'irembo' });
+      // Pass form data so backend can create the IremboApplication immediately
+      const init = await paymentAPI.paypackCashin({
+        amount: 100,
+        phone: paymentPhone,
+        product: 'irembo',
+        iremboData: {
+          fullName: formData.fullName,
+          nationalId: formData.nationalId,
+          email: formData.email,
+          language: formData.language,
+          testMode: formData.testMode,
+          district: formData.district,
+          testDate: formData.testDate,
+        },
+      });
       setTxnId(init.transactionId);
       setPaymentStatus('PENDING');
       
@@ -117,7 +130,7 @@ export default function Irembo() {
       });
       
       if (finalStatus !== 'SUCCESS') { 
-          setProcessing(false); 
+          setProcessing(false);
           setPaymentError(finalStatus === 'TIMEOUT' ? 'Payment timed out' : 'Payment failed'); 
           return; 
       }

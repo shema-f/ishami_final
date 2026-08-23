@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   Users, DollarSign, BookOpen, TrendingUp, Award, 
-  AlertTriangle, CheckCircle, Clock 
+  AlertTriangle, CheckCircle, Clock, FileCheck 
 } from 'lucide-react';
 import { adminAPI, leaderboardAPI } from '../../services/api';
 import { useNavigate } from 'react-router';
@@ -28,6 +28,13 @@ interface AnalyticsData {
     status: string;
     date: string;
   }>;
+  irembo?: {
+    total: number;
+    pending: number;
+    processing: number;
+    submitted: number;
+    completed: number;
+  };
 }
 
 export default function AdminDashboard() {
@@ -247,7 +254,7 @@ export default function AdminDashboard() {
           </div>
           
           <div className="space-y-4">
-            {analytics.topQuestions.map((question, index) => (
+            {(analytics.topQuestions || []).map((question, index) => (
               <div key={question.id} className="flex items-center space-x-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
                   <span className="text-orange-600 dark:text-orange-400 text-sm">
@@ -297,7 +304,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {analytics.recentPayments.map((payment) => (
+                {(analytics.recentPayments || []).map((payment) => (
                   <tr key={payment.id} className="border-b border-gray-100 dark:border-gray-700">
                     <td className="py-3 px-4 text-gray-900 dark:text-white">
                       {payment.username}
@@ -327,6 +334,59 @@ export default function AdminDashboard() {
             </table>
           </div>
         </motion.div>
+
+        {/* Irembo Applications Summary */}
+        {analytics.irembo && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 mt-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <FileCheck className="w-6 h-6 text-[#00A3AD]" />
+                <h3 className="text-gray-900 dark:text-white">Irembo Applications</h3>
+              </div>
+              <a
+                href="/admin/irembo"
+                className="text-sm text-[#00A3AD] hover:underline"
+              >
+                View All →
+              </a>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <p className="text-2xl text-gray-900 dark:text-white">{analytics.irembo.total}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Total</p>
+              </div>
+              <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+                <p className="text-2xl text-orange-600 dark:text-orange-400">{analytics.irembo.pending}</p>
+                <p className="text-xs text-orange-600 dark:text-orange-400">Pending</p>
+              </div>
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <p className="text-2xl text-blue-600 dark:text-blue-400">{analytics.irembo.processing}</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">Processing</p>
+              </div>
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                <p className="text-2xl text-purple-600 dark:text-purple-400">{analytics.irembo.submitted}</p>
+                <p className="text-xs text-purple-600 dark:text-purple-400">Submitted</p>
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                <p className="text-2xl text-green-600 dark:text-green-400">{analytics.irembo.completed}</p>
+                <p className="text-xs text-green-600 dark:text-green-400">Completed</p>
+              </div>
+            </div>
+            {analytics.irembo.pending > 0 && (
+              <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-orange-500" />
+                <span className="text-sm text-orange-700 dark:text-orange-300">
+                  {analytics.irembo.pending} application{analytics.irembo.pending !== 1 ? 's' : ''} need{analytics.irembo.pending === 1 ? 's' : ''} review
+                </span>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

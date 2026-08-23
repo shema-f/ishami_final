@@ -167,6 +167,7 @@ const IremboSchema = new Schema({
   testMode: String,
   district: String,
   testDate: String,
+  transactionId: String,
   status: { type: String, default: 'PENDING' },
   createdAt: { type: Date, default: Date.now }
 });
@@ -229,7 +230,8 @@ const CertificateSchema = new Schema({
   totalQuestions: Number,
   quizTitle: String,
   certificateNo: { type: String, unique: true },
-  issuedAt: { type: Date, default: Date.now }
+  issuedAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date }
 });
 CertificateSchema.index({ userId: 1, issuedAt: -1 });
 const Certificate = model('Certificate', CertificateSchema);
@@ -1430,7 +1432,7 @@ async function momoStatus(ref) {
 
 app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
   try {
-    const { amount, phone, provider, product } = req.body || {};
+    const { amount, phone, provider, product, iremboData } = req.body || {};
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
 
@@ -1448,7 +1450,29 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
     console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${expected}, phone=${cleanPhone}`);
-    res.json({ transactionId: String(payment._id), status: payment.status || 'PENDING', providerRef: paypackResult.ref });
+
+    // If irembo product with form data, create the application immediately
+    let iremboApplicationId = null;
+    if (prod === 'irembo' && iremboData && iremboData.fullName) {
+      const app = await IremboApplication.create({
+        userId: req.user._id,
+        fullName: iremboData.fullName,
+        nationalId: iremboData.nationalId,
+        phone: cleanPhone,
+        email: iremboData.email,
+        language: iremboData.language,
+        testMode: iremboData.testMode,
+        district: iremboData.district,
+        testDate: iremboData.testDate,
+        transactionId: String(payment._id),
+        status: 'PENDING_PAYMENT',
+      });
+      iremboApplicationId = String(app._id);
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+      console.log(`[Irembo] Draft application ${app._id} created for user ${req.user._id}`);
+    }
+
+    res.json({ transactionId: String(payment._id), status: payment.status || 'PENDING', providerRef: paypackResult.ref, iremboApplicationId });
   } catch (e) {
     console.error('[Paypack] /initiate error:', e?.message || e);
     await FraudLog.create({ userId: req.user?._id, type: 'initiate_error', message: 'Payment initiate failed', meta: { error: String(e && e.message || e) } });
@@ -1477,6 +1501,15 @@ app.get('/api/payment/status/:transactionId', authMiddleware, async (req, res) =
           const u = await User.findById(txn.userId);
           if (u) { u.isPro = true; await u.save(); }
         }
+        // Promote IremboApplication from PENDING_PAYMENT to PENDING
+        if (txn.product === 'irembo') {
+          const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
+          if (app) {
+            app.status = 'PENDING';
+            app.transactionId = String(txn._id);
+            await app.save();
+          }
+        }
       } else if (ppStatus === 'failed') {
         txn.status = 'FAILED';
         await txn.save();
@@ -1491,7 +1524,7 @@ app.get('/api/payment/status/:transactionId', authMiddleware, async (req, res) =
 // Plural routes (alias) — now also use Paypack
 app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
   try {
-    const { amount, phone, provider, product } = req.body || {};
+    const { amount, phone, provider, product, iremboData } = req.body || {};
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
     const expected = testMode ? 100 : (prod === 'irembo' ? 5500 : 1000);
@@ -1504,7 +1537,28 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     const webhookMode = testMode ? 'development' : 'production';
     const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
-    res.json({ transactionId: String(payment._id), status: payment.status || 'PENDING', providerRef: paypackResult.ref });
+
+    // If irembo product with form data, create the application immediately
+    let iremboApplicationId = null;
+    if (prod === 'irembo' && iremboData && iremboData.fullName) {
+      const app = await IremboApplication.create({
+        userId: req.user._id,
+        fullName: iremboData.fullName,
+        nationalId: iremboData.nationalId,
+        phone: cleanPhone,
+        email: iremboData.email,
+        language: iremboData.language,
+        testMode: iremboData.testMode,
+        district: iremboData.district,
+        testDate: iremboData.testDate,
+        transactionId: String(payment._id),
+        status: 'PENDING_PAYMENT',
+      });
+      iremboApplicationId = String(app._id);
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+    }
+
+    res.json({ transactionId: String(payment._id), status: payment.status || 'PENDING', providerRef: paypackResult.ref, iremboApplicationId });
   } catch (e) {
     console.error('[Paypack] /payments/initiate error:', e?.message || e);
     await FraudLog.create({ userId: req.user?._id, type: 'initiate_error', message: 'Payment initiate failed', meta: { error: String(e && e.message || e) } });
@@ -1528,6 +1582,16 @@ app.get('/api/payments/status/:transactionId', authMiddleware, async (req, res) 
         if (txn.product === 'pro') {
           const u = await User.findById(txn.userId);
           if (u) { u.isPro = true; await u.save(); }
+        }
+        // Promote IremboApplication from PENDING_PAYMENT to PENDING
+        if (txn.product === 'irembo') {
+          const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
+          if (app) {
+            app.status = 'PENDING';
+            app.transactionId = String(txn._id);
+            await app.save();
+            console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING via /payments/status`);
+          }
         }
       } else if (ppStatus === 'failed') {
         txn.status = 'FAILED';
@@ -1583,7 +1647,7 @@ import { paypackCashin, paypackFindTransaction, paypackListEvents, verifyWebhook
  */
 app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
   try {
-    const { amount, phone, product } = req.body || {};
+    const { amount, phone, product, iremboData } = req.body || {};
     const prod = String(product || 'pro');
 
     // For testing: allow 100 RWF, otherwise enforce standard amounts
@@ -1618,6 +1682,27 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
       status: 'PENDING',
     });
 
+    // If irembo product with form data, create the application immediately
+    let iremboApplicationId = null;
+    if (prod === 'irembo' && iremboData && iremboData.fullName) {
+      const app = await IremboApplication.create({
+        userId: req.user._id,
+        fullName: iremboData.fullName,
+        nationalId: iremboData.nationalId,
+        phone: cleanPhone,
+        email: iremboData.email,
+        language: iremboData.language,
+        testMode: iremboData.testMode,
+        district: iremboData.district,
+        testDate: iremboData.testDate,
+        transactionId: String(payment._id),
+        status: 'PENDING_PAYMENT',
+      });
+      iremboApplicationId = String(app._id);
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+      console.log(`[Irembo] Draft application ${app._id} created for user ${req.user._id}`);
+    }
+
     console.log(`[Paypack] Cashin initiated: ref=${paypackResult.ref}, amount=${expected}, phone=${cleanPhone}`);
 
     res.json({
@@ -1626,6 +1711,7 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
       status: paypackResult.status || 'pending',
       amount: paypackResult.amount,
       kind: paypackResult.kind,
+      iremboApplicationId,
     });
   } catch (e) {
     const ppMsg = e?.response?.data?.message || e?.message || 'Payment initiation failed';
@@ -1662,6 +1748,16 @@ app.get('/api/paypack/status/:transactionId', authMiddleware, async (req, res) =
           if (txn.product === 'pro') {
             const u = await User.findById(txn.userId);
             if (u) { u.isPro = true; await u.save(); }
+          }
+          // Promote IremboApplication from PENDING_PAYMENT to PENDING
+          if (txn.product === 'irembo') {
+            const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
+            if (app) {
+              app.status = 'PENDING';
+              app.transactionId = String(txn._id);
+              await app.save();
+              console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING`);
+            }
           }
         } else if (ppStatus === 'failed') {
           txn.status = 'FAILED';
@@ -1721,6 +1817,16 @@ app.post('/api/webhook/paypack', async (req, res) => {
       if (txn.product === 'pro') {
         const u = await User.findById(txn.userId);
         if (u) { u.isPro = true; await u.save(); }
+      }
+      // Promote IremboApplication from PENDING_PAYMENT to PENDING
+      if (txn.product === 'irembo') {
+        const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
+        if (app) {
+          app.status = 'PENDING';
+          app.transactionId = String(txn._id);
+          await app.save();
+          console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING`);
+        }
       }
       console.log(`[Paypack] Webhook: Payment ${ref} SUCCESS`);
     } else if (status === 'failed') {
@@ -1861,6 +1967,9 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Certificate requires 70% or higher' });
     }
     const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+    const issuedDate = new Date();
+    const expiryDate = new Date(issuedDate);
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     const cert = await Certificate.create({
       userId: user._id,
       username: user.username,
@@ -1868,7 +1977,8 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
       totalQuestions,
       quizTitle: quizTitle || 'Traffic Rules & Road Safety Understanding',
       certificateNo: certNo,
-      issuedAt: new Date()
+      issuedAt: issuedDate,
+      expiresAt: expiryDate
     });
     res.json({
       success: true,
@@ -1935,13 +2045,57 @@ app.get('/api/certificates/verify/:certNo', async (req, res) => {
 app.post('/api/irembo/register', authMiddleware, async (req, res) => {
   const txnId = String(req.body?.transactionId || '');
   const txn = txnId ? await Payment.findById(txnId) : null;
-  if (!txn || String(txn.userId) !== String(req.user._id) || txn.status !== 'SUCCESS' || txn.amount !== 5500 || txn.product !== 'irembo') {
-    await FraudLog.create({ userId: req.user._id, type: 'register_without_payment', message: 'Irembo register blocked', meta: { txnId } });
-    return res.status(402).json({ message: 'Payment required' });
+  const testMode = process.env.PAYPACK_TEST_MODE === 'true';
+  const expectedAmount = testMode ? 100 : 5500;
+
+  // Determine status: PENDING if payment succeeded, PENDING_PAYMENT otherwise
+  let appStatus = 'PENDING_PAYMENT';
+  if (txn && String(txn.userId) === String(req.user._id) && txn.status === 'SUCCESS' && Number(txn.amount) === expectedAmount && txn.product === 'irembo') {
+    appStatus = 'PENDING';
   }
-  const application = await IremboApplication.create({ userId: req.user._id, fullName: req.body.fullName, nationalId: req.body.nationalId, phone: req.body.phone, email: req.body.email, language: req.body.language, testMode: req.body.testMode, district: req.body.district, testDate: req.body.testDate });
-  await Notification.create({ title: 'Irembo registration', body: `New application ${String(application._id)}`, segment: 'admins' });
-  res.json({ application: { id: String(application._id), fullName: application.fullName, nationalId: application.nationalId, phone: application.phone, email: application.email, language: application.language, testMode: application.testMode, district: application.district, testDate: application.testDate, status: application.status, createdAt: application.createdAt } });
+
+  // Check if a draft application was already created at payment initiation time
+  // Also check PENDING status in case webhook/polling already promoted it
+  let application = null;
+  if (txnId) {
+    application = await IremboApplication.findOne({ userId: req.user._id, transactionId: txnId, status: { $in: ['PENDING_PAYMENT', 'PENDING'] } }).sort({ createdAt: -1 });
+  }
+  if (!application) {
+    application = await IremboApplication.findOne({ userId: req.user._id, status: { $in: ['PENDING_PAYMENT', 'PENDING'] } }).sort({ createdAt: -1 });
+  }
+
+  if (application) {
+    // Update existing draft with full form data and new status
+    application.fullName = req.body.fullName || application.fullName;
+    application.nationalId = req.body.nationalId || application.nationalId;
+    application.phone = req.body.phone || application.phone;
+    application.email = req.body.email || application.email;
+    application.language = req.body.language || application.language;
+    application.testMode = req.body.testMode || application.testMode;
+    application.district = req.body.district || application.district;
+    application.testDate = req.body.testDate || application.testDate;
+    application.transactionId = txnId || application.transactionId;
+    application.status = appStatus;
+    await application.save();
+  } else {
+    // No draft found — create new application
+    application = await IremboApplication.create({
+      userId: req.user._id,
+      fullName: req.body.fullName,
+      nationalId: req.body.nationalId,
+      phone: req.body.phone,
+      email: req.body.email,
+      language: req.body.language,
+      testMode: req.body.testMode,
+      district: req.body.district,
+      testDate: req.body.testDate,
+      transactionId: txnId || undefined,
+      status: appStatus,
+    });
+    await Notification.create({ title: 'Irembo registration', body: `New application from ${req.body.fullName} (${appStatus === 'PENDING' ? 'payment confirmed' : 'awaiting payment'})`, segment: 'admins' });
+  }
+
+  res.json({ application: { id: String(application._id), fullName: application.fullName, nationalId: application.nationalId, phone: application.phone, email: application.email, language: application.language, testMode: application.testMode, district: application.district, testDate: application.testDate, status: application.status, transactionId: application.transactionId, createdAt: application.createdAt } });
 });
 
 // SIMULATION
@@ -2010,7 +2164,20 @@ app.get('/api/admin/analytics', authMiddleware, adminMiddleware, async (req, res
     const match = subAgg.find(s => String(s._id) === String(q._id));
     return { id: String(q._id), question: q.question, failRate: match ? match.wrongCount : [67,54,48,35,22][i] };
   });
-  res.json({ totalUsers, proUsers, totalRevenue, todaySignups, todayQuizAttempts, conversionRate, paymentSuccessRate, paymentFailureRate, topQuestions });
+  const recentPayments = await Payment.find({}).sort({ createdAt: -1 }).limit(10).lean();
+  const rpUserIds = recentPayments.map(p => p.userId).filter(Boolean);
+  const rpUsers = rpUserIds.length ? await User.find({ _id: { $in: rpUserIds } }).lean() : [];
+  const rpUserMap = new Map(rpUsers.map(u => [String(u._id), u]));
+  const recentPaymentsData = recentPayments.map(p => {
+    const u = rpUserMap.get(String(p.userId));
+    return { id: String(p._id), username: u?.username || 'Unknown', amount: Number(p.amount || 0), status: p.status || 'PENDING', date: p.createdAt };
+  });
+  const iremboPending = await IremboApplication.countDocuments({ status: 'PENDING' });
+  const iremboProcessing = await IremboApplication.countDocuments({ status: 'PROCESSING' });
+  const iremboSubmitted = await IremboApplication.countDocuments({ status: 'SUBMITTED_TO_IREMBO' });
+  const iremboCompleted = await IremboApplication.countDocuments({ status: 'COMPLETED' });
+  const iremboTotal = await IremboApplication.countDocuments();
+  res.json({ totalUsers, proUsers, totalRevenue, todaySignups, todayQuizAttempts, conversionRate, paymentSuccessRate, paymentFailureRate, topQuestions, recentPayments: recentPaymentsData, irembo: { total: iremboTotal, pending: iremboPending, processing: iremboProcessing, submitted: iremboSubmitted, completed: iremboCompleted } });
 });
 
 app.get('/api/admin/newsletter/subscribers', authMiddleware, adminOnly, async (req, res) => {
@@ -2427,6 +2594,9 @@ app.post('/api/certificate/generate/:submissionId', authMiddleware, async (req, 
     }
     const certificateNo = `ISH-${Date.now().toString(36).toUpperCase()}`;
     const quizTitle = req.body?.quizTitle || 'Traffic Rules & Road Safety Proficiency';
+    const issuedDate2 = new Date();
+    const expiryDate2 = new Date(issuedDate2);
+    expiryDate2.setFullYear(expiryDate2.getFullYear() + 1);
     const cert = await Certificate.create({
       userId: req.user._id,
       username: req.user.username,
@@ -2434,7 +2604,8 @@ app.post('/api/certificate/generate/:submissionId', authMiddleware, async (req, 
       totalQuestions: total,
       quizTitle,
       certificateNo,
-      issuedAt: new Date()
+      issuedAt: issuedDate2,
+      expiresAt: expiryDate2
     });
     res.json({
       success: true,
@@ -2469,6 +2640,30 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
     const issuedDate = cert.issuedAt ? new Date(cert.issuedAt) : new Date();
     const dateStr = issuedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+    // Expiry date: 1 year from issue, or compute from existing cert
+    let expiresAt = cert.expiresAt ? new Date(cert.expiresAt) : new Date(issuedDate);
+    if (!cert.expiresAt) {
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    }
+    const expiryStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Generate real QR code as PNG buffer
+    const QRCode = (await import('qrcode')).default;
+    const verifyUrl = `https://ishami.rw/verify/${cert.certificateNo}`;
+    const qrBuffer = await QRCode.toBuffer(verifyUrl, {
+      width: 120,
+      margin: 2,
+      color: { dark: '#000000', light: '#FFFFFF' },
+      errorCorrectionLevel: 'M'
+    });
+
+    // Load signature image
+    const fs = await import('fs');
+    const path = await import('path');
+    const sigPath = path.join(process.cwd(), 'src', 'assets', 'ferrivox.png');
+    let sigExists = false;
+    try { fs.accessSync(sigPath); sigExists = true; } catch {}
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="ISHAMI-Certificate-${cert.certificateNo}.pdf"`);
 
@@ -2479,7 +2674,7 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
     const pageHeight = doc.page.height;
     const margin = 40;
 
-    // Background watermark-ish
+    // Background
     doc.save();
     doc.fillColor('#f7f3e9');
     doc.rect(0, 0, pageWidth, pageHeight).fill();
@@ -2493,8 +2688,7 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
     doc.rect(margin + 8, margin + 8, pageWidth - 2 * (margin + 8), pageHeight - 2 * (margin + 8)).stroke();
     doc.restore();
 
-    // Corner geometric decorations (Imigongo-inspired triangles)
-    const cornerSize = 30;
+    // Corner decorations
     const drawCorner = (cx, cy, color) => {
       doc.save();
       doc.fillColor(color);
@@ -2524,7 +2718,7 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
     doc.moveTo(margin + 100, lineY).lineTo(pageWidth - margin - 100, lineY).stroke();
     doc.restore();
 
-    // Issued to label
+    // Issued to
     doc.save();
     doc.moveDown(5);
     doc.fillColor('#555').font('Helvetica').fontSize(14).text('This is to certify that', { align: 'center' });
@@ -2548,29 +2742,62 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
     doc.text(`Score: ${cert.score}/${cert.totalQuestions} correct answers — ${percentage}%`, boxX + 20, boxY + 28, { width: boxW - 40, align: 'center' });
     doc.restore();
 
-    // Date and cert number
+    // ═══ QR Code ═══
+    const qrSize = 70;
+    const qrX = pageWidth - margin - qrSize - 20;
+    const qrY = pageHeight - margin - 120;
+    doc.image(qrBuffer, qrX, qrY, { width: qrSize, height: qrSize });
     doc.save();
-    doc.fillColor('#333').font('Helvetica').fontSize(12);
-    doc.text(`Date Issued: ${dateStr}`, margin + 60, pageHeight - margin - 90, { width: 250 });
-    doc.text(`Certificate No: ${cert.certificateNo}`, margin + 60, pageHeight - margin - 70, { width: 350 });
+    doc.fillColor('#888').font('Helvetica').fontSize(7);
+    doc.text('Scan to verify', qrX, qrY + qrSize + 4, { width: qrSize, align: 'center' });
     doc.restore();
+
+    // ═══ Dates (left side) ═══
+    doc.save();
+    doc.fillColor('#333').font('Helvetica').fontSize(11);
+    doc.text(`Date Issued: ${dateStr}`, margin + 60, pageHeight - margin - 85, { width: 250 });
+    doc.text(`Valid Until: ${expiryStr}`, margin + 60, pageHeight - margin - 68, { width: 250 });
+    doc.fillColor('#666').font('Helvetica').fontSize(9);
+    doc.text(`Certificate No: ${cert.certificateNo}`, margin + 60, pageHeight - margin - 52, { width: 350 });
+    doc.restore();
+
+    // ═══ Signature (center-right) ═══
+    const sigX = pageWidth - margin - 300;
+    const sigY = pageHeight - margin - 80;
+
+    // Draw signature image if available
+    if (sigExists) {
+      try {
+        doc.image(sigPath, sigX + 20, sigY - 30, { width: 100, height: 30, fit: [100, 30] });
+      } catch {}
+    }
 
     // Signature line
     doc.save();
-    const sigX = pageWidth - margin - 260;
-    const sigY = pageHeight - margin - 80;
     doc.strokeColor('#333').lineWidth(1);
-    doc.moveTo(sigX, sigY).lineTo(sigX + 200, sigY).stroke();
-    doc.fillColor('#333').font('Helvetica-Bold').fontSize(12);
-    doc.text('For ISHAMI Rwanda', sigX, sigY + 8, { width: 200, align: 'center' });
-    doc.font('Helvetica').fontSize(10);
-    doc.text('Authorized Signatory', sigX, sigY + 26, { width: 200, align: 'center' });
+    doc.moveTo(sigX, sigY).lineTo(sigX + 140, sigY).stroke();
+    doc.fillColor('#333').font('Helvetica-Bold').fontSize(10);
+    doc.text('Managing Director', sigX, sigY + 6, { width: 140, align: 'center' });
+    doc.font('Helvetica').fontSize(8);
+    doc.text('ISHAMI Platform', sigX, sigY + 18, { width: 140, align: 'center' });
+    doc.restore();
+
+    // ═══ Official Seal ═══
+    const sealX = pageWidth - margin - 150;
+    const sealY = pageHeight - margin - 80;
+    doc.save();
+    doc.strokeColor('#8b6914').lineWidth(1.5);
+    doc.circle(sealX + 25, sealY - 10, 22).stroke();
+    doc.fillColor('#8b6914').font('Helvetica-Bold').fontSize(6);
+    doc.text('ISHAMI', sealX + 25, sealY - 14, { width: 50, align: 'center' });
+    doc.font('Helvetica').fontSize(5);
+    doc.text('CERTIFIED', sealX + 25, sealY - 5, { width: 50, align: 'center' });
     doc.restore();
 
     // Badge at bottom
     doc.save();
-    doc.fillColor('#8b6914').font('Helvetica-Bold').fontSize(10);
-    doc.text('ISHAMI RWANDA — Gerayo Amahoro 🚦', margin, pageHeight - margin - 20, { width: pageWidth - 2 * margin, align: 'center' });
+    doc.fillColor('#8b6914').font('Helvetica-Bold').fontSize(9);
+    doc.text('ISHAMI RWANDA — Gerayo Amahoro | Safe Roads, Safe Lives', margin, pageHeight - margin - 15, { width: pageWidth - 2 * margin, align: 'center' });
     doc.restore();
 
     doc.end();

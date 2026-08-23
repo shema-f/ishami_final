@@ -2126,11 +2126,95 @@ export const ICE_CONDITIONS: ScenarioConfig = {
   ],
 };
 
+// ─── Reverse / Backup Driving Scenario ──────────────────
+// Location: Stadium Parking Area (south-east)
+// Route: Practice reversing in a straight line, reversing around a corner, and reverse parking
+
+export const REVERSE_DRIVING: ScenarioConfig = {
+  id: 'reverse_driving',
+  title: 'Reverse / Backup Driving',
+  titleRW: 'Gutwara Inyuma (Backup)',
+  description: 'Master the art of reversing safely. Practice straight-line reversing, reversing around corners, and reverse parking into a bay.',
+  descriptionRW: 'Menya neza uburyo bwo gutwara inyuma. Jya mu gihe usubira inyuma neza mu mihanda.',
+  difficulty: 'BEGINNER',
+  location: 'Kigali — Stadium Parking Zone (South-East)',
+  locationRW: 'Kigali — Ahantu h\'Imodoka y\'Ukwirakwiza (Iburasirazuba)',
+  estimatedTime: '5-7 min',
+  maxSpeed: 15,
+  speedLimit: 10,
+  xpReward: 400,
+  trainingMode: true,
+  objectives: [
+    { id: 'gear_reverse', text: 'Select reverse gear', textRW: 'Hitamo igeari y\'inyuma', icon: '⚙️' },
+    { id: 'check_behind', text: 'Check behind before reversing', textRW: 'Reba inyuma mbere yo kugenda', icon: '👀' },
+    { id: 'straight_reverse', text: 'Reverse in a straight line', textRW: 'Subira inyuma mu buriri', icon: '↩️' },
+    { id: 'reverse_turn', text: 'Reverse around a corner', textRW: 'Subira inyuma mu furuka', icon: '🔄' },
+    { id: 'reverse_park', text: 'Reverse park into bay', textRW: 'Shira imodoka inyuma', icon: '🅿️' },
+  ],
+  waypoints: [
+    {
+      id: 'REV_START',
+      position: [144, 0, 180],
+      radius: 5,
+      objective: 'Start on the road near stadium',
+      instruction: 'Position your car on the road near the stadium parking entrance.',
+      completed: false,
+      instructorMessage: 'You are on the road near the stadium. We will practice reversing from here.',
+    },
+    {
+      id: 'REV_GEAR',
+      position: [144, 0, 198],
+      radius: 4,
+      objective: 'Select reverse gear and check behind',
+      instruction: 'Come to a stop. Select reverse gear (R). Check all mirrors and look over your shoulder.',
+      completed: false,
+      instructorMessage: 'Stop here. Put the car in REVERSE gear. Look over your right shoulder and check all mirrors.',
+    },
+    {
+      id: 'REV_STRAIGHT',
+      position: [144, 0, 216],
+      radius: 4,
+      objective: 'Reverse in a straight line',
+      instruction: 'Release clutch slowly and reverse in a straight line. Keep the steering straight.',
+      completed: false,
+      instructorMessage: 'Good! Now reverse slowly in a straight line. Keep your eyes scanning behind you.',
+    },
+    {
+      id: 'REV_CORNER',
+      position: [126, 0, 216],
+      radius: 4,
+      objective: 'Reverse around a corner',
+      instruction: 'Turn the steering wheel and reverse around the corner into the parking aisle.',
+      completed: false,
+      instructorMessage: 'Now turn the wheel and reverse around the corner. Remember: when reversing, steering is inverted!',
+    },
+    {
+      id: 'REV_PARK',
+      position: [108, 0, 216],
+      radius: 3,
+      objective: 'Reverse park into the bay',
+      instruction: 'Align with the parking bay and reverse into it. Straighten the wheel.',
+      completed: false,
+      instructorMessage: 'Good! Now reverse into the parking bay. Straighten the wheel as you enter.',
+    },
+    {
+      id: 'REV_COMPLETE',
+      position: [108, 0, 198],
+      radius: 5,
+      objective: 'Mission complete!',
+      instruction: 'Stop in the bay. Engage handbrake and select neutral.',
+      completed: false,
+      instructorMessage: 'Excellent reverse driving! You completed the backup course perfectly.',
+    },
+  ],
+};
+
 // ─── Scenario Registry ────────────────────────────────────
 
 export const ALL_SCENARIO_CONFIGS: ScenarioConfig[] = [
   TRAFFIC_FLOW,
   CORNERS_TURNS,
+  REVERSE_DRIVING,
   PARALLEL_PARKING,
   HILL_START,
   ROUNDABOUT_NAVIGATION,
