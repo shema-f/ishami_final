@@ -20,6 +20,16 @@ services:
         value: https://ishami-frontend.onrender.com,https://ishami.rw
       - key: PORT
         value: 10000
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        value: AI.Ab8RN6L09IEGbEqvfPBFk1_UU4XX4yP1SrH_HHb7dTvpTVVM-g
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: SEARCH_PROVIDER
+        value: serper
+      - key: SERPER_API_KEY
+        value: 989ea82dc768e6f52a4b4a0e11ad6fc97a832cd41521990d53ed9d8b85ee4bf7
 
   - type: static_site
     name: ishami-frontend
@@ -28,4 +38,4 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: VITE_API_URL
-        sync: false
+        value: https://ishami-final.onrender.com
