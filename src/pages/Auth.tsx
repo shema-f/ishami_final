@@ -32,7 +32,7 @@ export default function Auth() {
   
   const { login, signup, updateUser, socialLogin, googleIdTokenLogin, firebaseLogin, user } = useAuth();
   const navigate = useNavigate();
-  const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://ishami-final.onrender.com';
   const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '921766633773-ggb4nlq294cvaetc8gpa5cadh6sokecu.apps.googleusercontent.com';
 
   useEffect(() => {

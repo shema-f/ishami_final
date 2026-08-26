@@ -1,12 +1,11 @@
 /**
  * API Service Layer
  * 
- * Replace 'http://localhost:5000' with your actual backend URL
- * For production: 'https://api.ishami.rw' or your domain
+ * Reads VITE_API_URL from the environment (set at build time by Vite).
+ * Falls back to the deployed backend URL when the env var is missing.
  */
 
-const PRIMARY_API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-const FALLBACK_API_BASE = 'http://localhost:5001';
+const PRIMARY_API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://ishami-final.onrender.com';
 
 // Helper function for API calls
 async function apiCall(endpoint: string, options: RequestInit = {}) {
@@ -18,26 +17,10 @@ async function apiCall(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  let response: Response | null = null;
-  let baseTried = PRIMARY_API_BASE;
-  try {
-    response = await fetch(`${baseTried}${endpoint}`, {
-      ...options,
-      headers,
-    });
-  } catch (err: any) {
-    const isNetworkError = err && (err.name === 'TypeError' || /fetch/i.test(String(err)));
-    const isLocalhostPrimary = PRIMARY_API_BASE.includes('localhost:5000');
-    if (isNetworkError && isLocalhostPrimary) {
-      baseTried = FALLBACK_API_BASE;
-      response = await fetch(`${baseTried}${endpoint}`, {
-        ...options,
-        headers,
-      });
-    } else {
-      throw err;
-    }
-  }
+  const response = await fetch(`${PRIMARY_API_BASE}${endpoint}`, {
+    ...options,
+    headers,
+  });
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -231,27 +214,12 @@ export const aiAPI = {
         'Accept': 'text/event-stream',
       };
       if (token) headers['Authorization'] = `Bearer ${token}`;
-      let resp: Response | null = null;
-      try {
-        resp = await fetch(`${PRIMARY_API_BASE}/api/ai/stream`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ prompt, sentiment, history }),
-          signal,
-        });
-      } catch (err: any) {
-        const isNetworkError = err && (err.name === 'TypeError' || /fetch/i.test(String(err)));
-        if (isNetworkError && PRIMARY_API_BASE.includes('localhost:5000')) {
-          resp = await fetch(`${FALLBACK_API_BASE}/api/ai/stream`, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ prompt, sentiment, history }),
-            signal,
-          });
-        } else {
-          throw err;
-        }
-      }
+      const resp = await fetch(`${PRIMARY_API_BASE}/api/ai/stream`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ prompt, sentiment, history }),
+        signal,
+      });
       if (!resp.ok || !resp.body) {
         if (!resp.ok && resp.headers.get('content-type')?.includes('application/json')) {
           const j = await resp.json();
@@ -408,8 +376,7 @@ export const resourcesAPI = {
    */
   downloadResource: async (resourceId: string) => {
     const token = localStorage.getItem('authToken');
-    const baseUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
-    window.open(`${baseUrl}/api/resources/download/${resourceId}?token=${token}`, '_blank');
+    window.open(`${PRIMARY_API_BASE}/api/resources/download/${resourceId}?token=${token}`, '_blank');
   },
 };
 

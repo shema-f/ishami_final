@@ -15,6 +15,17 @@ services:
       - key: JWT_SECRET
         value: ishami-production-jwt-secret-2024
       - key: FRONTEND_URL
-        value: https://ishami.rw
+        value: https://ishami-frontend.onrender.com
+      - key: CORS_ORIGINS
+        value: https://ishami-frontend.onrender.com,https://ishami.rw
       - key: PORT
-        value: 5000
+        value: 10000
+
+  - type: static_site
+    name: ishami-frontend
+    rootDir: .
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: VITE_API_URL
+        sync: false

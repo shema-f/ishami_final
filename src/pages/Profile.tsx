@@ -83,26 +83,12 @@ export default function Profile() {
     }
     try {
       setSaving(true);
-      // Call API to update username
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${(import.meta as any).env?.VITE_API_URL || 'http://localhost:5000'}/api/auth/update-profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ username: newUsername.trim() }),
-      });
-      if (response.ok) {
-        updateUser({ username: newUsername.trim() });
-        toast.success('Username updated successfully!');
-        setEditingField(null);
-      } else {
-        const err = await response.json().catch(() => ({}));
-        toast.error(err.message || 'Failed to update username');
-      }
-    } catch {
-      toast.error('Failed to update username');
+      await authAPI.updateProfile({ username: newUsername.trim() });
+      updateUser({ username: newUsername.trim() });
+      toast.success('Username updated successfully!');
+      setEditingField(null);
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to update username');
     } finally {
       setSaving(false);
     }
@@ -123,27 +109,14 @@ export default function Profile() {
     }
     try {
       setSaving(true);
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`${(import.meta as any).env?.VITE_API_URL || 'http://localhost:5000'}/api/auth/update-profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      if (response.ok) {
-        toast.success('Password updated successfully!');
-        setEditingField(null);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        const err = await response.json().catch(() => ({}));
-        toast.error(err.message || 'Failed to update password');
-      }
-    } catch {
-      toast.error('Failed to update password');
+      await authAPI.updateProfile({ currentPassword, newPassword });
+      toast.success('Password updated successfully!');
+      setEditingField(null);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to update password');
     } finally {
       setSaving(false);
     }
