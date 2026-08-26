@@ -6,11 +6,15 @@ services:
     buildCommand: npm install
     startCommand: node index.js
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /api/ai/status
     envVars:
       - key: MONGODB_URI
-        sync: false
+        value: mongodb+srv://admin:admin123@cluster0.3tglbwn.mongodb.net/?appName=Cluster0
       - key: MONGODB_DB
-        sync: false
+        value: ishami
       - key: JWT_SECRET
-        sync: false
+        value: ishami-production-jwt-secret-2024
+      - key: FRONTEND_URL
+        value: https://ishami.rw
+      - key: PORT
+        value: 5000
