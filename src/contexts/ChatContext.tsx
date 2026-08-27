@@ -29,6 +29,8 @@ interface ChatContextType {
   updateMessage: (conversationId: string, messageId: number, updates: Partial<ChatMessage>) => void;
   removeMessage: (conversationId: string, messageId: number) => void;
   updateConversationTitle: (id: string, title: string) => void;
+  exportConversations: () => void;
+  importConversations: (file: File) => Promise<number>;
   isLoading: boolean;
 }
 
@@ -366,6 +368,76 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, []);
 
+  // ── Export conversations as JSON file ──
+  const exportConversations = useCallback(() => {
+    const data = conversations.map(conv => ({
+      id: conv.id,
+      title: conv.title,
+      messages: conv.messages.map(m => ({
+        ...m,
+        timestamp: m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
+      })),
+      createdAt: conv.createdAt instanceof Date ? conv.createdAt.toISOString() : conv.createdAt,
+      updatedAt: conv.updatedAt instanceof Date ? conv.updatedAt.toISOString() : conv.updatedAt,
+    }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ishami-chats-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [conversations]);
+
+  // ── Import conversations from JSON file ──
+  const importConversations = useCallback(async (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const raw = JSON.parse(e.target?.result as string);
+          if (!Array.isArray(raw)) {
+            reject(new Error('Invalid file format'));
+            return;
+          }
+          const imported: Conversation[] = raw.map((conv: any) => ({
+            id: conv.id || generateClientId(),
+            title: conv.title || 'Imported Chat',
+            messages: (conv.messages || []).map((m: any) => ({
+              id: m.id || Date.now() + Math.random(),
+              text: m.text || '',
+              isUser: !!m.isUser,
+              timestamp: new Date(m.timestamp || Date.now()),
+              image: m.image || null,
+              structured: m.structured || null,
+            })),
+            createdAt: new Date(conv.createdAt || Date.now()),
+            updatedAt: new Date(conv.updatedAt || Date.now()),
+          }));
+          // Merge with existing — skip duplicates by title + message count
+          const existingKeys = new Set(
+            conversations.map(c => `${c.title}|${c.messages.length}`)
+          );
+          const newConvs = imported.filter(c => !existingKeys.has(`${c.title}|${c.messages.length}`));
+          const merged = [...newConvs, ...conversations];
+          setConversations(merged);
+          saveLocal(merged);
+          // Sync new ones to backend
+          for (const conv of newConvs) {
+            syncToBackend(conv);
+          }
+          resolve(newConvs.length);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }, [conversations, syncToBackend]);
+
   // ── Auto-sync to backend on mutations (debounced) ──
   const syncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -392,6 +464,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateMessage,
       removeMessage,
       updateConversationTitle,
+      exportConversations,
+      importConversations,
       isLoading,
     }}>
       {children}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { aiAPI } from '../services/api';
@@ -90,6 +90,8 @@ export default function AIAssistant() {
     addMessage,
     updateMessage,
     removeMessage,
+    exportConversations,
+    importConversations,
     isLoading: isChatLoading,
   } = useChat();
 
@@ -101,6 +103,8 @@ export default function AIAssistant() {
   const [aiStatus, setAiStatus] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const stickToBottomRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -180,6 +184,22 @@ export default function AIAssistant() {
       removeMessage(conversationId, msgId);
       if (streamErr?.name === 'AbortError') throw streamErr;
       return null;
+    }
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const count = await importConversations(file);
+      // Brief success feedback via console — could add toast later
+      console.log(`Imported ${count} new conversation(s)`);
+    } catch (err) {
+      console.error('Import failed:', err);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -364,9 +384,36 @@ export default function AIAssistant() {
             ))}
           </div>
 
-          <div className="p-4 border-t border-white/10">
+          <div className="p-4 border-t border-white/10 space-y-3">
+            <div className="flex gap-2">
+              <button
+                onClick={exportConversations}
+                disabled={conversations.length === 0}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-300 hover:bg-white/10 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Download className="w-3.5 h-3.5" />
+                {uiLang === 'rw' ? "Kurura" : "Export"}
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-300 hover:bg-white/10 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                {importing
+                  ? (uiLang === 'rw' ? 'Birimo...' : 'Importing...')
+                  : (uiLang === 'rw' ? 'Shyira' : 'Import')}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                className="hidden"
+              />
+            </div>
             <div className="text-xs text-gray-500 text-center">
-              {conversations.length} {uiLang === 'rw' ? "imitindire y'ubusobanuro" : "conversation{conversations.length !== 1 ? 's' : ''}"}
+              {conversations.length} {uiLang === 'rw' ? "imitindire y'ubusobanuro" : `conversation${conversations.length !== 1 ? 's' : ''}`}
             </div>
           </div>
         </div>
