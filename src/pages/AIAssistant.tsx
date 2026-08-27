@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload, Search } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload, Search, Pencil, Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { aiAPI } from '../services/api';
@@ -105,6 +105,9 @@ export default function AIAssistant() {
   const [isLoading, setIsLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const stickToBottomRef = useRef(true);
@@ -185,6 +188,69 @@ export default function AIAssistant() {
       removeMessage(conversationId, msgId);
       if (streamErr?.name === 'AbortError') throw streamErr;
       return null;
+    }
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteConversation(deleteTarget.id);
+      setDeleteTarget(null);
+    }
+  };
+
+  const startEditing = (msg: { id: number; text: string }) => {
+    setEditingMessageId(msg.id);
+    setEditingText(msg.text);
+  };
+
+  const cancelEditing = () => {
+    setEditingMessageId(null);
+    setEditingText('');
+  };
+
+  const saveEdit = async (messageId: number) => {
+    if (!activeConversation || !editingText.trim()) return;
+    const convId = activeConversation.id;
+
+    // Update the user message text
+    updateMessage(convId, messageId, { text: editingText.trim() });
+    setEditingMessageId(null);
+    setEditingText('');
+
+    // Remove all messages after this one (the old AI response)
+    const msgIndex = activeConversation.messages.findIndex(m => m.id === messageId);
+    if (msgIndex >= 0) {
+      const msgsToRemove = activeConversation.messages.slice(msgIndex + 1);
+      for (const m of msgsToRemove) {
+        removeMessage(convId, m.id);
+      }
+    }
+
+    // Re-send the edited message to get a fresh AI response
+    if (!user?.isPro && questionCount >= 5) {
+      setShowPaywall(true);
+      return;
+    }
+    const sentiment = detectSentiment(editingText.trim());
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    setIsLoading(true);
+
+    const updatedConv = { ...activeConversation, messages: [...activeConversation.messages] };
+    const historyStart = Math.max(0, updatedConv.messages.findIndex(m => m.id === messageId) - 10);
+    const history = updatedConv.messages.slice(historyStart, msgIndex + 1).map(m => ({
+      role: m.isUser ? 'user' : 'model',
+      content: m.id === messageId ? editingText.trim() : m.text,
+    }));
+
+    try {
+      const res = await aiAPI.askAssistant(editingText.trim(), sentiment, history, controller.signal);
+      addMessage(convId, { id: nextMsgIdRef.current++, text: res.text, isUser: false, timestamp: new Date(), structured: res.structured });
+    } catch (e: any) {
+      if (e?.name === 'AbortError') return;
+      addMessage(convId, { id: nextMsgIdRef.current++, text: "The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro", isUser: false, timestamp: new Date(), structured: { intent: 'error', topic: 'general' } });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -410,7 +476,7 @@ export default function AIAssistant() {
                     </p>
                   </div>
                   <button
-                    onClick={(e) => { e.stopPropagation(); deleteConversation(conv.id); }}
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: conv.id, title: conv.title }); }}
                     className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -556,8 +622,44 @@ export default function AIAssistant() {
                         </div>
                       </div>
                     )}
-                    <div className={`p-4 rounded-2xl leading-relaxed whitespace-pre-wrap ${message.isUser ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-sm' : 'bg-white/10 text-white rounded-tl-sm border border-white/5'}`}>
-                      <p className="whitespace-pre-wrap">{message.text}</p>
+                    <div className={`group/msg relative p-4 rounded-2xl leading-relaxed whitespace-pre-wrap ${message.isUser ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-sm' : 'bg-white/10 text-white rounded-tl-sm border border-white/5'}`}>
+                      {message.isUser && editingMessageId !== message.id && (
+                        <button
+                          onClick={() => startEditing(message)}
+                          className="absolute -top-2 -left-2 opacity-0 group-hover/msg:opacity-100 p-1 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+                          title="Edit message"
+                        >
+                          <Pencil className="w-3 h-3 text-white" />
+                        </button>
+                      )}
+                      {editingMessageId === message.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-white text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            rows={3}
+                            autoFocus
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={cancelEditing}
+                              className="px-3 py-1 text-xs text-gray-300 hover:text-white transition-colors"
+                            >
+                              {uiLang === 'rw' ? 'Hagarika' : 'Cancel'}
+                            </button>
+                            <button
+                              onClick={() => saveEdit(message.id)}
+                              disabled={!editingText.trim()}
+                              className="px-3 py-1 text-xs bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-30"
+                            >
+                              {uiLang === 'rw' ? 'Bika & Ongera' : 'Save & Resend'}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap">{message.text}</p>
+                      )}
                       {message.structured?.safety_note && message.structured.safety_note.trim() && !message.text.includes(message.structured.safety_note.slice(0, 20)) && (
                         <div className="mt-3 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-200 text-xs">
                           ⚠️ {message.structured.safety_note}
@@ -653,6 +755,39 @@ export default function AIAssistant() {
                 </button>
                 <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors">
                   {uiLang === 'rw' ? "Nyuma yo" : "Maybe Later"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteTarget(null)}>
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} onClick={(e) => e.stopPropagation()} className="bg-[#111827] rounded-3xl p-8 max-w-sm w-full border border-white/10 shadow-2xl">
+            <div className="text-center">
+              <div className="inline-flex p-4 bg-rose-500/20 rounded-3xl mb-6">
+                <Trash2 className="w-10 h-10 text-rose-400" />
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">{uiLang === 'rw' ? 'Siba Intindiro?' : 'Delete Conversation?'}</h2>
+              <p className="text-gray-400 mb-6 text-sm">
+                {uiLang === 'rw'
+                  ? `"${deleteTarget.title}" irasibwa. Iki gikorwa ntigishobora kugaruka.`
+                  : `"${deleteTarget.title}" will be permanently deleted. This action cannot be undone.`}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteTarget(null)}
+                  className="flex-1 px-4 py-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-colors"
+                >
+                  {uiLang === 'rw' ? 'Hagarika' : 'Cancel'}
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold transition-colors"
+                >
+                  {uiLang === 'rw' ? 'Siba' : 'Delete'}
                 </button>
               </div>
             </div>
