@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit } from 'lucide-react';
-import { articles, type Article, type ArticleStatus } from '../../data/articles';
+import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit, Search } from 'lucide-react';
+import { articles, type Article, type ArticleStatus, type ArticleSEO } from '../../data/articles';
 import ImageUpload from '../../components/ImageUpload';
 
 interface ArticleFormData {
@@ -17,6 +17,7 @@ interface ArticleFormData {
   readTime: string;
   status: ArticleStatus;
   publishDate: string;
+  seo: ArticleSEO;
 }
 
 const emptyForm: ArticleFormData = {
@@ -32,6 +33,13 @@ const emptyForm: ArticleFormData = {
   readTime: '5 min read',
   status: 'draft',
   publishDate: '',
+  seo: {
+    metaTitle: '',
+    metaTitleRw: '',
+    metaDescription: '',
+    metaDescriptionRw: '',
+    keywords: [],
+  },
 };
 
 export default function AdminArticles() {
@@ -84,6 +92,13 @@ export default function AdminArticles() {
       readTime: article.readTime,
       status: article.status,
       publishDate: article.publishDate || '',
+      seo: article.seo || {
+        metaTitle: '',
+        metaTitleRw: '',
+        metaDescription: '',
+        metaDescriptionRw: '',
+        keywords: [],
+      },
     });
     setEditingId(article.id);
     setShowForm(true);
@@ -363,6 +378,96 @@ export default function AdminArticles() {
                   value={formData.image}
                   onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
                 />
+              </div>
+
+              {/* SEO Section */}
+              <div className="border-t border-white/10 pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Search className="w-5 h-5 text-green-400" />
+                  <h3 className="text-lg font-bold text-white">SEO Settings</h3>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Meta Title (English)</label>
+                    <input
+                      type="text"
+                      value={formData.seo.metaTitle || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, seo: { ...prev.seo, metaTitle: e.target.value } }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="SEO title (defaults to article title)"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{(formData.seo.metaTitle || formData.title_en).length}/60 characters</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Meta Title (Kinyarwanda)</label>
+                    <input
+                      type="text"
+                      value={formData.seo.metaTitleRw || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, seo: { ...prev.seo, metaTitleRw: e.target.value } }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Ishi ry'SEO (defaults to article title)"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Meta Description (English)</label>
+                    <textarea
+                      value={formData.seo.metaDescription || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, seo: { ...prev.seo, metaDescription: e.target.value } }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      rows={3}
+                      placeholder="SEO description (defaults to excerpt)"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{(formData.seo.metaDescription || formData.excerpt_en).length}/160 characters</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Meta Description (Kinyarwanda)</label>
+                    <textarea
+                      value={formData.seo.metaDescriptionRw || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, seo: { ...prev.seo, metaDescriptionRw: e.target.value } }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      rows={3}
+                      placeholder="Ibisobanuro by'SEO (defaults to excerpt)"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Keywords (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={formData.seo.keywords?.join(', ') || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo: { ...prev.seo, keywords: e.target.value.split(',').map(k => k.trim()).filter(Boolean) } }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="driving, Rwanda, traffic rules, safety"
+                  />
+                </div>
+
+                {/* Social Preview */}
+                <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider font-semibold">Social Preview</p>
+                  <div className="bg-white rounded-lg overflow-hidden max-w-md">
+                    <div className="h-32 bg-gray-200">
+                      <img 
+                        src={formData.image || 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop'} 
+                        alt="" 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <div className="p-3">
+                      <p className="text-xs text-gray-500 uppercase">ishami.rw</p>
+                      <p className="text-sm font-bold text-gray-900 line-clamp-1">
+                        {formData.seo.metaTitle || formData.title_en || 'Article Title'}
+                      </p>
+                      <p className="text-xs text-gray-600 line-clamp-2">
+                        {formData.seo.metaDescription || formData.excerpt_en || 'Article description...'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Status and Scheduling */}

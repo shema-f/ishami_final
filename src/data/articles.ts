@@ -3,6 +3,15 @@
 
 export type ArticleStatus = 'published' | 'draft' | 'scheduled';
 
+export interface ArticleSEO {
+  metaTitle?: string;
+  metaTitleRw?: string;
+  metaDescription?: string;
+  metaDescriptionRw?: string;
+  keywords?: string[];
+  ogImage?: string;
+}
+
 export interface Article {
   id: string;
   slug: string;
@@ -19,7 +28,8 @@ export interface Article {
   date: string;
   author: string;
   status: ArticleStatus;
-  publishDate?: string; // ISO date string for scheduled articles
+  publishDate?: string;
+  seo?: ArticleSEO;
 }
 
 export const articles: Article[] = [

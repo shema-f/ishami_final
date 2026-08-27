@@ -8,6 +8,7 @@ import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeCon
 import Comments from '../components/Comments';
 import ReadingModeToggle from '../components/ReadingModeToggle';
 import BlogSidebar from '../components/BlogSidebar';
+import SEOHead from '../components/SEOHead';
 import { useArticleAnalytics } from '../contexts/ArticleAnalyticsContext';
 
 function ArticleCard({ article }: { article: Article }) {
@@ -317,7 +318,9 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
 
 
   return (
-    <div className={`min-h-screen py-8 px-4 transition-colors duration-300 ${styles.container}`}>
+    <>
+      <SEOHead article={article} />
+      <div className={`min-h-screen py-8 px-4 transition-colors duration-300 ${styles.container}`}>
       <ReadingProgress />
       <div className="max-w-4xl mx-auto pt-16">
         {/* Back Button */}
@@ -489,6 +492,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }
 
