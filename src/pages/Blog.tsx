@@ -5,6 +5,7 @@ import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, 
 import { articles, type Article } from '../data/articles';
 import { useTranslation } from '../contexts/I18nContext';
 import { useBookmarks } from '../contexts/BookmarksContext';
+import Comments from '../components/Comments';
 
 function ArticleCard({ article }: { article: Article }) {
   const { lang } = useTranslation();
@@ -475,6 +476,9 @@ function ArticleDetail({ article }: { article: Article }) {
             })}
           </div>
         </motion.div>
+
+        {/* Comments Section */}
+        <Comments articleId={article.id} />
 
         {/* Related Articles */}
         <RelatedArticles currentArticle={article} />

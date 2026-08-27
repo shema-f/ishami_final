@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { BookmarksProvider } from './contexts/BookmarksContext';
+import { CommentsProvider } from './contexts/CommentsContext';
 
 function App() {
   return (
@@ -11,7 +12,9 @@ function App() {
       <AuthProvider>
         <ChatProvider>
           <BookmarksProvider>
-            <RouterProvider router={router} />
+            <CommentsProvider>
+              <RouterProvider router={router} />
+            </CommentsProvider>
           </BookmarksProvider>
         </ChatProvider>
       </AuthProvider>
