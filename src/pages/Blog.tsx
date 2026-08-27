@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
 import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X } from 'lucide-react';
 import { articles, type Article } from '../data/articles';
@@ -153,14 +153,53 @@ function ShareButtons({ title, slug }: { title: string; slug: string }) {
   );
 }
 
+function ReadingProgress() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        setProgress(Math.min((scrollTop / docHeight) * 100, 100));
+      }
+    };
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    return () => window.removeEventListener('scroll', updateProgress);
+  }, []);
+
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 z-50 h-1 bg-white/10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <motion.div
+        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+        style={{ width: `${progress}%` }}
+        transition={{ duration: 0.1 }}
+      />
+    </motion.div>
+  );
+}
+
+function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / wordsPerMinute));
+}
+
 function ArticleDetail({ article }: { article: Article }) {
   const { lang } = useTranslation();
 
   const content = lang === 'rw' ? article.content_rw : article.content_en;
   const title = lang === 'rw' ? article.title_rw : article.title_en;
+  const readTime = calculateReadingTime(content);
 
   return (
     <div className="min-h-screen py-8 px-4">
+      <ReadingProgress />
       <div className="max-w-4xl mx-auto pt-16">
         {/* Back Button */}
         <motion.div
@@ -183,13 +222,13 @@ function ArticleDetail({ article }: { article: Article }) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 text-gray-500 text-sm mb-4">
+          <div className="flex flex-wrap items-center gap-3 text-gray-500 text-sm mb-4">
             <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold">
               {lang === 'rw' ? article.category_rw : article.category}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {article.readTime}
+              {lang === 'rw' ? `${readTime} min isoma` : `${readTime} min read`}
             </span>
             <span>{new Date(article.date).toLocaleDateString()}</span>
           </div>
