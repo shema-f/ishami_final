@@ -28,6 +28,7 @@ export default function Navigation() {
     { path: '/resources', label: t('nav.resources') },
     { path: '/leaderboard', label: t('nav.leaderboard') },
     { path: '/blog', label: t('nav.blog') },
+    { path: '/bookmarks', label: t('nav.bookmarks') },
   ];
 
   const isActive = (path: string) => location.pathname === path;

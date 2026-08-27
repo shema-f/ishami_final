@@ -25,6 +25,7 @@ const Simulation = lazy(() => import("../pages/Simulation"));
 const ScenarioSelect = lazy(() => import("../simulation/ui/ScenarioSelect"));
 const SharedChat = lazy(() => import("../pages/SharedChat"));
 const Blog = lazy(() => import("../pages/Blog"));
+const Bookmarks = lazy(() => import("../pages/Bookmarks"));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
@@ -61,6 +62,7 @@ export const router = createBrowserRouter([
       { path: "shared/:token", Component: SharedChat },
       { path: "blog", Component: Blog },
       { path: "blog/:slug", Component: Blog },
+      { path: "bookmarks", Component: Bookmarks },
       { path: "*", Component: NotFound },
     ],
   },

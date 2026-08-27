@@ -12,6 +12,8 @@ const translations: Translations = {
   'nav.simulation':      { en: '3D Simulation', rw: '3D simulation' },
   'nav.resources':       { en: 'Resources', rw: 'Imfashanyigisho' },
   'nav.leaderboard':     { en: 'Leaderboard', rw: 'Leaderboard' },
+  'nav.blog':            { en: 'Blog', rw: 'Inyandiko' },
+  'nav.bookmarks':       { en: 'Bookmarks', rw: 'Amabiko' },
   'nav.signIn':          { en: 'Sign In', rw: 'Injira' },
   'nav.getStarted':      { en: 'Get Started', rw: 'Tangira Ubu' },
   'nav.signOut':         { en: 'Sign Out', rw: 'Sohoka' },
