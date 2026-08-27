@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit } from 'lucide-react';
 import { articles, type Article, type ArticleStatus } from '../../data/articles';
+import ImageUpload from '../../components/ImageUpload';
 
 interface ArticleFormData {
   title_en: string;
@@ -318,7 +319,7 @@ export default function AdminArticles() {
               </div>
 
               {/* Category and Meta */}
-              <div className="grid md:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Category (English)</label>
                   <input
@@ -341,35 +342,28 @@ export default function AdminArticles() {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Read Time</label>
-                  <input
-                    type="text"
-                    value={formData.readTime}
-                    onChange={(e) => setFormData(prev => ({ ...prev, readTime: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., 5 min read"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://..."
-                  />
-                </div>
               </div>
 
-              {/* Image Preview */}
-              {formData.image && (
-                <div className="rounded-xl overflow-hidden border border-white/10 h-48">
-                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
+              {/* Read Time */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Read Time</label>
+                <input
+                  type="text"
+                  value={formData.readTime}
+                  onChange={(e) => setFormData(prev => ({ ...prev, readTime: e.target.value }))}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., 5 min read"
+                />
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Article Image</label>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
+                />
+              </div>
 
               {/* Status and Scheduling */}
               <div className="grid md:grid-cols-2 gap-4">
