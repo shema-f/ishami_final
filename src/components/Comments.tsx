@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, Send, Heart, Reply, Trash2, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, Send, Heart, Reply, Trash2, User, ChevronDown, ChevronUp, Mail } from 'lucide-react';
 import { useComments, type Comment } from '../contexts/CommentsContext';
+import { useNotifications } from '../contexts/NotificationsContext';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
+import { articles } from '../data/articles';
 
 interface CommentsProps {
   articleId: string;
@@ -13,14 +15,17 @@ export default function Comments({ articleId }: CommentsProps) {
   const { lang } = useTranslation();
   const { user } = useAuth();
   const { getArticleComments, addComment } = useComments();
+  const { addNotification } = useNotifications();
   
   const [authorName, setAuthorName] = useState(user?.username || '');
+  const [authorEmail, setAuthorEmail] = useState('');
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
   const comments = getArticleComments(articleId);
   const displayComments = showAll ? comments : comments.slice(0, 5);
+  const article = articles.find(a => a.id === articleId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,17 +64,29 @@ export default function Comments({ articleId }: CommentsProps) {
       {/* Comment Form */}
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
-              <User className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row gap-3 mb-3">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white">
+                <User className="w-5 h-5" />
+              </div>
+              <input
+                type="text"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                placeholder={lang === 'rw' ? 'Izina ryawe (optional)' : 'Your name (optional)'}
+                className="flex-1 bg-transparent border-b border-white/10 text-white placeholder-gray-500 py-2 focus:outline-none focus:border-blue-500 transition-colors"
+              />
             </div>
-            <input
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              placeholder={lang === 'rw' ? 'Izina ryawe ( optional )' : 'Your name (optional)'}
-              className="flex-1 bg-transparent border-b border-white/10 text-white placeholder-gray-500 py-2 focus:outline-none focus:border-blue-500 transition-colors"
-            />
+            <div className="flex items-center gap-3 flex-1">
+              <Mail className="w-5 h-5 text-gray-400" />
+              <input
+                type="email"
+                value={authorEmail}
+                onChange={(e) => setAuthorEmail(e.target.value)}
+                placeholder={lang === 'rw' ? 'Email (ukemera notifications)' : 'Email (to get notifications)'}
+                className="flex-1 bg-transparent border-b border-white/10 text-white placeholder-gray-500 py-2 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
           </div>
           <textarea
             value={commentText}
@@ -78,11 +95,16 @@ export default function Comments({ articleId }: CommentsProps) {
             rows={3}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
-          <div className="flex justify-end mt-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
+            <p className="text-xs text-gray-500">
+              {lang === 'rw' 
+                ? 'Injiza email yawe kugira ngo umve igihe abandi bapamuye.' 
+                : 'Enter your email to get notified when others reply.'}
+            </p>
             <button
               type="submit"
               disabled={!commentText.trim() || isSubmitting}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -148,10 +170,14 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
   const { lang } = useTranslation();
   const { user } = useAuth();
   const { deleteComment, likeComment, addComment } = useComments();
+  const { addNotification } = useNotifications();
   
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [replyEmail, setReplyEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const article = articles.find(a => a.id === articleId);
 
   const formatTime = (timestamp: number) => {
     const now = Date.now();
@@ -173,8 +199,23 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 200));
     
-    addComment(articleId, user?.username || 'Anonymous', replyText, comment.id);
+    const replyAuthorName = user?.username || 'Anonymous';
+    addComment(articleId, replyAuthorName, replyText, comment.id);
+    
+    // Send notification to the original commenter
+    addNotification({
+      type: 'reply',
+      articleId,
+      articleTitle: article ? (lang === 'rw' ? article.title_rw : article.title_en) : 'Article',
+      articleSlug: article?.slug || '',
+      commentId: comment.id,
+      fromUser: replyAuthorName,
+      message: `${replyAuthorName} replied to your comment: "${replyText.substring(0, 50)}${replyText.length > 50 ? '...' : ''}"`,
+      email: replyEmail || undefined,
+    });
+    
     setReplyText('');
+    setReplyEmail('');
     setShowReplyForm(false);
     setIsSubmitting(false);
   };
@@ -248,27 +289,36 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
               exit={{ opacity: 0, height: 0 }}
               className="mt-3 overflow-hidden"
             >
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <input
-                  type="text"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder={lang === 'rw' ? 'Andika igisubizo...' : 'Write a reply...'}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleReply();
-                    }
-                  }}
+                  type="email"
+                  value={replyEmail}
+                  onChange={(e) => setReplyEmail(e.target.value)}
+                  placeholder={lang === 'rw' ? 'Email (kugira ngo umve notifications)' : 'Email (to get notified)'}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
-                <button
-                  onClick={handleReply}
-                  disabled={!replyText.trim() || isSubmitting}
-                  className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder={lang === 'rw' ? 'Andika igisubizo...' : 'Write a reply...'}
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleReply();
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleReply}
+                    disabled={!replyText.trim() || isSubmitting}
+                    className="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}

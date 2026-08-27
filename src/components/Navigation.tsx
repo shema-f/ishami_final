@@ -1,9 +1,10 @@
 import { Link, useLocation } from 'react-router';
-import { Menu, X, ChevronRight, Globe, User } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe, User, Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
+import { useNotifications } from '../contexts/NotificationsContext';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,7 @@ export default function Navigation() {
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const { t, lang, setLang } = useTranslation();
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,6 +117,19 @@ export default function Navigation() {
 
           {/* Right Section */}
           <div className="hidden lg:flex items-center space-x-4">
+            {/* Notifications Bell */}
+            <Link
+              to="/notifications"
+              className="relative p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors"
+            >
+              <Bell className="w-5 h-5 text-slate-300" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </Link>
+
             {isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <Link
@@ -227,6 +242,23 @@ export default function Navigation() {
               ))}
               
               <div className="pt-4 space-y-3 border-t border-slate-700/50">
+                {/* Notifications Link (Mobile) */}
+                <Link
+                  to="/notifications"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Bell className="w-4 h-4" />
+                    <span>{t('nav.notifications')}</span>
+                  </div>
+                  {unreadCount > 0 && (
+                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs rounded-full font-bold">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+
                 {isAuthenticated ? (
                   <>
                     <Link

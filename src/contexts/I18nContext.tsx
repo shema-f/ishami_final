@@ -14,6 +14,7 @@ const translations: Translations = {
   'nav.leaderboard':     { en: 'Leaderboard', rw: 'Leaderboard' },
   'nav.blog':            { en: 'Blog', rw: 'Inyandiko' },
   'nav.bookmarks':       { en: 'Bookmarks', rw: 'Amabiko' },
+  'nav.notifications':   { en: 'Notifications', rw: 'Notifications' },
   'nav.signIn':          { en: 'Sign In', rw: 'Injira' },
   'nav.getStarted':      { en: 'Get Started', rw: 'Tangira Ubu' },
   'nav.signOut':         { en: 'Sign Out', rw: 'Sohoka' },
