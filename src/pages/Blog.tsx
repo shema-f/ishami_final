@@ -5,7 +5,9 @@ import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, 
 import { articles, type Article } from '../data/articles';
 import { useTranslation } from '../contexts/I18nContext';
 import { useBookmarks } from '../contexts/BookmarksContext';
+import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeContext';
 import Comments from '../components/Comments';
+import ReadingModeToggle from '../components/ReadingModeToggle';
 
 function ArticleCard({ article }: { article: Article }) {
   const { lang } = useTranslation();
@@ -291,11 +293,11 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
       </div>
     </motion.div>
   );
-}
-
-function ArticleDetail({ article }: { article: Article }) {
+}function ArticleDetail({ article }: { article: Article }) {
   const { lang } = useTranslation();
   const { isBookmarked, addBookmark, removeBookmark, addToHistory } = useBookmarks();
+  const { readingMode } = useReadingMode();
+  const styles = getReadingModeStyles(readingMode);
   const bookmarked = isBookmarked(article.id);
 
   const content = lang === 'rw' ? article.content_rw : article.content_en;
@@ -325,8 +327,9 @@ function ArticleDetail({ article }: { article: Article }) {
     }
   };
 
+
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className={`min-h-screen py-8 px-4 transition-colors duration-300 ${styles.container}`}>
       <ReadingProgress />
       <div className="max-w-4xl mx-auto pt-16">
         {/* Back Button */}
@@ -378,7 +381,7 @@ function ArticleDetail({ article }: { article: Article }) {
             </div>
           </div>
 
-          {/* Bookmark and Share Buttons */}
+          {/* Bookmark, Share, and Reading Mode Buttons */}
           <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
             {/* Bookmark Button */}
             <button
@@ -386,7 +389,7 @@ function ArticleDetail({ article }: { article: Article }) {
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium ${
                 bookmarked 
                   ? 'bg-blue-500/20 border border-blue-500/30 text-blue-400' 
-                  : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                  : `${styles.card} border ${styles.border} ${styles.textSecondary} hover:${styles.text}`
               }`}
             >
               {bookmarked ? (
@@ -401,6 +404,9 @@ function ArticleDetail({ article }: { article: Article }) {
                 </>
               )}
             </button>
+
+            {/* Reading Mode Toggle */}
+            <ReadingModeToggle />
           </div>
 
           {/* Social Share Buttons */}
@@ -428,23 +434,23 @@ function ArticleDetail({ article }: { article: Article }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 sm:p-12 mb-12"
+          className={`${styles.card} backdrop-blur-xl rounded-3xl border ${styles.border} p-8 sm:p-12 mb-12 transition-colors duration-300`}
         >
           <div className="prose prose-invert prose-blue max-w-none">
             {content.split('\n').map((line, i) => {
               if (line.startsWith('## ')) {
-                return <h2 key={i} className="text-2xl font-bold text-white mt-8 mb-4 font-[family-name:var(--font-heading)]">{line.replace('## ', '')}</h2>;
+                return <h2 key={i} className={`text-2xl font-bold ${styles.heading} mt-8 mb-4 font-[family-name:var(--font-heading)]`}>{line.replace('## ', '')}</h2>;
               }
               if (line.startsWith('### ')) {
-                return <h3 key={i} className="text-xl font-bold text-white mt-6 mb-3 font-[family-name:var(--font-heading)]">{line.replace('### ', '')}</h3>;
+                return <h3 key={i} className={`text-xl font-bold ${styles.heading} mt-6 mb-3 font-[family-name:var(--font-heading)]`}>{line.replace('### ', '')}</h3>;
               }
               if (line.startsWith('- **')) {
                 const parts = line.replace('- **', '').split('**');
                 return (
                   <div key={i} className="flex items-start gap-3 mb-2 ml-4">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <p className="text-gray-300">
-                      <strong className="text-white">{parts[0]}</strong>
+                    <span className={`${styles.accent} mt-1`}>•</span>
+                    <p className={styles.text}>
+                      <strong className={styles.heading}>{parts[0]}</strong>
                       {parts[1] || ''}
                     </p>
                   </div>
@@ -453,16 +459,16 @@ function ArticleDetail({ article }: { article: Article }) {
               if (line.startsWith('- ')) {
                 return (
                   <div key={i} className="flex items-start gap-3 mb-2 ml-4">
-                    <span className="text-blue-400 mt-1">•</span>
-                    <p className="text-gray-300">{line.replace('- ', '')}</p>
+                    <span className={`${styles.accent} mt-1`}>•</span>
+                    <p className={styles.text}>{line.replace('- ', '')}</p>
                   </div>
                 );
               }
               if (line.match(/^\d+\. /)) {
                 return (
                   <div key={i} className="flex items-start gap-3 mb-2 ml-4">
-                    <span className="text-blue-400 font-bold mt-0.5">{line.match(/^(\d+)\./)?.[1]}.</span>
-                    <p className="text-gray-300">{line.replace(/^\d+\. /, '')}</p>
+                    <span className={`${styles.accent} font-bold mt-0.5`}>{line.match(/^(\d+)\./)?.[1]}.</span>
+                    <p className={styles.text}>{line.replace(/^\d+\. /, '')}</p>
                   </div>
                 );
               }
@@ -472,7 +478,7 @@ function ArticleDetail({ article }: { article: Article }) {
               if (line.trim() === '') {
                 return <div key={i} className="h-2" />;
               }
-              return <p key={i} className="text-gray-300 mb-2 leading-relaxed">{line}</p>;
+              return <p key={i} className={`${styles.text} mb-2 leading-relaxed`}>{line}</p>;
             })}
           </div>
         </motion.div>
