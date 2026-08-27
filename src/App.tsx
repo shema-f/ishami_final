@@ -7,6 +7,7 @@ import { BookmarksProvider } from './contexts/BookmarksContext';
 import { CommentsProvider } from './contexts/CommentsContext';
 import { ReadingModeProvider } from './contexts/ReadingModeContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
+import { ArticleAnalyticsProvider } from './contexts/ArticleAnalyticsContext';
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
             <CommentsProvider>
               <ReadingModeProvider>
                 <NotificationsProvider>
-                  <RouterProvider router={router} />
+                  <ArticleAnalyticsProvider>
+                    <RouterProvider router={router} />
+                  </ArticleAnalyticsProvider>
                 </NotificationsProvider>
               </ReadingModeProvider>
             </CommentsProvider>

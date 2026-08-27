@@ -1,16 +1,19 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
-import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X } from 'lucide-react';
+import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X, Eye } from 'lucide-react';
 import { articles, type Article } from '../data/articles';
 import { useTranslation } from '../contexts/I18nContext';
 import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeContext';
 import Comments from '../components/Comments';
 import ReadingModeToggle from '../components/ReadingModeToggle';
 import BlogSidebar from '../components/BlogSidebar';
+import { useArticleAnalytics } from '../contexts/ArticleAnalyticsContext';
 
 function ArticleCard({ article }: { article: Article }) {
   const { lang } = useTranslation();
+  const { getArticleStats } = useArticleAnalytics();
+  const stats = getArticleStats(article.id);
 
   return (
     <Link to={`/blog/${article.slug}`}>
@@ -44,6 +47,15 @@ function ArticleCard({ article }: { article: Article }) {
             </span>
             <span>·</span>
             <span>{new Date(article.date).toLocaleDateString()}</span>
+            {stats.totalViews > 0 && (
+              <>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Eye className="w-3 h-3" />
+                  {stats.totalViews}
+                </span>
+              </>
+            )}
           </div>
 
           <h3 className="text-white text-lg font-bold mb-2 font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors line-clamp-2">
@@ -270,10 +282,38 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
   const { lang } = useTranslation();
   const { readingMode } = useReadingMode();
   const styles = getReadingModeStyles(readingMode);
+  const { trackView, updateViewDuration, markCompleted, getArticleStats } = useArticleAnalytics();
 
   const content = lang === 'rw' ? article.content_rw : article.content_en;
   const title = lang === 'rw' ? article.title_rw : article.title_en;
   const readTime = calculateReadingTime(content);
+  const stats = getArticleStats(article.id);
+
+  // Track view on mount
+  useEffect(() => {
+    trackView(article.id);
+    const startTime = Date.now();
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight > 0) {
+        const percentage = Math.round((scrollTop / docHeight) * 100);
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        updateViewDuration(article.id, duration);
+        if (percentage >= 80) {
+          markCompleted(article.id);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      updateViewDuration(article.id, duration);
+    };
+  }, [article.id, trackView, updateViewDuration, markCompleted]);
 
 
   return (
@@ -310,6 +350,15 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
               {lang === 'rw' ? `${readTime} min isoma` : `${readTime} min read`}
             </span>
             <span>{new Date(article.date).toLocaleDateString()}</span>
+            {stats.totalViews > 0 && (
+              <>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Eye className="w-3 h-3" />
+                  {stats.totalViews} {lang === 'rw' ? 'amategeko' : 'views'}
+                </span>
+              </>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
