@@ -9,7 +9,7 @@ type LeaderboardEntry = { userId: string; username: string; bestScore: number; q
 const formatName = (name: string) => name || 'Unknown';
 
 export default function Leaderboard() {
-  const { lang } = useTranslation();
+  const { t, lang } = useTranslation();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +52,7 @@ export default function Leaderboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading leaderboard...</p>
+          <p className="text-gray-400">{t('lb.loading', 'Loading leaderboard...')}</p>
         </div>
       </div>
     );
@@ -74,10 +74,10 @@ export default function Leaderboard() {
             <Trophy className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-            Leaderboard
+            {t('lb.title', 'Leaderboard')}
           </h1>
           <p className="text-gray-400 text-lg">
-            Top performers in Rwanda Traffic Rules mastery
+            {t('lb.subtitle', 'Top performers in Rwanda Traffic Rules mastery')}
           </p>
         </motion.div>
 
@@ -98,15 +98,15 @@ export default function Leaderboard() {
             <div className="flex items-center gap-4">
               <Zap className="w-8 h-8" />
               <div>
-                <h3 className="font-semibold mb-1">Climb the Rankings!</h3>
+                <h3 className="font-semibold mb-1">{t('lb.motivation.title', 'Climb the Rankings!')}</h3>
                 <p className="text-blue-100 text-sm">
-                  Complete quizzes daily to maintain your streak and earn badges
+                  {t('lb.motivation.description', 'Complete quizzes daily to maintain your streak and earn badges')}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-blue-100">
               <TrendingUp className="w-5 h-5" />
-              <span className="text-sm">Updated in real-time</span>
+              <span className="text-sm">{t('lb.motivation.real_time', 'Updated in real-time')}</span>
             </div>
           </div>
         </motion.div>
@@ -121,32 +121,32 @@ export default function Leaderboard() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Share2 className="w-5 h-5 text-blue-400" />
-              <span className="text-white text-sm">Share this leaderboard</span>
+              <span className="text-white text-sm">{t('lb.share.title', 'Share this leaderboard')}</span>
             </div>
             <div className="flex items-center flex-wrap gap-2">
               <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent('ISHAMI App Leaderboard — Can you beat me?')}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(t('lb.share.share_text', 'ISHAMI App Leaderboard — Can you beat me?'))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-500 transition-colors"
               >
                 <Facebook className="w-4 h-4" />
-                Facebook
+                {t('lb.share.facebook', 'Facebook')}
               </a>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent('ISHAMI App Leaderboard — Can you beat me? ' + shareUrl)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(t('lb.share.share_text', 'ISHAMI App Leaderboard — Can you beat me?') + ' ' + shareUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white text-xs hover:bg-green-500 transition-colors"
               >
-                WhatsApp
+                {t('lb.share.whatsapp', 'WhatsApp')}
               </a>
               <button
                 onClick={doCopy}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-white text-xs hover:bg-white/20 transition-colors"
               >
                 <Copy className="w-4 h-4" />
-                {copied ? 'Copied!' : 'Copy Link'}
+                {copied ? t('lb.share.copied', 'Copied!') : t('lb.share.copy_link', 'Copy Link')}
               </button>
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function Leaderboard() {
                 {formatName(top3[1]?.username || '')}
               </h3>
               <p className="text-2xl font-bold text-blue-400 font-[family-name:var(--font-mono)]">{top3[1]?.bestScore ?? '-'}</p>
-              <p className="text-xs text-gray-500">best score</p>
+              <p className="text-xs text-gray-500">{t('lb.table.best_score_label', 'best score')}</p>
             </motion.div>
           </div>
 
@@ -189,7 +189,7 @@ export default function Leaderboard() {
                 {formatName(top3[0]?.username || '')}
               </h3>
               <p className="text-3xl font-bold text-white font-[family-name:var(--font-mono)]">{top3[0]?.bestScore ?? '-'}</p>
-              <p className="text-sm text-yellow-100">best score</p>
+              <p className="text-sm text-yellow-100">{t('lb.table.best_score_label', 'best score')}</p>
             </motion.div>
           </div>
 
@@ -206,7 +206,7 @@ export default function Leaderboard() {
                 {formatName(top3[2]?.username || '')}
               </h3>
               <p className="text-2xl font-bold text-orange-400 font-[family-name:var(--font-mono)]">{top3[2]?.bestScore ?? '-'}</p>
-              <p className="text-xs text-gray-500">best score</p>
+              <p className="text-xs text-gray-500">{t('lb.table.best_score_label', 'best score')}</p>
             </motion.div>
           </div>
         </motion.div>
@@ -222,12 +222,12 @@ export default function Leaderboard() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">Rank</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">User</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400">Best Score</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden sm:table-cell">Quizzes</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">Total Marks</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">Average</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.rank', 'Rank')}</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.user', 'User')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400">{t('lb.table.best_score', 'Best Score')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden sm:table-cell">{t('lb.table.quizzes', 'Quizzes')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">{t('lb.table.total_marks', 'Total Marks')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">{t('lb.table.average', 'Average')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -311,14 +311,13 @@ export default function Leaderboard() {
               <div className="flex-1 text-center md:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-4">
                   <Award className="w-4 h-4 text-yellow-400" />
-                  <span className="text-sm text-yellow-400 font-medium">Earn Your Certificate</span>
+                  <span className="text-sm text-yellow-400 font-medium">{t('lb.certification_cta.badge', 'Earn Your Certificate')}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 font-[family-name:var(--font-heading)]">
-                  Ready to Get Certified?
+                  {t('lb.certification_cta.title', 'Ready to Get Certified?')}
                 </h3>
                 <p className="text-slate-400 max-w-lg">
-                  Top the leaderboard and earn your official ISHAMI Certificate of Completion.
-                  Share it with employers or verify it online.
+                  {t('lb.certification_cta.description', 'Top the leaderboard and earn your official ISHAMI Certificate of Completion. Share it with employers or verify it online.')}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -327,7 +326,7 @@ export default function Leaderboard() {
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/25 transition-all duration-300"
                 >
                   <Trophy className="w-5 h-5" />
-                  <span>Take a Quiz</span>
+                  <span>{t('lb.certification_cta.take_quiz', 'Take a Quiz')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
@@ -335,7 +334,7 @@ export default function Leaderboard() {
                   className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300"
                 >
                   <Shield className="w-5 h-5 text-yellow-400" />
-                  <span>View Certificate</span>
+                  <span>{t('lb.certification_cta.view_certificate', 'View Certificate')}</span>
                 </Link>
               </div>
             </div>
@@ -350,14 +349,14 @@ export default function Leaderboard() {
           className="mt-8 text-center"
         >
           <p className="text-gray-400 mb-4">
-            Think you can make it to the top?
+            {t('lb.cta.description', 'Think you can make it to the top?')}
           </p>
           <Link
             to="/quiz"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300"
           >
             <Trophy className="w-5 h-5" />
-            <span>Start Climbing</span>
+            <span>{t('lb.cta.button', 'Start Climbing')}</span>
             <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>

@@ -1170,16 +1170,16 @@ export default function Simulation() {
         <div className="max-w-md text-center">
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-            3D Simulation Not Available
+            {t('sim.not_available.title', '3D Simulation Not Available')}
           </h2>
           <p className="text-slate-400 mb-4">
-            The driving simulation requires a device with 3D graphics support. Please use a desktop computer or laptop.
+            {t('sim.not_available.description', 'The driving simulation requires a device with 3D graphics support. Please use a desktop computer or laptop.')}
           </p>
           <button
             onClick={() => navigate('/simulation')}
             className="px-6 py-3 rounded-xl bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors"
           >
-            Return Home
+            {t('sim.not_available.return_home', 'Return Home')}
           </button>
         </div>
       </div>
@@ -1195,7 +1195,7 @@ export default function Simulation() {
           className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#111827]/80 backdrop-blur-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Back</span>
+          <span className="text-sm font-medium">{t('sim.back_button', 'Back')}</span>
         </button>
       </div>
 
@@ -1233,9 +1233,9 @@ export default function Simulation() {
                 <span className="text-2xl">🚗</span>
               </div>
               <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                Loading ISHAMI Simulator
+                {t('sim.loading.title', 'Loading ISHAMI Simulator')}
               </h2>
-              <p className="text-sm text-slate-400 mb-6">Preparing Kigali environment...</p>
+              <p className="text-sm text-slate-400 mb-6">{t('sim.loading.subtitle', 'Preparing Kigali environment...')}</p>
               <div className="w-64 mx-auto">
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
@@ -1267,9 +1267,9 @@ export default function Simulation() {
               className="absolute bottom-10 left-1/2 -translate-x-1/2"
             >
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/10">
-                <span className="text-xs text-white/60">Press</span>
-                <kbd className="px-2 py-0.5 bg-white/10 rounded text-xs text-white font-bold">ENTER</kbd>
-                <span className="text-xs text-white/60">to skip</span>
+                <span className="text-xs text-white/60">{t('sim.skip_hint.press', 'Press')}</span>
+                <kbd className="px-2 py-0.5 bg-white/10 rounded text-xs text-white font-bold">{t('sim.skip_hint.enter', 'ENTER')}</kbd>
+                <span className="text-xs text-white/60">{t('sim.skip_hint.to_skip', 'to skip')}</span>
               </div>
             </motion.div>
             <motion.div
@@ -1279,7 +1279,7 @@ export default function Simulation() {
               className="text-center"
             >
               <div className="text-xs text-blue-400 uppercase tracking-[0.3em] font-bold mb-2">
-                Driving Training Area
+                {t('sim.cinematic.driving_area', 'Driving Training Area')}
               </div>
               <h1 className="text-5xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
                 KIGALI
@@ -1293,10 +1293,10 @@ export default function Simulation() {
               className="text-center mt-4"
             >
               <div className="text-xs text-amber-400 uppercase tracking-[0.2em] font-bold mb-1">
-                Guided Start
+                {t('sim.guided_start', 'Guided Start')}
               </div>
               <div className="text-lg text-slate-400" style={{ fontFamily: 'var(--font-heading)' }}>
-                Gutangira Gutwara
+                {t('scen.1.title', 'Gutangira Gutwara')}
               </div>
             </motion.div>
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0d1117] to-transparent" />
@@ -1405,7 +1405,7 @@ export default function Simulation() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 hover:bg-white/10 transition-all text-sm font-medium"
               >
                 <FastForward className="w-4 h-4" />
-                Skip to Driving
+                {t('sim.guided_start', 'Skip to Driving')}
                 <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-[10px] text-slate-500 ml-1">TAB</kbd>
               </button>
             </motion.div>
@@ -1420,7 +1420,7 @@ export default function Simulation() {
             >
               <div className="bg-[#111827]/90 backdrop-blur-lg rounded-2xl border border-white/10 px-6 py-3 text-center">
                 <div className="text-xs font-bold text-white uppercase tracking-wider mb-2">
-                  ⌨️ Controls
+                  ⌨️ {lang === 'rw' ? 'Ubuyobozi' : 'Controls'}
                 </div>
                 <div className="grid grid-cols-3 gap-x-6 gap-y-1 text-[11px] text-slate-400">
                   <span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">W/S</kbd> Gas / Brake</span>
@@ -1489,7 +1489,7 @@ export default function Simulation() {
                 onClick={skipToDriving}
                 className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-500/30 backdrop-blur-lg border border-blue-500/40 text-white font-bold text-sm active:scale-95 transition-transform"
               >
-                ⏩ Skip to Driving
+                ⏩ {t('sim.guided_start', 'Skip to Driving')}
               </button>
             </motion.div>
           )}

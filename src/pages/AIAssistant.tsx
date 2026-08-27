@@ -4,6 +4,7 @@ import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, Al
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { aiAPI, conversationAPI } from '../services/api';
+import { useTranslation } from '../contexts/I18nContext';
 
 interface AIStructured {
   language?: 'en' | 'rw' | 'mixed';
@@ -81,6 +82,7 @@ const detectUiLangHint = (text: string) => {
 
 export default function AIAssistant() {
   const { user } = useAuth();
+  const { t, lang } = useTranslation();
   const {
     conversations,
     activeConversation,
@@ -394,9 +396,9 @@ export default function AIAssistant() {
   const ConfidenceBadge = ({ c }: { c?: 'high' | 'medium' | 'low' }) => {
     if (!c) return null;
     const map = {
-      high: { color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', label: uiLang === 'rw' ? 'Kumenya neza' : 'High confidence' },
-      medium: { color: 'bg-amber-500/20 text-amber-300 border-amber-500/30', label: uiLang === 'rw' ? 'Guteranya' : 'Medium confidence' },
-      low: { color: 'bg-rose-500/20 text-rose-300 border border-rose-500/30', label: uiLang === 'rw' ? 'Nta mpuhwe' : 'Low confidence' },
+      high: { color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30', label: t('ai.confidence.high', 'High confidence') },
+      medium: { color: 'bg-amber-500/20 text-amber-300 border-amber-500/30', label: t('ai.confidence.medium', 'Medium confidence') },
+      low: { color: 'bg-rose-500/20 text-rose-300 border border-rose-500/30', label: t('ai.confidence.low', 'Low confidence') },
     };
     const { color, label } = map[c] || map.medium;
     return (
@@ -461,7 +463,7 @@ export default function AIAssistant() {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
             >
               <Plus className="w-5 h-5" />
-              {uiLang === 'rw' ? "Igifunguro gishya" : "New Chat"}
+              {t('ai.new_chat', 'New Chat')}
             </button>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -469,7 +471,7 @@ export default function AIAssistant() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={uiLang === 'rw' ? "Rondera inyandiko..." : "Search chats..."}
+                placeholder={t('ai.search_chats_placeholder', 'Search chats...')}
                 className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-green-500/50 transition-all"
               />
               {searchQuery && (
@@ -488,7 +490,7 @@ export default function AIAssistant() {
               <div className="text-center py-8">
                 <Search className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                 <p className="text-sm text-gray-500">
-                  {uiLang === 'rw' ? "Nta ntindiro yabonetse" : "No conversations found"}
+                  {t('ai.no_conversations', 'No conversations found')}
                 </p>
               </div>
             )}
@@ -511,14 +513,14 @@ export default function AIAssistant() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{conv.title}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(conv.updatedAt).toLocaleDateString()} · {conv.messages.length} {uiLang === 'rw' ? "ubusobanuro" : "messages"}
+                      {new Date(conv.updatedAt).toLocaleDateString()} · {conv.messages.length} {t('ai.messages', 'messages')}
                     </p>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                     <button
                       onClick={(e) => handleShare(e, conv.id)}
                       className={`p-1 transition-all ${shareStatus[conv.id] ? 'text-green-400 hover:text-green-300' : 'text-gray-500 hover:text-green-400'}`}
-                      title={shareStatus[conv.id] ? (copiedToken === shareStatus[conv.id] ? 'Copied!' : 'Copy link') : 'Share'}
+                      title={shareStatus[conv.id] ? (copiedToken === shareStatus[conv.id] ? t('ai.copied', 'Copied!') : t('ai.copy_link', 'Copy link')) : t('ai.share', 'Share')}
                     >
                       {shareStatus[conv.id] ? <Link className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
                     </button>
@@ -542,7 +544,7 @@ export default function AIAssistant() {
                 className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-300 hover:bg-white/10 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Download className="w-3.5 h-3.5" />
-                {uiLang === 'rw' ? "Kurura" : "Export"}
+                {t('ai.export', 'Export')}
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -551,8 +553,8 @@ export default function AIAssistant() {
               >
                 <Upload className="w-3.5 h-3.5" />
                 {importing
-                  ? (uiLang === 'rw' ? 'Birimo...' : 'Importing...')
-                  : (uiLang === 'rw' ? 'Shyira' : 'Import')}
+                  ? t('ai.importing', 'Importing...')
+                  : t('ai.import', 'Import')}
               </button>
               <input
                 ref={fileInputRef}
@@ -563,7 +565,7 @@ export default function AIAssistant() {
               />
             </div>
             <div className="text-xs text-gray-500 text-center">
-              {conversations.length} {uiLang === 'rw' ? "imitindire y'ubusobanuro" : `conversation${conversations.length !== 1 ? 's' : ''}`}
+              {conversations.length} {t('ai.conversation_count', `conversation${conversations.length !== 1 ? 's' : ''}`).replace('{count}', String(conversations.length))}
             </div>
           </div>
         </div>
@@ -587,19 +589,19 @@ export default function AIAssistant() {
                 </div>
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Moto-Sensei</h1>
+            <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('ai.title', 'Moto-Sensei')}</h1>
             <p className="text-gray-400">
-              {uiLang === 'rw' ? "Umunyamwuga w'Amategeko y'Umuhanda — Rwanda" : "Rwanda Traffic Rules AI Instructor"}
+              {t('ai.subtitle', 'Rwanda Traffic Rules AI Instructor')}
             </p>
             <div className="flex flex-wrap justify-center items-center gap-2 mt-3 text-[11px] text-gray-400">
               <span className="inline-flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
-                <Languages className="w-3 h-3" /> Kinyarwanda + English
+                <Languages className="w-3 h-3" /> {t('ai.badges.languages', 'Kinyarwanda + English')}
               </span>
               <span className="inline-flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
-                <Shield className="w-3 h-3" /> {uiLang === 'rw' ? "Kubera umutekano" : "Safety validated"}
+                <Shield className="w-3 h-3" /> {t('ai.badges.safety_validated', 'Safety validated')}
               </span>
               <span className="inline-flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
-                <BookOpen className="w-3 h-3" /> {uiLang === 'rw' ? "Imyandiko isigaye" : "Verified knowledge"}
+                <BookOpen className="w-3 h-3" /> {t('ai.badges.verified_knowledge', 'Verified knowledge')}
               </span>
               {aiStatus && (
                 <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 rounded-full px-2 py-0.5">
@@ -609,7 +611,7 @@ export default function AIAssistant() {
             </div>
             {!user?.isPro && (
               <p className="text-sm text-yellow-400 mt-2 font-medium">
-                {5 - questionCount} {uiLang === 'rw' ? "ibibazo bisigaye (bisanze)" : "free questions remaining"}
+                {t('ai.free_questions', '{count} free questions remaining').replace('{count}', String(5 - questionCount))}
               </p>
             )}
           </motion.div>

@@ -7,9 +7,11 @@ import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { useAuth } from '../contexts/AuthContext';
 import { iremboAPI, paymentAPI } from '../services/api';
+import { useTranslation } from '../contexts/I18nContext';
 
 export default function Irembo() {
   const { user } = useAuth();
+  const { t, lang } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     nationalId: '',
@@ -44,32 +46,27 @@ export default function Irembo() {
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
 
-    // National ID validation (16 digits)
     if (!/^\d{16}$/.test(formData.nationalId)) {
-      newErrors.nationalId = 'National ID must be exactly 16 digits';
+      newErrors.nationalId = t('irembo.validation.national_id_digits', 'National ID must be exactly 16 digits');
     }
 
-    // Age check (extract year from ID - first 5 digits represent birth year + last 2 of century)
     const birthYear = parseInt('19' + formData.nationalId.substring(1, 3));
     const currentYear = new Date().getFullYear();
     const age = currentYear - birthYear;
     if (age < 16) {
-      newErrors.nationalId = 'You must be at least 16 years old';
+      newErrors.nationalId = t('irembo.validation.age_requirement', 'You must be at least 16 years old');
     }
 
-    // Phone validation (Rwandan format)
     if (!/^(\+250|0)(78|79|72|73)\d{7}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Rwandan phone number';
+      newErrors.phone = t('irembo.validation.phone_invalid', 'Please enter a valid Rwandan phone number');
     }
 
-    // Email validation
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('irembo.validation.email_invalid', 'Please enter a valid email address');
     }
 
-    // Terms acceptance
     if (!formData.termsAccepted) {
-      newErrors.termsAccepted = 'You must accept the terms and conditions';
+      newErrors.termsAccepted = t('irembo.validation.terms_required', 'You must accept the terms and conditions');
     }
 
     setErrors(newErrors);
@@ -88,8 +85,6 @@ export default function Irembo() {
     try {
       setProcessing(true);
       setPaymentError(null);
-      // Use Paypack for payment — 100 RWF in test mode
-      // Pass form data so backend can create the IremboApplication immediately
       const init = await paymentAPI.paypackCashin({
         amount: 100,
         phone: paymentPhone,
@@ -165,7 +160,6 @@ export default function Irembo() {
       [name]: type === 'checkbox' ? checked : value
     }));
 
-    // Clear error for this field
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -189,37 +183,36 @@ export default function Irembo() {
             </div>
             
             <h2 className="text-gray-900 dark:text-white mb-4">
-              Application Submitted Successfully!
+              {t('irembo.success.title', 'Application Submitted Successfully!')}
             </h2>
             
             <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Your Irembo driving test registration has been received.
+              {t('irembo.success.description', 'Your Irembo driving test registration has been received.')}
             </p>
 
-            {/* Payment & Application */}
             <div className="bg-gradient-to-br from-[#00A3AD]/10 to-purple-500/10 rounded-2xl p-6 mb-8">
-              <h3 className="text-gray-900 dark:text-white mb-4">Registration Details</h3>
+              <h3 className="text-gray-900 dark:text-white mb-4">{t('irembo.success.details_title', 'Registration Details')}</h3>
               
               <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Transaction:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('irembo.success.transaction', 'Transaction:')}</span>
                   <code className="px-3 py-1 bg-white dark:bg-gray-700 rounded-lg text-[#00A3AD]">
                     {txnId}
                   </code>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Amount:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('irembo.success.amount', 'Amount:')}</span>
                   <span className="text-gray-900 dark:text-white">5,500 RWF</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Application ID:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('irembo.success.application_id', 'Application ID:')}</span>
                   <span className="text-gray-900 dark:text-white">{applicationId || '—'}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Valid Until:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('irembo.success.valid_until', 'Valid Until:')}</span>
                   <span className="text-orange-500 flex items-center">
                     <Clock className="w-4 h-4 mr-1" />
                     {new Date(Date.now() + 8 * 60 * 60 * 1000).toLocaleString()}
@@ -230,7 +223,7 @@ export default function Irembo() {
 
             {paymentStatus === 'PENDING' && (
               <div className="mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
-                <p className="text-gray-900 dark:text-white">📱 Check your phone for USSD prompt to confirm payment...</p>
+                <p className="text-gray-900 dark:text-white">{t('irembo.success.check_phone', '📱 Check your phone for USSD prompt to confirm payment...')}</p>
               </div>
             )}
             {paymentError && (
@@ -239,17 +232,16 @@ export default function Irembo() {
               </div>
             )}
 
-            {/* Important Notice */}
             <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-6">
               <div className="flex items-start space-x-3">
                 <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div className="text-left">
-                  <h4 className="text-orange-900 dark:text-orange-100 mb-2">Important:</h4>
+                  <h4 className="text-orange-900 dark:text-orange-100 mb-2">{t('irembo.success.important_title', 'Important:')}</h4>
                   <ul className="text-orange-800 dark:text-orange-200 text-sm space-y-1">
-                    <li>• Approve the payment prompt within 8 hours</li>
-                    <li>• If payment is not completed, your slot will be released</li>
-                    <li>• You will receive an SMS confirmation after payment</li>
-                    <li>• If no SMS within 2 hours, contact us at support@ishami.rw</li>
+                    <li>• {t('irembo.success.important_items.approve', 'Approve the payment prompt within 8 hours')}</li>
+                    <li>• {t('irembo.success.important_items.slot_release', 'If payment is not completed, your slot will be released')}</li>
+                    <li>• {t('irembo.success.important_items.sms_confirmation', 'You will receive an SMS confirmation after payment')}</li>
+                    <li>• {t('irembo.success.important_items.no_sms', 'If no SMS within 2 hours, contact us at support@ishami.rw')}</li>
                   </ul>
                 </div>
               </div>
@@ -272,7 +264,7 @@ export default function Irembo() {
               }}
               className="px-8 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl hover:shadow-xl hover:shadow-[#00A3AD]/50 transition-all duration-300"
             >
-              Submit Another Application
+              {t('irembo.success.submit_another', 'Submit Another Application')}
             </button>
           </div>
         </motion.div>
@@ -293,12 +285,12 @@ export default function Irembo() {
             <FileCheck className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-gray-900 dark:text-white mb-4">
-            Irembo Driving Test Registration
+            {t('irembo.title', 'Irembo Driving Test Registration')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
-            We'll help you register for your driving code exam through Irembo
+            {t('irembo.subtitle', "We'll help you register for your driving code exam through Irembo")}
             <span className="block mt-1 text-[#00A3AD]">
-              Service Fee: 5,500 RWF
+              {t('irembo.service_fee', 'Service Fee: 5,500 RWF')}
             </span>
           </p>
         </motion.div>
@@ -313,12 +305,12 @@ export default function Irembo() {
           <div className="flex items-start space-x-3">
             <AlertCircle className="w-6 h-6 text-blue-500 flex-shrink-0" />
             <div>
-              <h3 className="text-blue-900 dark:text-blue-100 mb-2">Before You Start:</h3>
+              <h3 className="text-blue-900 dark:text-blue-100 mb-2">{t('irembo.info_banner.title', 'Before You Start:')}</h3>
               <ul className="text-blue-800 dark:text-blue-200 text-sm space-y-1">
-                <li>• You must be at least 16 years old</li>
-                <li>• National ID is required (passports not accepted)</li>
-                <li>• Ensure your phone number is active for SMS notifications</li>
-                <li>• Processing time: Within 8 hours of payment</li>
+                <li>• {t('irembo.info_banner.items.age', 'You must be at least 16 years old')}</li>
+                <li>• {t('irembo.info_banner.items.national_id', 'National ID is required (passports not accepted)')}</li>
+                <li>• {t('irembo.info_banner.items.phone', 'Ensure your phone number is active for SMS notifications')}</li>
+                <li>• {t('irembo.info_banner.items.processing', 'Processing time: Within 8 hours of payment')}</li>
               </ul>
             </div>
           </div>
@@ -335,14 +327,14 @@ export default function Irembo() {
             {/* Full Name */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Full Legal Name *
+                {t('irembo.form.full_name', 'Full Legal Name *')}
               </label>
               <input
                 type="text"
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="Enter your full name as on ID"
+                placeholder={t('irembo.form.full_name_placeholder', 'Enter your full name as on ID')}
                 required
                 className="w-full px-4 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
               />
@@ -351,14 +343,14 @@ export default function Irembo() {
             {/* National ID */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                National ID Number *
+                {t('irembo.form.national_id', 'National ID Number *')}
               </label>
               <input
                 type="text"
                 name="nationalId"
                 value={formData.nationalId}
                 onChange={handleChange}
-                placeholder="16-digit National ID"
+                placeholder={t('irembo.form.national_id_placeholder', '16-digit National ID')}
                 required
                 maxLength={16}
                 className={`w-full px-4 py-4 bg-white dark:bg-gray-700 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white ${
@@ -377,14 +369,14 @@ export default function Irembo() {
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
                 <Phone className="w-4 h-4 inline mr-2" />
-                Phone Number *
+                {t('irembo.form.phone', 'Phone Number *')}
               </label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+250 78X XXX XXX"
+                placeholder={t('irembo.form.phone_placeholder', '+250 78X XXX XXX')}
                 required
                 className={`w-full px-4 py-4 bg-white dark:bg-gray-700 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white ${
                   errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-[#00A3AD]'
@@ -402,14 +394,14 @@ export default function Irembo() {
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
                 <Mail className="w-4 h-4 inline mr-2" />
-                Email Address *
+                {t('irembo.form.email', 'Email Address *')}
               </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="your.email@example.com"
+                placeholder={t('irembo.form.email_placeholder', 'your.email@example.com')}
                 required
                 className={`w-full px-4 py-4 bg-white dark:bg-gray-700 border rounded-xl focus:outline-none focus:ring-2 text-gray-900 dark:text-white ${
                   errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-600 focus:ring-[#00A3AD]'
@@ -426,7 +418,7 @@ export default function Irembo() {
             {/* Language Preference */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Preferred Language *
+                {t('irembo.form.language', 'Preferred Language *')}
               </label>
               <select
                 name="language"
@@ -443,7 +435,7 @@ export default function Irembo() {
             {/* Test Mode */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                Test Mode *
+                {t('irembo.form.test_mode', 'Test Mode *')}
               </label>
               <select
                 name="testMode"
@@ -460,7 +452,7 @@ export default function Irembo() {
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
                 <MapPin className="w-4 h-4 inline mr-2" />
-                Test Center (District) *
+                {t('irembo.form.district', 'Test Center (District) *')}
               </label>
               <select
                 name="district"
@@ -469,7 +461,7 @@ export default function Irembo() {
                 required
                 className="w-full px-4 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A3AD] text-gray-900 dark:text-white"
               >
-                <option value="">Select your district</option>
+                <option value="">{t('irembo.form.district_placeholder', 'Select your district')}</option>
                 {districts.map((district) => (
                   <option key={district} value={district}>
                     {district}
@@ -482,7 +474,7 @@ export default function Irembo() {
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
                 <Calendar className="w-4 h-4 inline mr-2" />
-                Preferred Test Date *
+                {t('irembo.form.test_date', 'Preferred Test Date *')}
               </label>
               <input
                 type="date"
@@ -506,9 +498,8 @@ export default function Irembo() {
                   className="w-5 h-5 text-[#00A3AD] border-gray-300 rounded focus:ring-[#00A3AD] mt-0.5"
                 />
                 <span className="text-gray-700 dark:text-gray-300 text-sm">
-                  I confirm that all information provided is correct and I accept that 
-                  passports or replacement ID certificates are not accepted. I agree to the 
-                  <a href="#" className="text-[#00A3AD] hover:underline"> terms and conditions</a>.
+                  {t('irembo.form.terms', 'I confirm that all information provided is correct and I accept that passports or replacement ID certificates are not accepted. I agree to the')}{' '}
+                  <a href="#" className="text-[#00A3AD] hover:underline">{t('irembo.form.terms_link', 'terms and conditions')}</a>.
                 </span>
               </label>
               {errors.termsAccepted && (
@@ -526,7 +517,7 @@ export default function Irembo() {
               disabled={processing}
             >
               <FileCheck className="w-5 h-5" />
-              <span>{processing ? 'Processing…' : 'Submit Registration - 5,500 RWF'}</span>
+              <span>{processing ? t('irembo.form.processing', 'Processing…') : t('irembo.form.submit_button', 'Submit Registration - 5,500 RWF')}</span>
             </button>
           </form>
         </motion.div>
@@ -539,11 +530,11 @@ export default function Irembo() {
           className="mt-8 text-center text-gray-600 dark:text-gray-400"
         >
           <p>
-            Need help? Contact us at{' '}
+            {t('irembo.contact.need_help', 'Need help? Contact us at')}{' '}
             <a href="mailto:support@ishami.rw" className="text-[#00A3AD] hover:underline">
               support@ishami.rw
             </a>{' '}
-            or call{' '}
+            {t('irembo.contact.or_call', 'or call')}{' '}
             <a href="tel:+250788000000" className="text-[#00A3AD] hover:underline">
               +250 788 000 000
             </a>
@@ -554,29 +545,29 @@ export default function Irembo() {
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Confirm Payment</DialogTitle>
+            <DialogTitle>{t('irembo.payment_dialog.title', 'Confirm Payment')}</DialogTitle>
             <DialogDescription>
-              To complete your Irembo registration, a payment of 5,500 RWF is required.
+              {t('irembo.payment_dialog.description', 'To complete your Irembo registration, a payment of 5,500 RWF is required.')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Registration Test Fee:</span>
+                <span>{t('irembo.payment_dialog.registration_fee', 'Registration Test Fee:')}</span>
                 <span className="font-medium">5,000 RWF</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Service Provider Fee:</span>
+                <span>{t('irembo.payment_dialog.service_fee', 'Service Provider Fee:')}</span>
                 <span className="font-medium">500 RWF</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-bold">
-                <span>Total:</span>
+                <span>{t('irembo.payment_dialog.total', 'Total:')}</span>
                 <span>5,500 RWF</span>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="payment-phone" className="text-right">
-                MoMo Number
+                {t('irembo.payment_dialog.momo_number', 'MoMo Number')}
               </Label>
               <Input
                 id="payment-phone"
@@ -588,9 +579,9 @@ export default function Irembo() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>{t('irembo.payment_dialog.cancel', 'Cancel')}</Button>
             <Button onClick={handlePaymentConfirm} disabled={!/^(\+250|0)(78|79|72|73)\d{7}$/.test(paymentPhone)}>
-              Pay Now
+              {t('irembo.payment_dialog.pay_now', 'Pay Now')}
             </Button>
           </DialogFooter>
         </DialogContent>

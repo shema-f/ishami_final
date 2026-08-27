@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { authAPI } from '../services/api';
 import { toast } from 'sonner';
+import { useTranslation } from '../contexts/I18nContext';
 
 interface QuizHistory {
   id: string;
@@ -22,6 +23,7 @@ interface QuizHistory {
 export default function Profile() {
   const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, lang } = useTranslation();
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [newUsername, setNewUsername] = useState('');
@@ -34,7 +36,6 @@ export default function Profile() {
   const [quizHistory, setQuizHistory] = useState<QuizHistory[]>([]);
 
   useEffect(() => {
-    // Load quiz history from localStorage
     const stored = localStorage.getItem('quizHistory');
     if (stored) {
       try {
@@ -47,9 +48,9 @@ export default function Profile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Please log in to view your profile.</p>
+          <p className="text-gray-400 mb-4">{t('profile.auth_required.message', 'Please log in to view your profile.')}</p>
           <button onClick={() => navigate('/auth')} className="px-6 py-3 bg-blue-500 text-white rounded-xl">
-            Log In
+            {t('profile.auth_required.button', 'Log In')}
           </button>
         </div>
       </div>
@@ -66,15 +67,15 @@ export default function Profile() {
   const passedQuizzes = quizHistory.filter(q => q.passed).length;
 
   const stats = [
-    { icon: <Trophy className="w-5 h-5" />, label: 'Quizzes Taken', value: totalQuizzes, color: 'from-yellow-500 to-orange-500' },
-    { icon: <Target className="w-5 h-5" />, label: 'Best Score', value: `${bestScore}%`, color: 'from-blue-500 to-cyan-500' },
-    { icon: <TrendingUp className="w-5 h-5" />, label: 'Average Score', value: `${avgScore}%`, color: 'from-emerald-500 to-teal-500' },
-    { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Quizzes Passed', value: passedQuizzes, color: 'from-purple-500 to-pink-500' },
+    { icon: <Trophy className="w-5 h-5" />, label: t('profile.stats.quizzes_taken', 'Quizzes Taken'), value: totalQuizzes, color: 'from-yellow-500 to-orange-500' },
+    { icon: <Target className="w-5 h-5" />, label: t('profile.stats.best_score', 'Best Score'), value: `${bestScore}%`, color: 'from-blue-500 to-cyan-500' },
+    { icon: <TrendingUp className="w-5 h-5" />, label: t('profile.stats.average_score', 'Average Score'), value: `${avgScore}%`, color: 'from-emerald-500 to-teal-500' },
+    { icon: <CheckCircle2 className="w-5 h-5" />, label: t('profile.stats.quizzes_passed', 'Quizzes Passed'), value: passedQuizzes, color: 'from-purple-500 to-pink-500' },
   ];
 
   const handleUpdateUsername = async () => {
     if (!newUsername.trim()) {
-      toast.error('Username cannot be empty');
+      toast.error(t('profile.toast.username_empty', 'Username cannot be empty'));
       return;
     }
     if (newUsername.trim() === user.username) {
@@ -85,7 +86,7 @@ export default function Profile() {
       setSaving(true);
       await authAPI.updateProfile({ username: newUsername.trim() });
       updateUser({ username: newUsername.trim() });
-      toast.success('Username updated successfully!');
+      toast.success(t('profile.toast.username_updated', 'Username updated successfully!'));
       setEditingField(null);
     } catch (e: any) {
       toast.error(e?.message || 'Failed to update username');
@@ -96,21 +97,21 @@ export default function Profile() {
 
   const handleUpdatePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error('Please fill in all password fields');
+      toast.error(t('profile.toast.password_fill_all', 'Please fill in all password fields'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t('profile.toast.passwords_no_match', 'New passwords do not match'));
       return;
     }
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error(t('profile.toast.password_too_short', 'Password must be at least 6 characters'));
       return;
     }
     try {
       setSaving(true);
       await authAPI.updateProfile({ currentPassword, newPassword });
-      toast.success('Password updated successfully!');
+      toast.success(t('profile.toast.password_updated', 'Password updated successfully!'));
       setEditingField(null);
       setCurrentPassword('');
       setNewPassword('');
@@ -131,7 +132,6 @@ export default function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          {/* Avatar */}
           <div className="relative inline-block mb-4">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/30">
               {user.username?.charAt(0).toUpperCase() || 'U'}
@@ -148,7 +148,7 @@ export default function Profile() {
           <p className="text-gray-400">{user.email}</p>
           {user.isPro && (
             <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-400 text-xs font-semibold">
-              <Shield className="w-3 h-3" /> Pro Member
+              <Shield className="w-3 h-3" /> {t('profile.pro_badge', 'Pro Member')}
             </span>
           )}
         </motion.div>
@@ -183,13 +183,13 @@ export default function Profile() {
         >
           <h2 className="text-xl font-bold text-white mb-6 font-[family-name:var(--font-heading)] flex items-center gap-2">
             <User className="w-5 h-5 text-blue-400" />
-            Profile Settings
+            {t('profile.settings.title', 'Profile Settings')}
           </h2>
 
           <div className="space-y-6">
             {/* Username */}
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Username</label>
+              <label className="block text-sm text-gray-400 mb-2">{t('profile.settings.username_label', 'Username')}</label>
               {editingField === 'username' ? (
                 <div className="flex gap-2">
                   <input
@@ -197,7 +197,7 @@ export default function Profile() {
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     className="flex-1 px-4 py-3 bg-white/5 border border-white/15 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter new username"
+                    placeholder={t('profile.settings.username_placeholder', 'Enter new username')}
                   />
                   <button
                     onClick={handleUpdateUsername}
@@ -228,7 +228,7 @@ export default function Profile() {
 
             {/* Email (read-only) */}
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Email</label>
+              <label className="block text-sm text-gray-400 mb-2">{t('profile.settings.email_label', 'Email')}</label>
               <div className="flex items-center px-4 py-3 bg-white/5 border border-white/10 rounded-xl">
                 <Mail className="w-4 h-4 text-gray-500 mr-3" />
                 <span className="text-gray-300">{user.email}</span>
@@ -237,7 +237,7 @@ export default function Profile() {
 
             {/* Change Password */}
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Change Password</label>
+              <label className="block text-sm text-gray-400 mb-2">{t('profile.settings.change_password_label', 'Change Password')}</label>
               {editingField === 'password' ? (
                 <div className="space-y-3">
                   <div className="relative">
@@ -247,7 +247,7 @@ export default function Profile() {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/15 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Current password"
+                      placeholder={t('profile.settings.current_password_placeholder', 'Current password')}
                     />
                     <button
                       type="button"
@@ -264,7 +264,7 @@ export default function Profile() {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="w-full pl-11 pr-12 py-3 bg-white/5 border border-white/15 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="New password"
+                      placeholder={t('profile.settings.new_password_placeholder', 'New password')}
                     />
                     <button
                       type="button"
@@ -279,7 +279,7 @@ export default function Profile() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Confirm new password"
+                    placeholder={t('profile.settings.confirm_password_placeholder', 'Confirm new password')}
                   />
                   <div className="flex gap-2">
                     <button
@@ -288,13 +288,13 @@ export default function Profile() {
                       className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
                       <Save className="w-4 h-4" />
-                      {saving ? 'Saving...' : 'Update Password'}
+                      {saving ? t('profile.settings.saving', 'Saving...') : t('profile.settings.update_password', 'Update Password')}
                     </button>
                     <button
                       onClick={() => { setEditingField(null); setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); }}
                       className="px-6 py-3 bg-white/10 text-white rounded-xl hover:bg-white/15 transition-colors"
                     >
-                      Cancel
+                      {t('profile.settings.cancel', 'Cancel')}
                     </button>
                   </div>
                 </div>
@@ -323,18 +323,18 @@ export default function Profile() {
         >
           <h2 className="text-xl font-bold text-white mb-6 font-[family-name:var(--font-heading)] flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-400" />
-            Quiz History
+            {t('profile.quiz_history.title', 'Quiz History')}
           </h2>
 
           {quizHistory.length === 0 ? (
             <div className="text-center py-10">
               <BookOpen className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 mb-4">No quizzes taken yet</p>
+              <p className="text-gray-400 mb-4">{t('profile.quiz_history.no_history', 'No quizzes taken yet')}</p>
               <button
                 onClick={() => navigate('/quiz')}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
               >
-                Start a Quiz <ArrowRight className="w-4 h-4" />
+                {t('profile.quiz_history.start_quiz', 'Start a Quiz')} <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           ) : (
@@ -378,17 +378,17 @@ export default function Profile() {
         >
           <h2 className="text-xl font-bold text-white mb-6 font-[family-name:var(--font-heading)] flex items-center gap-2">
             <Award className="w-5 h-5 text-yellow-400" />
-            Achievements
+            {t('profile.achievements.title', 'Achievements')}
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {[
-              { icon: '🎯', title: 'First Quiz', desc: 'Complete your first quiz', unlocked: totalQuizzes >= 1 },
-              { icon: '🔥', title: 'Hot Streak', desc: 'Pass 3 quizzes in a row', unlocked: passedQuizzes >= 3 },
-              { icon: '💯', title: 'Perfect Score', desc: 'Score 100% on a quiz', unlocked: bestScore === 100 },
-              { icon: '🏆', title: 'Champion', desc: 'Score above 90%', unlocked: bestScore >= 90 },
-              { icon: '📚', title: 'Scholar', desc: 'Take 10 quizzes', unlocked: totalQuizzes >= 10 },
-              { icon: '🛡️', title: 'Pro Member', desc: 'Upgrade to Pro', unlocked: !!user.isPro },
+              { icon: '🎯', title: t('profile.achievements.badges.first_quiz.title', 'First Quiz'), desc: t('profile.achievements.badges.first_quiz.desc', 'Complete your first quiz'), unlocked: totalQuizzes >= 1 },
+              { icon: '🔥', title: t('profile.achievements.badges.hot_streak.title', 'Hot Streak'), desc: t('profile.achievements.badges.hot_streak.desc', 'Pass 3 quizzes in a row'), unlocked: passedQuizzes >= 3 },
+              { icon: '💯', title: t('profile.achievements.badges.perfect_score.title', 'Perfect Score'), desc: t('profile.achievements.badges.perfect_score.desc', 'Score 100% on a quiz'), unlocked: bestScore === 100 },
+              { icon: '🏆', title: t('profile.achievements.badges.champion.title', 'Champion'), desc: t('profile.achievements.badges.champion.desc', 'Score above 90%'), unlocked: bestScore >= 90 },
+              { icon: '📚', title: t('profile.achievements.badges.scholar.title', 'Scholar'), desc: t('profile.achievements.badges.scholar.desc', 'Take 10 quizzes'), unlocked: totalQuizzes >= 10 },
+              { icon: '🛡️', title: t('profile.achievements.badges.pro_member.title', 'Pro Member'), desc: t('profile.achievements.badges.pro_member.desc', 'Upgrade to Pro'), unlocked: !!user.isPro },
             ].map((badge, idx) => (
               <div
                 key={idx}
@@ -417,7 +417,7 @@ export default function Profile() {
             onClick={() => { logout(); navigate('/'); }}
             className="px-8 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold hover:bg-red-500/20 transition-all duration-300"
           >
-            Log Out
+            {t('profile.logout', 'Log Out')}
           </button>
         </motion.div>
       </div>
