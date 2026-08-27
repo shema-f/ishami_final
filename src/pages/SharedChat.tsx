@@ -99,7 +99,7 @@ export default function SharedChat() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-8 px-4">
+      <div className="min-h-screen flex items-center justify-center py-6 sm:py-8 px-3 sm:px-4">
         <div className="flex flex-col items-center gap-3">
           <div className="flex gap-2">
             <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -114,14 +114,14 @@ export default function SharedChat() {
 
   if (error || !conversation) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-8 px-4">
-        <div className="text-center">
-          <div className="inline-flex p-4 bg-rose-500/20 rounded-3xl mb-6">
-            <MessageCircle className="w-10 h-10 text-rose-400" />
+      <div className="min-h-screen flex items-center justify-center py-6 sm:py-8 px-3 sm:px-4">
+        <div className="text-center px-4">
+          <div className="inline-flex p-3 sm:p-4 bg-rose-500/20 rounded-3xl mb-6">
+            <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-rose-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Shared Conversation</h1>
-          <p className="text-gray-400 mb-6">{error || 'Conversation not found'}</p>
-          <a href="/ai-assistant" className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 inline-block">
+          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Shared Conversation</h1>
+          <p className="text-sm sm:text-base text-gray-400 mb-6">{error || 'Conversation not found'}</p>
+          <a href="/ai-assistant" className="px-5 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 inline-block text-sm sm:text-base">
             Open Moto-Sensei
           </a>
         </div>
@@ -130,22 +130,22 @@ export default function SharedChat() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen py-6 sm:py-8 px-3 sm:px-4">
       <div className="fixed top-20 right-10 w-72 h-72 bg-green-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="fixed bottom-10 left-10 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto pt-16">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
+      <div className="max-w-3xl mx-auto pt-12 sm:pt-16">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-green-500 rounded-2xl blur-xl opacity-30" />
-              <div className="relative w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
-                <Bot className="w-8 h-8 text-white" />
+              <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                <Bot className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{conversation.title}</h1>
-          <div className="flex flex-wrap justify-center items-center gap-2 mt-3 text-[11px] text-gray-400">
+          <h1 className="text-xl sm:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)] px-2">{conversation.title}</h1>
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-3 text-[10px] sm:text-[11px] text-gray-400">
             <span className="inline-flex items-center gap-1 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
               <Languages className="w-3 h-3" /> Shared Conversation
             </span>
@@ -155,33 +155,33 @@ export default function SharedChat() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-          <div ref={chatRef} className="max-h-[600px] overflow-y-auto p-6 space-y-4 custom-scrollbar">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+          <div ref={chatRef} className="h-[50vh] sm:h-[600px] overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 custom-scrollbar">
             {conversation.messages.map((message) => (
               <motion.div key={message.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[82%] ${message.isUser ? 'order-2' : 'order-1'}`}>
+                <div className={`max-w-[88%] sm:max-w-[82%] ${message.isUser ? 'order-2' : 'order-1'}`}>
                   {!message.isUser && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-lg bg-green-500/20 flex items-center justify-center">
-                        <Bot className="w-4 h-4 text-green-400" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-green-500/20 flex items-center justify-center">
+                        <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
                       </div>
-                      <span className="text-sm text-gray-500">Moto-Sensei</span>
+                      <span className="text-xs sm:text-sm text-gray-500">Moto-Sensei</span>
                       <TopicBadge s={message.structured} />
                       <ConfidenceBadge c={message.structured?.confidence} />
                     </div>
                   )}
                   {message.isUser && (
-                    <div className="flex items-center gap-2 mb-2 justify-end">
-                      <span className="text-sm text-gray-500">You</span>
-                      <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                        <User className="w-4 h-4 text-blue-400" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2 justify-end">
+                      <span className="text-xs sm:text-sm text-gray-500">You</span>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
                       </div>
                     </div>
                   )}
-                  <div className={`p-4 rounded-2xl leading-relaxed whitespace-pre-wrap ${message.isUser ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-sm' : 'bg-white/10 text-white rounded-tl-sm border border-white/5'}`}>
+                  <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl leading-relaxed whitespace-pre-wrap text-sm sm:text-base ${message.isUser ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-sm' : 'bg-white/10 text-white rounded-tl-sm border border-white/5'}`}>
                     <p className="whitespace-pre-wrap">{message.text}</p>
                     {message.structured?.safety_note && message.structured.safety_note.trim() && !message.text.includes(message.structured.safety_note.slice(0, 20)) && (
-                      <div className="mt-3 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-200 text-xs">
+                      <div className="mt-2 sm:mt-3 p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-200 text-xs">
                         ⚠️ {message.structured.safety_note}
                       </div>
                     )}
@@ -192,9 +192,9 @@ export default function SharedChat() {
           </div>
         </motion.div>
 
-        <div className="text-center mt-6">
-          <a href="/ai-assistant" className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 inline-flex items-center gap-2">
-            <Bot className="w-5 h-5" />
+        <div className="text-center mt-5 sm:mt-6 pb-6">
+          <a href="/ai-assistant" className="px-5 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300 inline-flex items-center gap-2 text-sm sm:text-base">
+            <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
             Try Moto-Sensei yourself
           </a>
         </div>
