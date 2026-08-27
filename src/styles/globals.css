@@ -199,6 +199,8 @@
     scroll-behavior: smooth;
     background: var(--background);
     color: var(--text-primary);
+    /* Prevent CLS from scrollbar appearing/disappearing */
+    overflow-y: scroll;
   }
 
   body {
@@ -209,9 +211,24 @@
      or it will paint over the texture. */
     @apply bg-transparent text-foreground antialiased;
     font-family: var(--font-body);
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
     line-height: 1.6;
+    /* Prevent layout shift from font loading */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent CLS from images without dimensions */
+  img, video, canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Stable scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -568,6 +585,26 @@
   :root {
     --radius-lg: 16px;
     --radius-xl: 20px;
+  }
+
+  /* Reduce animation complexity on mobile */
+  .glass-card:hover {
+    transform: none;
+  }
+
+  /* Prevent CLS from scroll-triggered animations */
+  [style*="will-change"] {
+    will-change: auto !important;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

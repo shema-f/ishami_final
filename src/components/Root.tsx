@@ -2,7 +2,7 @@ import { Outlet } from 'react-router';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import AnimatedBackground from './AnimatedBackground';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Download, X } from 'lucide-react';
 import { useTranslation } from '../contexts/I18nContext';
@@ -51,7 +51,9 @@ export default function Root() {
       <AnimatedBackground />
       <Navigation />
       <main>
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
 

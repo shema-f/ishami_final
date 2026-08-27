@@ -11,6 +11,7 @@ const ASPHALT_MOTTLE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 export default function AnimatedBackground() {
   const reduceMotion = useReducedMotion();
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   // Deterministic dust layout (no layout shift across re-renders)
   const dust = useMemo(
     () =>
@@ -45,16 +46,18 @@ export default function AnimatedBackground() {
         }}
       />
 
-      {/* Coarse asphalt mottle (aggregate patches) */}
-      <div
-        className="absolute inset-0 mix-blend-soft-light"
-        style={{ backgroundImage: ASPHALT_MOTTLE, backgroundSize: '420px 420px', opacity: 0.55 }}
-      />
+      {/* Coarse asphalt mottle (aggregate patches) — skip on mobile for performance */}
+      {!isMobile && (
+        <div
+          className="absolute inset-0 mix-blend-soft-light"
+          style={{ backgroundImage: ASPHALT_MOTTLE, backgroundSize: '420px 420px', opacity: 0.55 }}
+        />
+      )}
 
       {/* Fine asphalt grain — the gray noise */}
       <div
         className="absolute inset-0 mix-blend-overlay"
-        style={{ backgroundImage: ASPHALT_GRAIN, backgroundSize: '180px 180px', opacity: 0.45 }}
+        style={{ backgroundImage: ASPHALT_GRAIN, backgroundSize: isMobile ? '360px 360px' : '180px 180px', opacity: isMobile ? 0.3 : 0.45 }}
       />
 
       {/* Faint longitudinal road wear streaks */}
@@ -87,8 +90,8 @@ export default function AnimatedBackground() {
         }}
       />
 
-      {/* Dust drifting in the headlights */}
-      {dust.map((p, i) => (
+      {/* Dust drifting in the headlights — reduce count on mobile */}
+      {dust.slice(0, isMobile ? 6 : 16).map((p, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full bg-white"
@@ -97,7 +100,8 @@ export default function AnimatedBackground() {
             top: `${p.top}%`,
             width: p.size,
             height: p.size,
-          }}
+          }
+          }
           animate={reduceMotion ? undefined : { y: [0, -p.drift, 0], opacity: [0.04, 0.16, 0.04] }}
           transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: 'easeInOut' }}
         />

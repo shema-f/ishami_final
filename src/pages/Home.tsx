@@ -5,8 +5,10 @@ import { useState, lazy, Suspense } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
-import FlipCard from '../components/FlipCard';
-import TestimonialCarousel from '../components/TestimonialCarousel';
+
+// Lazy-load heavy components below the fold
+const FlipCard = lazy(() => import('../components/FlipCard'));
+const TestimonialCarousel = lazy(() => import('../components/TestimonialCarousel'));
 
 // Lazy-load the hero — the 3D scene + GSAP + three.js are code-split into a separate chunk
 const CinematicHero = lazy(() => import('../components/hero/CinematicHero'));
@@ -80,10 +82,12 @@ export default function Home() {
       {/* Cinematic 3D Hero Section (lazy-loaded) */}
       <Suspense
         fallback={
-          <section className="relative min-h-screen bg-[#0a0e14] flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-              <span className="text-slate-400 text-sm tracking-wider">Loading...</span>
+          <section className="relative bg-[#0a0e14]" style={{ height: '100dvh', minHeight: '600px' }}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                <span className="text-slate-400 text-sm tracking-wider">Loading...</span>
+              </div>
             </div>
           </section>
         }
@@ -222,7 +226,9 @@ export default function Home() {
               {t('home.flip.subtitle')}
             </p>
           </div>
-          <FlipCard />
+          <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /></div>}>
+            <FlipCard />
+          </Suspense>
         </div>
       </section>
 
@@ -333,7 +339,9 @@ export default function Home() {
               {lang === 'en' ? 'Join thousands of successful learners' : 'Jya mu bwenge bw\'abiga benshi'}
             </p>
           </div>
-          <TestimonialCarousel />
+          <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /></div>}>
+            <TestimonialCarousel />
+          </Suspense>
         </div>
       </section>
 
