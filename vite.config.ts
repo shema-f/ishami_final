@@ -1,11 +1,11 @@
-
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import tailwindcss from '@tailwindcss/vite';
-  import path from 'path';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import tailwindcss from '@tailwindcss/vite';
+import preloadPlugin from './vite.preload-plugin';
+import path from 'path';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), preloadPlugin()],
   publicDir: 'public',
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],

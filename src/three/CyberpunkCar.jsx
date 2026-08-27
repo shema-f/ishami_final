@@ -2,7 +2,7 @@ import { useRef, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-const CyberpunkCar = forwardRef(function CyberpunkCar({ position = [0, 0, 0], rotation = [0, 0, 0], isHovered = false }, ref) {
+const CyberpunkCar = forwardRef(function CyberpunkCar({ position = [0, 0, 0], rotation = [0, 0, 0], scale = 1, isHovered = false }, ref) {
   useImperativeHandle(ref, () => groupRef.current, [])
 
   const groupRef = useRef()
@@ -39,7 +39,7 @@ const CyberpunkCar = forwardRef(function CyberpunkCar({ position = [0, 0, 0], ro
       // Tiny lift on hover
       groupRef.current.position.y = baseY + hf * 0.04
       // Subtle scale pulse
-      const pulse = 1 + hf * 0.015 + Math.sin(t * 2) * hf * 0.005
+      const pulse = scale + hf * 0.015 * scale + Math.sin(t * 2) * hf * 0.005 * scale
       groupRef.current.scale.setScalar(pulse)
     }
 

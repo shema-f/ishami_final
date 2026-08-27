@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router';
-import { Menu, X, ChevronRight, Globe, User, Bell } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +9,7 @@ import { useNotifications } from '../contexts/NotificationsContext';
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const { t, lang, setLang } = useTranslation();
@@ -22,6 +23,15 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setBlogDropdownOpen(false);
+    if (blogDropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [blogDropdownOpen]);
+
   const navItems = [
     { path: '/', label: t('nav.home') },
     { path: '/simulation', label: t('nav.simulation') },
@@ -29,11 +39,16 @@ export default function Navigation() {
     { path: '/quiz', label: t('nav.quiz') },
     { path: '/resources', label: t('nav.resources') },
     { path: '/leaderboard', label: t('nav.leaderboard') },
-    { path: '/blog', label: t('nav.blog') },
-    { path: '/bookmarks', label: t('nav.bookmarks') },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const blogSubItems = [
+    { path: '/blog', label: t('nav.blog'), icon: <Globe className="w-4 h-4" /> },
+    { path: '/blog/bookmarks', label: t('nav.bookmarks'), icon: <Bookmark className="w-4 h-4" /> },
+    { path: '/blog/notifications', label: t('nav.notifications'), icon: <Bell className="w-4 h-4" />, badge: unreadCount },
+  ];
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+  const isBlogActive = location.pathname.startsWith('/blog');
 
   return (
     <nav
@@ -88,6 +103,69 @@ export default function Navigation() {
               </Link>
             ))}
 
+            {/* Blog Dropdown */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBlogDropdownOpen(!blogDropdownOpen);
+                }}
+                className={`relative px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center gap-1 ${
+                  isBlogActive
+                    ? 'text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {isBlogActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-white/10 rounded-lg border border-white/10"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 text-sm">{t('nav.blog')}</span>
+                <ChevronDown className={`relative z-10 w-3 h-3 transition-transform ${blogDropdownOpen ? 'rotate-180' : ''}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold relative z-10">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {blogDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-56 bg-[#16171C] border border-white/10 rounded-xl shadow-2xl shadow-black/30 overflow-hidden z-50"
+                  >
+                    {blogSubItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setBlogDropdownOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 transition-all ${
+                          isActive(item.path)
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                        }`}
+                      >
+                        {item.icon}
+                        <span className="text-sm font-medium">{item.label}</span>
+                        {'badge' in item && item.badge > 0 && (
+                          <span className="ml-auto px-2 py-0.5 bg-red-500 text-white text-xs rounded-full font-bold">
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Desktop Language Switcher */}
             <div className="ml-2 inline-flex items-center gap-0.5 px-1 py-1 rounded-xl bg-slate-800/60 border border-slate-700/50">
               <button
@@ -117,19 +195,6 @@ export default function Navigation() {
 
           {/* Right Section */}
           <div className="hidden lg:flex items-center space-x-4">
-            {/* Notifications Bell */}
-            <Link
-              to="/notifications"
-              className="relative p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors"
-            >
-              <Bell className="w-5 h-5 text-slate-300" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </Link>
-
             {isAuthenticated ? (
               <div className="flex items-center space-x-3">
                 <Link
@@ -240,24 +305,41 @@ export default function Navigation() {
                   </Link>
                 </motion.div>
               ))}
+
+              {/* Blog Section (Mobile) */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navItems.length * 0.05 }}
+              >
+                <div className={`px-4 py-2 text-xs uppercase tracking-wider text-slate-500 font-semibold ${isBlogActive ? 'text-blue-400' : ''}`}>
+                  {t('nav.blog')}
+                </div>
+                {blogSubItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center justify-between px-4 py-2.5 ml-2 rounded-xl transition-all font-medium ${
+                      isActive(item.path)
+                        ? 'bg-blue-500/15 text-white border border-blue-500/20'
+                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </div>
+                    {'badge' in item && item.badge > 0 && (
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs rounded-full font-bold">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </motion.div>
               
               <div className="pt-4 space-y-3 border-t border-slate-700/50">
-                {/* Notifications Link (Mobile) */}
-                <Link
-                  to="/notifications"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <Bell className="w-4 h-4" />
-                    <span>{t('nav.notifications')}</span>
-                  </div>
-                  {unreadCount > 0 && (
-                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs rounded-full font-bold">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
 
                 {isAuthenticated ? (
                   <>

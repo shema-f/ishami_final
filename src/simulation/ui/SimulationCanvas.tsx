@@ -9,6 +9,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { VehiclePhysics } from '../vehicle/VehiclePhysics';
 import { CollisionSystem } from '../core/CollisionSystem';
 import TrafficSystem from './TrafficSystem';
@@ -17,6 +18,9 @@ import type { SimulationState, Waypoint } from '../core/SimulationState';
 // ─── GLB Cache ──────────────────────────────────────────────
 
 const glbCache: Record<string, any> = {};
+
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
 
 function useCachedGLB(path: string) {
   const [gltf, setGltf] = useState<any>(null);
@@ -29,6 +33,7 @@ function useCachedGLB(path: string) {
       return;
     }
     const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
     loader.load(
       path,
       (g) => {

@@ -1,28 +1,15 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
-import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X } from 'lucide-react';
 import { articles, type Article } from '../data/articles';
 import { useTranslation } from '../contexts/I18nContext';
-import { useBookmarks } from '../contexts/BookmarksContext';
 import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeContext';
 import Comments from '../components/Comments';
 import ReadingModeToggle from '../components/ReadingModeToggle';
 
 function ArticleCard({ article }: { article: Article }) {
   const { lang } = useTranslation();
-  const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
-  const bookmarked = isBookmarked(article.id);
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (bookmarked) {
-      removeBookmark(article.id);
-    } else {
-      addBookmark(article.id);
-    }
-  };
 
   return (
     <Link to={`/blog/${article.slug}`}>
@@ -45,21 +32,6 @@ function ArticleCard({ article }: { article: Article }) {
               {lang === 'rw' ? article.category_rw : article.category}
             </span>
           </div>
-          {/* Bookmark Button */}
-          <button
-            onClick={handleBookmarkClick}
-            className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-sm transition-all ${
-              bookmarked 
-                ? 'bg-blue-500/90 text-white' 
-                : 'bg-black/30 text-white hover:bg-black/50'
-            }`}
-          >
-            {bookmarked ? (
-              <BookmarkCheck className="w-4 h-4" />
-            ) : (
-              <Bookmark className="w-4 h-4" />
-            )}
-          </button>
         </div>
 
         {/* Content */}
@@ -295,37 +267,12 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
   );
 }function ArticleDetail({ article }: { article: Article }) {
   const { lang } = useTranslation();
-  const { isBookmarked, addBookmark, removeBookmark, addToHistory } = useBookmarks();
   const { readingMode } = useReadingMode();
   const styles = getReadingModeStyles(readingMode);
-  const bookmarked = isBookmarked(article.id);
 
   const content = lang === 'rw' ? article.content_rw : article.content_en;
   const title = lang === 'rw' ? article.title_rw : article.title_en;
   const readTime = calculateReadingTime(content);
-
-  // Track reading progress
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight > 0) {
-        const percentage = Math.min(Math.round((scrollTop / docHeight) * 100), 100);
-        addToHistory(article.id, article.slug, percentage);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [article.id, article.slug, addToHistory]);
-
-  const handleBookmarkClick = () => {
-    if (bookmarked) {
-      removeBookmark(article.id);
-    } else {
-      addBookmark(article.id);
-    }
-  };
 
 
   return (
@@ -381,31 +328,8 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
             </div>
           </div>
 
-          {/* Bookmark, Share, and Reading Mode Buttons */}
-          <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-            {/* Bookmark Button */}
-            <button
-              onClick={handleBookmarkClick}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium ${
-                bookmarked 
-                  ? 'bg-blue-500/20 border border-blue-500/30 text-blue-400' 
-                  : `${styles.card} border ${styles.border} ${styles.textSecondary} hover:${styles.text}`
-              }`}
-            >
-              {bookmarked ? (
-                <>
-                  <BookmarkCheck className="w-4 h-4" />
-                  {lang === 'rw' ? 'Byabitswe' : 'Bookmarked'}
-                </>
-              ) : (
-                <>
-                  <Bookmark className="w-4 h-4" />
-                  {lang === 'rw' ? 'Bika' : 'Bookmark'}
-                </>
-              )}
-            </button>
-
-            {/* Reading Mode Toggle */}
+          {/* Reading Mode Toggle */}
+          <div className="mt-6">
             <ReadingModeToggle />
           </div>
 

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback, Suspense } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, Text } from '@react-three/drei'
 import * as THREE from 'three'
-import CarModel from './CarModel'
+import CyberpunkCar from './CyberpunkCar'
 import City from './City'
 import CarTooltip from './CarTooltip'
 
@@ -319,7 +319,7 @@ function InteractiveCar({ carRef, hoverActive, onNavigate }) {
     >
       {/* Car placed on the road: y=0.7 lifts tires to road surface (model bottom ~0.69 below center) */}
       {/* Slight Y rotation gives a dynamic three-quarter angle view */}
-      <CarModel
+      <CyberpunkCar
         ref={carRef}
         position={[0, 0.7, 0]}
         rotation={[0, -0.15, 0]}
@@ -374,8 +374,11 @@ export default function HeroScene({ cameraState, carRef, fogState, ambientRef })
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 0.9,
         powerPreference: 'default',
+        alpha: false,
+        stencil: false,
+        depth: true,
       }}
-      dpr={[1, 1.0]}
+      dpr={[1, 1]}
       style={{
         background: 'linear-gradient(180deg, #0a0e14 0%, #1a1a2e 50%, #0a0e14 100%)',
       }}

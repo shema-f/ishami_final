@@ -40,22 +40,16 @@ export function BookmarksProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  // Persist bookmarks to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('article_bookmarks', JSON.stringify(bookmarks));
-    } catch {
-      // localStorage not available
-    }
+    } catch {}
   }, [bookmarks]);
 
-  // Persist reading history to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('reading_history', JSON.stringify(readingHistory));
-    } catch {
-      // localStorage not available
-    }
+    } catch {}
   }, [readingHistory]);
 
   const addBookmark = useCallback((articleId: string) => {
@@ -75,18 +69,11 @@ export function BookmarksProvider({ children }: { children: ReactNode }) {
 
   const addToHistory = useCallback((articleId: string, articleSlug: string, readPercentage: number) => {
     setReadingHistory(prev => {
-      // Remove existing entry for this article
       const filtered = prev.filter(item => item.articleId !== articleId);
-      // Add new entry at the beginning
       return [
-        {
-          articleId,
-          articleSlug,
-          timestamp: Date.now(),
-          readPercentage,
-        },
+        { articleId, articleSlug, timestamp: Date.now(), readPercentage },
         ...filtered,
-      ].slice(0, 50); // Keep only last 50 items
+      ].slice(0, 50);
     });
   }, []);
 

@@ -7,7 +7,7 @@ import { useTranslation } from '../contexts/I18nContext';
 import { useBookmarks } from '../contexts/BookmarksContext';
 
 export default function Bookmarks() {
-  const { lang, t } = useTranslation();
+  const { lang } = useTranslation();
   const { bookmarks, readingHistory, removeBookmark, clearHistory, removeFromHistory } = useBookmarks();
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'history'>('bookmarks');
 
@@ -85,10 +85,7 @@ export default function Bookmarks() {
 
         {/* Bookmarks Tab */}
         {activeTab === 'bookmarks' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {bookmarkedArticles.length === 0 ? (
               <div className="text-center py-20">
                 <Bookmark className="w-16 h-16 mx-auto mb-4 text-gray-600" />
@@ -127,10 +124,7 @@ export default function Bookmarks() {
 
         {/* History Tab */}
         {activeTab === 'history' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {historyWithArticles.length === 0 ? (
               <div className="text-center py-20">
                 <History className="w-16 h-16 mx-auto mb-4 text-gray-600" />
@@ -261,7 +255,6 @@ function HistoryCard({ item, article, formatDate, onRemove }: {
               <span>·</span>
               <span>{item.readPercentage}% {lang === 'rw' ? 'wasoma' : 'read'}</span>
             </div>
-            {/* Progress Bar */}
             <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
