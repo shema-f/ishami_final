@@ -25,46 +25,42 @@ export default function Home() {
       if (res?.success) {
         setSubscribed(true);
         setEmail('');
-        toast.success('Welcome to our newsletter!');
+        toast.success(t('home.newsletter.success', '✓ Thank you for subscribing! Check your email for confirmation.'));
       }
     } catch {
-      toast.error('Subscription failed. Please try again.');
+      toast.error(t('home.newsletter.error', 'Subscription failed. Please try again.'));
     }
   };
 
   const features = [
     {
       icon: <Zap className="w-6 h-6" />,
-      title: 'Interactive Quizzes',
-      titleKiny: 'Ibizamini Bihuza',
-      description: 'Test your knowledge with timed quizzes based on real Rwanda traffic rules.',
+      title: t('home.features.quizzes_title', 'Interactive Quizzes'),
+      description: t('home.features.quizzes_desc', 'Test your knowledge with timed quizzes based on real Rwanda traffic rules.'),
       link: '/quiz',
       color: 'from-blue-500 to-blue-600',
       glow: 'shadow-blue-500/25'
     },
     {
       icon: <Car className="w-6 h-6" />,
-      title: '3D Driving Simulation',
-      titleKiny: 'Imyitozo yo Gutwara',
-      description: 'Practice real-world scenarios in immersive 3D environments.',
+      title: t('home.features.simulation_title', '3D Driving Simulation'),
+      description: t('home.features.simulation_desc', 'Practice real-world scenarios in immersive 3D environments.'),
       link: '/simulation',
       color: 'from-purple-500 to-purple-600',
       glow: 'shadow-purple-500/25'
     },
     {
       icon: <Brain className="w-6 h-6" />,
-      title: 'AI Assistant - Moto-Sensei',
-      titleKiny: 'Umufasha wa AI',
-      description: 'Get instant answers from your friendly Rwandan driving instructor.',
+      title: t('home.features.ai_title', 'AI Assistant - Moto-Sensei'),
+      description: t('home.features.ai_desc', 'Get instant answers from your friendly Rwandan driving instructor.'),
       link: '/ai-assistant',
       color: 'from-emerald-500 to-emerald-600',
       glow: 'shadow-emerald-500/25'
     },
     {
       icon: <BookOpen className="w-6 h-6" />,
-      title: 'Download Resources',
-      titleKiny: 'Kuramo Ibyatanzwe',
-      description: 'Access PDFs, videos, and images of traffic signs and rules.',
+      title: t('home.features.resources_title', 'Download Resources'),
+      description: t('home.features.resources_desc', 'Access PDFs, videos, and images of traffic signs and rules.'),
       link: '/resources',
       color: 'from-amber-500 to-amber-600',
       glow: 'shadow-amber-500/25'
@@ -72,9 +68,9 @@ export default function Home() {
   ];
 
   const stats = [
-    { value: '10K+', label: 'Students', icon: <Target className="w-5 h-5" /> },
-    { value: '500+', label: 'Questions', icon: <BookOpen className="w-5 h-5" /> },
-    { value: '95%', label: 'Pass Rate', icon: <Trophy className="w-5 h-5" /> },
+    { value: '10K+', label: t('home.stats.students', 'Students'), icon: <Target className="w-5 h-5" /> },
+    { value: '500+', label: t('home.stats.questions', 'Questions'), icon: <BookOpen className="w-5 h-5" /> },
+    { value: '95%', label: t('home.stats.pass_rate', 'Pass Rate'), icon: <Trophy className="w-5 h-5" /> },
   ];
 
   return (
@@ -86,7 +82,7 @@ export default function Home() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-                <span className="text-slate-400 text-sm tracking-wider">Loading...</span>
+                <span className="text-slate-400 text-sm tracking-wider">{t('home.loading', 'Loading...')}</span>
               </div>
             </div>
           </section>
@@ -131,12 +127,11 @@ export default function Home() {
                       {feature.icon}
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-white mb-1">{feature.title}</h3>
-                    <p className="text-sm text-blue-400 mb-2 font-medium">{feature.titleKiny}</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
                     
                     <div className="mt-4 flex items-center text-blue-400 group-hover:text-blue-300">
-                      <span className="text-sm font-medium">Learn more</span>
+                      <span className="text-sm font-medium">{t('home.learn_more', 'Learn more')}</span>
                       <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -170,22 +165,21 @@ export default function Home() {
               <div className="flex-1 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
                   <Brain className="w-4 h-4 text-emerald-400" />
-                  <span className="text-sm text-emerald-400 font-medium">AI-Powered Learning</span>
+                  <span className="text-sm text-emerald-400 font-medium">{t('home.ai_section.badge', 'AI-Powered Learning')}</span>
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-                  Meet Moto-Sensei
+                  {t('home.ai_section.title', 'Meet Moto-Sensei')}
                 </h2>
                 <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
-                  Your friendly AI driving instructor. Ask questions in Kinyarwanda, 
-                  get instant explanations, and master traffic rules faster.
+                  {t('home.ai_section.description', 'Your friendly AI driving instructor. Ask questions in Kinyarwanda, get instant explanations, and master traffic rules faster.')}
                 </p>
                 
                 <Link
                   to="/ai-assistant"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 hover:-translate-y-0.5"
                 >
-                  <span>Chat with Moto-Sensei</span>
+                  <span>{t('home.ai_section.cta', 'Chat with Moto-Sensei')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
@@ -199,12 +193,12 @@ export default function Home() {
                         <Brain className="w-4 h-4 text-white" />
                       </div>
                       <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-200 border border-white/15">
-                        Muraho! I'm Moto-Sensei. What would you like to learn today?
+                        {t('home.ai_section.preview_greeting', "Muraho! I'm Moto-Sensei. What would you like to learn today?")}
                       </div>
                     </div>
                     <div className="flex gap-3 justify-end">
                       <div className="bg-blue-500 rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white">
-                        What does a red triangle sign mean?
+                        {t('home.ai_section.preview_question', 'What does a red triangle sign mean?')}
                       </div>
                     </div>
                   </div>
@@ -269,15 +263,13 @@ export default function Home() {
               <div className="flex-1 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20 mb-6">
                   <Award className="w-4 h-4 text-yellow-400" />
-                  <span className="text-sm text-yellow-400 font-medium">Earn Your Certificate</span>
+                  <span className="text-sm text-yellow-400 font-medium">{t('home.certificate_section.badge', 'Earn Your Certificate')}</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-                  Get Your Official
-                  <span className="text-yellow-400"> ISHAMI Certificate</span>
+                  {t('home.certificate_section.title', 'Get Your Official ISHAMI Certificate')}
                 </h2>
                 <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
-                  Complete the Traffic Rules & Road Safety quiz and earn an official certificate.
-                  Share it with employers, print it, or verify it online. Prove your driving knowledge!
+                  {t('home.certificate_section.description', 'Complete the Traffic Rules & Road Safety quiz and earn an official certificate. Share it with employers, print it, or verify it online. Prove your driving knowledge!')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <Link
@@ -285,13 +277,13 @@ export default function Home() {
                     className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-bold hover:shadow-xl hover:shadow-yellow-500/25 transition-all duration-300 hover:-translate-y-0.5"
                   >
                     <Trophy className="w-5 h-5" />
-                    <span>Take a Quiz</span>
+                    <span>{t('home.certificate_section.take_quiz', 'Take a Quiz')}</span>
                   </Link>
                   <Link
                     to="/certificate"
                     className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300"
                   >
-                    <span>View Certificate</span>
+                    <span>{t('home.certificate_section.view_certificate', 'View Certificate')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -306,12 +298,12 @@ export default function Home() {
                     </div>
                     <span className="text-sm font-bold text-white">ISHAMI</span>
                   </div>
-                  <p className="text-[10px] text-yellow-500 uppercase tracking-widest mb-2 font-bold">Certificate of Completion</p>
+                  <p className="text-[10px] text-yellow-500 uppercase tracking-widest mb-2 font-bold">{t('home.certificate_section.certificate_title', 'Certificate of Completion')}</p>
                   <div className="h-2 w-20 bg-yellow-500/30 rounded-full mb-4" />
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-2xl font-bold text-white">87%</p>
-                      <p className="text-[10px] text-slate-500">Final Score</p>
+                      <p className="text-[10px] text-slate-500">{t('home.certificate_section.final_score', 'Final Score')}</p>
                     </div>
                     <div className="p-3 rounded-full bg-yellow-500/20">
                       <Shield className="w-6 h-6 text-yellow-400" />
@@ -319,7 +311,7 @@ export default function Home() {
                   </div>
                   <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-400" />
-                    <span className="text-xs text-slate-400">Electronically verifiable</span>
+                    <span className="text-xs text-slate-400">{t('home.certificate_section.electronically_verifiable', 'Electronically verifiable')}</span>
                   </div>
                 </div>
               </div>
@@ -336,7 +328,7 @@ export default function Home() {
               {t('home.testimonials.title')}
             </h2>
             <p className="text-slate-400">
-              {lang === 'en' ? 'Join thousands of successful learners' : 'Jya mu bwenge bw\'abiga benshi'}
+              {t('home.testimonials.subtitle', 'Join thousands of successful learners')}
             </p>
           </div>
           <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /></div>}>
@@ -364,19 +356,19 @@ export default function Home() {
             />
             <div className="relative z-10 text-center text-white">
               <Trophy className="w-16 h-16 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-4 font-[family-name:var(--font-heading)]">{lang === 'en' ? 'Need Help with Irembo Registration?' : 'Ushaka Ubufasha mu Kwiyandikisha kuri Irembo?'}</h2>
+              <h2 className="text-3xl font-bold mb-4 font-[family-name:var(--font-heading)]">{t('home.irembo_section.title', 'Need Help with Irembo Registration?')}</h2>
               <p className="mb-8 text-purple-100">
-                {lang === 'en' ? 'We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.' : 'Twe dushobora kukugufasha kubona nomero y\'ikizamini cyawe kuri serivisi za Irembo. Bufasha bw\'agaciro, bwizewe kandi bw\'umutekano.'}
+                {t('home.irembo_section.description', 'We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.')}
               </p>
               <Link
                 to="/irembo"
                 className="inline-flex items-center px-8 py-4 bg-white text-purple-700 rounded-xl font-semibold hover:bg-slate-100 transition-all duration-300 gap-2 hover:shadow-xl hover:-translate-y-0.5"
               >
-                <span>{lang === 'en' ? 'Get Irembo Help' : 'Shyira Ubufasha wa Irembo'}</span>
+                <span>{t('home.irembo_section.cta', 'Get Irembo Help')}</span>
                 <ChevronRight className="w-5 h-5" />
               </Link>
               <p className="mt-4 text-sm text-purple-200">
-                {lang === 'en' ? 'Service Fee: 5,500 RWF | Processing Time: Within 8 hours' : 'Igiciro cya Serivisi: 5,500 RWF | Igihe cyo gutunganya: Mu minsi 8'}
+                {t('home.irembo_section.fee', 'Service Fee: 5,500 RWF | Processing Time: Within 8 hours')}
               </p>
             </div>
           </motion.div>
@@ -406,7 +398,7 @@ export default function Home() {
                 className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl"
               >
                 <p className="text-emerald-400">
-                  ✓ Thank you for subscribing! Check your email for confirmation.
+                  {t('home.newsletter.success', '✓ Thank you for subscribing! Check your email for confirmation.')}
                 </p>
               </motion.div>
             ) : (
@@ -417,7 +409,7 @@ export default function Home() {
                   aria-label="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('home.newsletter.enter_email', 'Enter your email')}
                   required
                   className="flex-1 px-6 py-4 bg-white/5 border border-white/15 rounded-[14px] focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-slate-500 transition-all"
                 />
@@ -425,7 +417,7 @@ export default function Home() {
                   type="submit"
                   className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-[14px] font-semibold hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 hover:-translate-y-0.5"
                 >
-                  {t('home.newsletter.sub')}
+                  {t('home.newsletter.subscribe', 'Subscribe')}
                 </button>
               </form>
             )}

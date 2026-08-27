@@ -1,0 +1,38 @@
+{
+  "title": "Moto-Sensei",
+  "subtitle": "Rwanda Traffic Rules AI Instructor",
+  "badges": {
+    "languages": "Kinyarwanda + English",
+    "safety_validated": "Safety validated",
+    "verified_knowledge": "Verified knowledge"
+  },
+  "free_questions": "{count} free questions remaining",
+  "new_chat": "New Chat",
+  "search_chats_placeholder": "Search chats...",
+  "no_conversations": "No conversations found",
+  "conversation_count": "{count} conversations",
+  "export": "Export",
+  "import": "Import",
+  "importing": "Importing...",
+  "share": "Share",
+  "copy_link": "Copy link",
+  "copied": "Copied!",
+  "messages": "messages",
+  "confidence": {
+    "high": "High confidence",
+    "medium": "Medium confidence",
+    "low": "Low confidence"
+  },
+  "errors": {
+    "rate_limited": "Too many requests right now. Please wait a moment and try again. #GerayoAmahoro",
+    "server_error": "The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro"
+  },
+  "suggested_prompts": [
+    "What does a STOP sign mean?",
+    "Explain right-of-way rules",
+    "What are the speed limits in Rwanda?",
+    "Teach me how to park on a hill",
+    "Give me 5 exam questions about signs",
+    "I am approaching a roundabout, what do I do?"
+  ]
+}

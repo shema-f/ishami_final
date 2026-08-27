@@ -1,0 +1,55 @@
+{
+  "auth_required": {
+    "message": "Nyamuneka injira kugira ngo urebe icyangombwa cyawe.",
+    "button": "Injira"
+  },
+  "back_button": "Gusubira inyuma",
+  "certificate": {
+    "title": "ISHAMI",
+    "subtitle": "Urubuga rw'Ikoranabuhanga ryo Kwigisha no Gusuzuma Ubumenyi bwo Gutwara Ibinyabiziga",
+    "certified": "BYEMEJWEYO",
+    "completion_title": "ICYANGOMBWA CY'URANGIJE AMASOMO",
+    "presented_to": "Iki cyangombwa gitanzwe ku bw'ishema kuri",
+    "description": "kubera gutsinda neza gahunda ya {quizTitle} no kugaragaza ubumenyi bushimishije ku mategeko y'umuhanda, ibyapa byo mu muhanda, n'imyitwarire myiza y'umunyamuhanda.",
+    "areas_title": "Ingingo Zizweho",
+    "areas": {
+      "road_signs": "Ibyapa byo mu muhanda n'ibisobanuro byabyo",
+      "pedestrian_safety": "Umutekano w'abanyamaguru n'abanyamagare",
+      "road_markings": "Ibimenyetso byo mu muhanda no kugendera mu mukono",
+      "speed_limits": "Umuvuduko ntarengwa n'inshingano zo kwitwararika",
+      "right_of_way": "Amategeko y'uburenganzira bw'ibanze no gutanga inzira",
+      "overtaking": "Kunyuranaho n'intera y'umutekano hagati y'ibinyabiziga",
+      "traffic_lights": "Amatara n'ibimenyetso byo kuyobora ibinyabiziga",
+      "road_safety": "Amahame y'umutekano wo mu muhanda mu Rwanda"
+    },
+    "details": {
+      "training_result": "Ibyavuye mu Masomo",
+      "pass": "YATSINZE",
+      "fail": "YATSINZWE",
+      "final_score": "Amanota ya Nyuma",
+      "training_level": "Urwego rw'Amasomo",
+      "training_level_value": "Gusobanukirwa Amategeko y'Umuhanda",
+      "certificate_no": "Nimero y'Icyangombwa",
+      "date_issued": "Itariki Cyatangiweho",
+      "valid_until": "Kizageza Ku Cyatangiweho"
+    },
+    "verification": {
+      "title": "Kugenzura Ukuri kw'Icyangombwa",
+      "scan_text": "Koresha QR code cyangwa sura ihuza kugira ngo ugenzure ukuri kwacyo:",
+      "scan_to_verify": "Kanda hano Ugenzure"
+    },
+    "signatures": {
+      "managing_director": "Umuyobozi Mukuru",
+      "assessment_officer": "Umukozi Ushinzwe Ibisuzumwa",
+      "platform": "Urubuga ISHAMI",
+      "motto_line1": "Umuhanda Utekanye, Ubuzima Butekanye",
+      "motto_line2": "Twubake u Rwanda Rwiza"
+    },
+    "footer_note": "Iki cyangombwa gishobora kugenzurwa hakoreshejwe ikoranabuhanga binyuze ku rubuga rwa Ishami."
+  },
+  "actions": {
+    "downloading": "Birakororwa...",
+    "download_pdf": "Koporora Icyangombwa muri PDF",
+    "view_leaderboard": "Reba Urutonde rw'Abatsinze neza"
+  }
+}

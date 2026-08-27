@@ -1,0 +1,55 @@
+{
+  "features": {
+    "quizzes_title": "Ibizamini ",
+    "quizzes_desc": "Suzuma ubumenyi bwawe ukoresheje ibizamini  bishingiye ku mategeko y'umuhanda y'u Rwanda nyayo.",
+    "simulation_title": "Imyitozo yo Gutwara Ibinyabiziga muri 3D",
+    "simulation_desc": "Itoze ibiba mu muhanda nyabyo mu buryo bw'amashusho yimbitse ya 3D.",
+    "ai_title": "Umufasha wa AI - Moto-Sensei",
+    "ai_desc": "Bona ibisubizo ako kanya bitanzwe n'umwarimu wawe ugufasha kwiga gutwara ibinyabiziga mu Rwanda.",
+    "resources_title": "download Inyandiko n'Imfashanyigisho",
+    "resources_desc": "Bona inyandiko za PDF, amashusho, n'amafoto by'ibyapa n'amategeko y'umuhanda."
+  },
+  "stats": {
+    "students": "Abanyeshuri",
+    "questions": "Ibibazo",
+    "pass_rate": "Ijanisha ry'Abatsinda"
+  },
+  "loading": "Birigutunganywa...",
+  "learn_more": "Menya byinshi",
+  "ai_section": {
+    "badge": "Uburyo bwo Kwiga Bwifashisha AI",
+    "title": "Menya Moto-Sensei",
+    "description": "Umwarimu wawe wa AI ugufasha kwiga gutwara. Baza ibibazo mu Kinyarwanda, uhabwe ibisobanuro aka kanya, kandi umenye amategeko y'umuhanda vuba cyane.",
+    "cta": "Ganira na Moto-Sensei",
+    "preview_greeting": "Muraho! Ndi Moto-Sensei. Ni iki mwifuza kwiga uyu munsi?",
+    "preview_question": "Icyapa gifite ishusho ya mpandeshatu itukura gisobanura iki?"
+  },
+  "certificate_section": {
+    "badge": "Bona Icyangombwa Cyawe",
+    "title": "Bona Icyangombwa Cyemewe cya ISHAMI",
+    "description": "Rangiza ikizamini cy'Amategeko y'Umuhanda n'Umutekano wo mu Muhanda uhabwe icyangombwa cyemewe. Gisangize abakoresha, gicapishe, cyangwa ugenzure ukuri kwacyo kuri interineti. Garagaza ubumenyi bwawe!",
+    "take_quiz": "Kora Ikizamini",
+    "view_certificate": "Reba Icyangombwa",
+    "certificate_title": "Icyangombwa cy'Usoje Amasomo",
+    "final_score": "Amanota ya Nyuma",
+    "electronically_verifiable": "Gishobora kugenzurwa hifashishijwe ikoranabuhanga"
+  },
+  "testimonials": {
+    "subtitle": "Fatanya n'ibihumbi by'abanyeshuri batsinze neza"
+  },
+  "irembo_section": {
+    "title": "Ukeneye Ubufasha bwo Kwiyandikisha ku Irembo?",
+    "description": "Twagufasha kubona kode yo gukorera ikizamini binyuze muri serivisi za Irembo. Ubufasha bwihuse, bwizewe, kandi butekanye.",
+    "cta": "Bona Ubufasha bwa Irembo",
+    "fee": "Igiciro cya Serivisi: 5,500 RWF | Igihe Bitwara: Mu masaha 8"
+  },
+  "newsletter": {
+    "enter_email": "Injiza imeri yawe",
+    "subscribe": "Iyandikishe",
+    "success": "✓ Urakoze kwiyandikisha! Reba muri imeri yawe ubutumwa bwo kwemeza.",
+    "error": "Kwiyandikisha byanze. Ongera ugerageze."
+  },
+  "cta": {
+    "start_button": "Tangira Kwiga"
+  }
+}

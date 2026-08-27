@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "home": "Ahabanza",
+    "aiAssistant": " AI ",
+    "quiz": "Ibizamini",
+    "simulation": "3D simulation",
+    "resources": "Imfashanyigisho",
+    "leaderboard": "Leaderboard",
+    "signIn": "Injira",
+    "getStarted": "Tangira Ubu",
+    "signOut": "Sohoka"
+  },
+  "footer": {
+    "subtitle": "Amategeko y'Umuhanda",
+    "description": "Menya neza amategeko y'umuhanda mu Rwanda ukoresheje ibizamini bikorwa kuri interineti, ubufasha bwa AI, n'imyitozo yo gutwara muri 3D.",
+    "quickLinks": "Aho Wahita Ugana",
+    "legal": "Amategeko",
+    "contactUs": "Twandikire",
+    "privacy": "Politiki y'Ubuzima Bwite",
+    "terms": "Amabwiriza n'Amategeko y'Imikoreshereze",
+    "cookies": "Politiki ya Kuki (Cookies)",
+    "rights": "all rights reserved",
+    "madeIn": "made with'",
+    "partnership": "Ku bufatanye na"
+  },
+  "root": {
+    "installTitle": "Shyira Porogaramu ya ISHAMI muri Telefoni",
+    "installDesc": "Bona uburyo bwiza bwo gukoresha ushyira porogaramu yacu muri telefoni. Ikora no mu gihe udafite interineti!",
+    "installNow": "Yishyiremo Ubu",
+    "maybeLater": "Wenda Nyuma"
+  },
+  "common": {
+    "select": "Hitamo Uburyo bw'Imyitozo",
+    "estimated": "min",
+    "objectives": "Intego",
+    "difficulty": "Uburemere"
+  }
+}

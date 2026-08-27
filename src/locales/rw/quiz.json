@@ -1,0 +1,39 @@
+{
+  "results": {
+    "congratulations": "Urakoze cyane! 🎉",
+    "keep_practicing": "Komeza Witoze! 💪",
+    "your_score": "Amanota Yawe:",
+    "excellent_work": "Wakoze neza cyane! Witeguye gukora ikizamini nyacyo cyo gutwara ibinyabiziga. Komeza uwo murava!",
+    "need_70_percent": "Ukeneye 70% kugira ngo utsinde. Subiramo imfashanyigisho maze wongere ugerageze. Urabishoboye!",
+    "get_certificate": "🎓 Bona Icyangombwa Cyawe",
+    "try_again": "Ongera Ugerageze",
+    "view_leaderboard": "Reba Urutonde rw'Abatsinze Neza"
+  },
+  "quiz_list": {
+    "time_left": "Igihe Gisigaye",
+    "progress": "Intambwe Umaze Gutera",
+    "score": "Amanota",
+    "previous": "Ibibazo Byabanje",
+    "next_question": "Ikibazo Gikurikira",
+    "finish_quiz": "Soza Ikizamini"
+  },
+  "paywall": {
+    "title": "Fungura Byose nka Pro",
+    "description": "Usoje ibibazo 6 by'ubuntu! Fungura ibibazo byose uko ari 20 n'izindi serivisi zihariye kuri",
+    "testing_price": "100 RWF",
+    "production_price": "1,000 RWF",
+    "pro_features_title": "Ibyiza bya Konti ya Pro:",
+    "features": {
+      "unlimited_quizzes": "Gukora ibizamini inshuro zose ushaka",
+      "full_simulation": "Kwinjira muri porogaramu yose y'imyitozo ya 3D",
+      "unlimited_ai": "Kubaza umufasha wa AI ibibazo bitagira ingano",
+      "premium_resources": "Gukoporora inyandiko n'amasomo yihariye"
+    },
+    "phone_placeholder": "Nimero ya telefoni (urugero: 0788xxxxxx)",
+    "processing": "Biratunganywa...",
+    "pay_button": "Ishyura ukoresheje Mobile Money - 100 RWF",
+    "phone_not_found": "Nimero yawe ya telefoni ntiyemejwe kuri Paypack. Nyamuneka yishyire kuri paji yawe ya Paypack → Nimero Zemejwe.",
+    "check_phone": "📱 Reba kuri telefoni yawe ubutumwa bwa USSD...",
+    "maybe_later": "Wenda Nyuma"
+  }
+}

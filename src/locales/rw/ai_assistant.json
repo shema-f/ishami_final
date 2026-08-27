@@ -1,0 +1,38 @@
+{
+  "title": "Moto-Sensei",
+  "subtitle": "Umwarimu wa AI ku Mategeko y'Umuhanda mu Rwanda",
+  "badges": {
+    "languages": "Ikinyarwanda + Icyongereza",
+    "safety_validated": "Umutekano wemejwe",
+    "verified_knowledge": "Ubumenyi bwagenzuwe"
+  },
+  "free_questions": "Hasigaye ibibazo {count} by'ubuntu",
+  "new_chat": "Ibiganiro Bishya",
+  "search_chats_placeholder": "Shakisha mu biganiro...",
+  "no_conversations": "Nta biganiro byabonetse",
+  "conversation_count": "Ibiganiro {count}",
+  "export": "Sohora",
+  "import": "Injiza",
+  "importing": "Birinjira...",
+  "share": "Sangiza",
+  "copy_link": "Koporora ihuza",
+  "copied": "Byakoporowe!",
+  "messages": "ubutumwa",
+  "confidence": {
+    "high": "Icyizere cyo hejuru",
+    "medium": "Icyizere giciriritse",
+    "low": "Icyizere gito"
+  },
+  "errors": {
+    "rate_limited": "Ubusabe bubaye bwinshi ako kanya. Tegereza akanya gato wongere ugerageze. #GerayoAmahoro",
+    "server_error": "Uburyo bwa AI bugize ikibazo by'akanya gato. Ongera ugerageze mu kanya. #GerayoAmahoro"
+  },
+  "suggested_prompts": [
+    "Icyapa cya STOP gisobanura iki?",
+    "Sobanura amategeko yo gutanga inzira (uburenganzira bw'ibanze)",
+    "Umuvuduko ntarengwa mu Rwanda ni uwuhe?",
+    "Nyigisha uko baparika ku musozi",
+    "Mpa ibibazo 5 by'ibizamini byerekeye ibyapa",
+    "Ndegera rond-point, ngomba gukora iki?"
+  ]
+}

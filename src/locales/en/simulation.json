@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "title": "Loading ISHAMI Simulator",
+    "subtitle": "Preparing Kigali environment..."
+  },
+  "not_available": {
+    "title": "3D Simulation Not Available",
+    "description": "The driving simulation requires a device with 3D graphics support. Please use a desktop computer or laptop.",
+    "return_home": "Return Home"
+  },
+  "back_button": "Back",
+  "flyover_labels": {
+    "kigali": "Driving Training Area",
+    "convention_centre": "Training District",
+    "training_route": "Follow the highlighted path",
+    "your_vehicle": "Starting Position"
+  },
+  "aerial_view": "AERIAL VIEW",
+  "guided_start": "Guided Start",
+  "route_preview": {
+    "title": "ROUTE PREVIEW",
+    "start": "START",
+    "destination": "DESTINATION",
+    "road": "ROAD",
+    "steps": "{count} steps",
+    "starting_point": "Starting point",
+    "final_destination": "Final destination",
+    "step": "Step {number}"
+  },
+  "mission_criteria": {
+    "title": "Mission Criteria",
+    "speed_limit": "Speed Limit",
+    "time": "Time",
+    "follow_route": "Follow the highlighted route",
+    "signal_turns": "Signal at every turn",
+    "no_collisions": "No building collisions",
+    "no_speeding": "No speeding"
+  },
+  "cinematic": {
+    "driving_area": "Driving Training Area"
+  },
+  "skip_hint": {
+    "press": "Press",
+    "enter": "ENTER",
+    "to_skip": "to skip"
+  },
+  "collisions": {
+    "minor": "You bumped into an obstacle. Drive more carefully!",
+    "warning": "Careful! You hit a building. Slow down near structures.",
+    "major": "Dangerous collision! You must avoid buildings entirely."
+  }
+}

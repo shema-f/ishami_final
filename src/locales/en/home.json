@@ -1,0 +1,55 @@
+{
+  "features": {
+    "quizzes_title": "Interactive Quizzes",
+    "quizzes_desc": "Test your knowledge with timed quizzes based on real Rwanda traffic rules.",
+    "simulation_title": "3D Driving Simulation",
+    "simulation_desc": "Practice real-world scenarios in immersive 3D environments.",
+    "ai_title": "AI Assistant - Moto-Sensei",
+    "ai_desc": "Get instant answers from your friendly Rwandan driving instructor.",
+    "resources_title": "Download Resources",
+    "resources_desc": "Access PDFs, videos, and images of traffic signs and rules."
+  },
+  "stats": {
+    "students": "Students",
+    "questions": "Questions",
+    "pass_rate": "Pass Rate"
+  },
+  "loading": "Loading...",
+  "learn_more": "Learn more",
+  "ai_section": {
+    "badge": "AI-Powered Learning",
+    "title": "Meet Moto-Sensei",
+    "description": "Your friendly AI driving instructor. Ask questions in Kinyarwanda, get instant explanations, and master traffic rules faster.",
+    "cta": "Chat with Moto-Sensei",
+    "preview_greeting": "Muraho! I'm Moto-Sensei. What would you like to learn today?",
+    "preview_question": "What does a red triangle sign mean?"
+  },
+  "certificate_section": {
+    "badge": "Earn Your Certificate",
+    "title": "Get Your Official ISHAMI Certificate",
+    "description": "Complete the Traffic Rules & Road Safety quiz and earn an official certificate. Share it with employers, print it, or verify it online. Prove your driving knowledge!",
+    "take_quiz": "Take a Quiz",
+    "view_certificate": "View Certificate",
+    "certificate_title": "Certificate of Completion",
+    "final_score": "Final Score",
+    "electronically_verifiable": "Electronically verifiable"
+  },
+  "testimonials": {
+    "subtitle": "Join thousands of successful learners"
+  },
+  "irembo_section": {
+    "title": "Need Help with Irembo Registration?",
+    "description": "We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.",
+    "cta": "Get Irembo Help",
+    "fee": "Service Fee: 5,500 RWF | Processing Time: Within 8 hours"
+  },
+  "newsletter": {
+    "enter_email": "Enter your email",
+    "subscribe": "Subscribe",
+    "success": "✓ Thank you for subscribing! Check your email for confirmation.",
+    "error": "Subscription failed. Please try again."
+  },
+  "cta": {
+    "start_button": "Start Learning"
+  }
+}

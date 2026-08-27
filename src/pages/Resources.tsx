@@ -136,13 +136,10 @@ export default function Resources() {
             <FileText className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-            Learning Resources
+            {t('res.title', 'Learning Resources')}
           </h1>
           <p className="text-gray-400 text-lg">
-            Download study materials, videos, and reference images
-            <span className="block mt-1 text-green-400">
-              Kuramo Ibikoresho byo Kwiga
-            </span>
+            {t('res.subtitle', 'Download study materials, videos, and reference images')}
           </p>
         </motion.div>
 
@@ -153,19 +150,19 @@ export default function Resources() {
           transition={{ delay: 0.2 }}
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
-          {['All', 'PDF', 'Video', 'Image'].map((filterOption) => (
+          {(['All', 'PDF', 'Video', 'Image'] as const).map((filterOption) => (
             <motion.button
               key={filterOption}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setFilter(filterOption as typeof filter)}
+              onClick={() => setFilter(filterOption)}
               className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium ${
                 filter === filterOption
                   ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                   : 'bg-white/5 backdrop-blur-xl text-gray-300 border border-white/10 hover:border-blue-500/30 hover:text-white hover:bg-white/10'
               }`}
             >
-              {filterOption}
+              {t(`res.filters.${filterOption.toLowerCase()}`, filterOption)}
             </motion.button>
           ))}
         </motion.div>
@@ -226,7 +223,7 @@ export default function Resources() {
 
                 {resource.size && (
                   <p className="text-gray-500 text-xs mb-4">
-                    Size: {resource.size}
+                    {t('res.resource.size', 'Size:')} {resource.size}
                   </p>
                 )}
 
@@ -244,24 +241,24 @@ export default function Resources() {
                   {!resource.fileUrl ? (
                     <>
                       <Lock className="w-4 h-4" />
-                      <span>Coming Soon</span>
+                      <span>{t('res.resource.coming_soon', 'Coming Soon')}</span>
                     </>
                   ) : resource.isPremium && !user?.isPro ? (
                     <>
                       <Lock className="w-4 h-4" />
-                      <span>Pro Only</span>
+                      <span>{t('res.resource.pro_only', 'Pro Only')}</span>
                     </>
                   ) : (
                     <>
                       {resource.type === 'Video' ? (
                         <>
                           <Play className="w-4 h-4" />
-                          <span>Watch</span>
+                          <span>{t('res.resource.watch', 'Watch')}</span>
                         </>
                       ) : (
                         <>
                           <Download className="w-4 h-4" />
-                          <span>Download</span>
+                          <span>{t('res.resource.download', 'Download')}</span>
                         </>
                       )}
                     </>
@@ -281,7 +278,7 @@ export default function Resources() {
           >
             <FileText className="w-16 h-16 mx-auto mb-4 text-gray-600" />
             <p className="text-gray-400">
-              No resources found for this filter.
+              {t('res.empty_state', 'No resources found for this filter.')}
             </p>
           </motion.div>
         )}
@@ -305,20 +302,21 @@ export default function Resources() {
               <div className="inline-flex p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
                 <Lock className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Premium Resource</h2>
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('res.paywall.title', 'Premium Resource')}</h2>
               <p className="text-gray-400 mb-6">
-                This resource is only available to Pro members. 
-                Upgrade for only <span className="text-blue-400 font-semibold">100 RWF</span> to access all premium content.
+                {t('res.paywall.description', 'This resource is only available to Pro members. Upgrade for only')}{' '}
+                <span className="text-blue-400 font-semibold">{t('res.paywall.price', '100 RWF')}</span>{' '}
+                {t('res.paywall.description_suffix', 'to access all premium content.')}
               </p>
               <div className="space-y-3">
                 <button className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300">
-                  Upgrade to Pro - 100 RWF
+                  {t('res.paywall.upgrade_button', 'Upgrade to Pro - 100 RWF')}
                 </button>
                 <button
                   onClick={() => setShowPaywall(false)}
                   className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
                 >
-                  Browse Free Resources
+                  {t('res.paywall.browse_free', 'Browse Free Resources')}
                 </button>
               </div>
             </div>

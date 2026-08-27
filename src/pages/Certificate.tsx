@@ -28,13 +28,11 @@ export default function Certificate() {
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
-    // Load certificate data from localStorage or generate sample
     const stored = localStorage.getItem('latestCertificate');
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         setCertData(parsed);
-        // Fetch the certificate ID from the server
         fetchCertificateId(parsed.certificateNo);
       } catch {}
     }
@@ -48,55 +46,33 @@ export default function Certificate() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (data.valid && data.certificate?.id) {
-        setCertificateId(data.certificate.id);
-      }
+      if (data?.id) setCertificateId(data.id);
     } catch {}
   };
 
   const handleDownloadPDF = async () => {
-    if (!certificateId || !user) return;
-    setDownloading(true);
     try {
-      const token = localStorage.getItem('ishami.token');
-      const response = await fetch(`/api/certificate/${certificateId}.pdf`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ISHAMI-Certificate-${certData?.certificateNo || 'download'}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        // Fallback to print
-        window.print();
-      }
-    } catch {
-      window.print();
+      setDownloading(true);
+      const certElement = document.getElementById('certificate-content');
+      if (!certElement) return;
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(certElement, { scale: 2, backgroundColor: '#0a1628' });
+      const { default: jsPDF } = await import('jspdf');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
+      pdf.save(`ISHAMI-Certificate-${certificateNo}.pdf`);
+    } catch (e) {
+      console.error('PDF generation failed:', e);
     } finally {
       setDownloading(false);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 mb-4">Please log in to view your certificate.</p>
-          <button onClick={() => navigate('/auth')} className="px-6 py-3 bg-blue-500 text-white rounded-xl">
-            Log In
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const stored = localStorage.getItem('latestCertificate');
+  const parsedStored = stored ? JSON.parse(stored) : null;
 
-  const certificateNo = certData?.certificateNo || `ISH-TRU-2026-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+  const certificateNo = certData?.certificateNo || parsedStored?.certificateNo || `ISH-TRU-${new Date().getFullYear()}-000000`;
   const score = certData?.score || 87;
   const totalQuestions = certData?.totalQuestions || 20;
   const percentage = Math.round((score / totalQuestions) * 100);
@@ -111,14 +87,14 @@ export default function Certificate() {
   const displayName = certData?.username || user.username;
 
   const areasOfUnderstanding = [
-    { icon: '⚠️', text: 'Road signs and their meanings' },
-    { icon: '🚶', text: 'Pedestrian and cyclist safety' },
-    { icon: '🛣️', text: 'Road markings and lane discipline' },
-    { icon: '⚡', text: 'Speed limits and responsibility' },
-    { icon: '🔺', text: 'Right of way and priority rules' },
-    { icon: '🚗', text: 'Overtaking and safe distances' },
-    { icon: '🚦', text: 'Traffic lights and signals' },
-    { icon: '🌄', text: 'Rwanda road-safety principles' },
+    { icon: '⚠️', text: t('cert.areas.road_signs', 'Road signs and their meanings') },
+    { icon: '🚶', text: t('cert.areas.pedestrian_safety', 'Pedestrian and cyclist safety') },
+    { icon: '🛣️', text: t('cert.areas.road_markings', 'Road markings and lane discipline') },
+    { icon: '⚡', text: t('cert.areas.speed_limits', 'Speed limits and responsibility') },
+    { icon: '🔺', text: t('cert.areas.right_of_way', 'Right of way and priority rules') },
+    { icon: '🚗', text: t('cert.areas.overtaking', 'Overtaking and safe distances') },
+    { icon: '🚦', text: t('cert.areas.traffic_lights', 'Traffic lights and signals') },
+    { icon: '🌄', text: t('cert.areas.road_safety', 'Rwanda road-safety principles') },
   ];
 
   return (
@@ -135,12 +111,13 @@ export default function Certificate() {
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back</span>
+            <span className="text-sm">{t('cert.back_button', 'Back')}</span>
           </button>
         </motion.div>
 
         {/* Certificate */}
         <motion.div
+          id="certificate-content"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -191,8 +168,8 @@ export default function Certificate() {
                   <img src="/apple-touch-icon.png" alt="ISHAMI" className="w-12 h-12 object-contain" />
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-wide font-[family-name:var(--font-heading)]">ISHAMI</h1>
-                  <p className="text-xs text-slate-400">Digital Driving Education & Assessment Platform</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-wide font-[family-name:var(--font-heading)]">{t('cert.title', 'ISHAMI')}</h1>
+                  <p className="text-xs text-slate-400">{t('cert.subtitle', 'Digital Driving Education & Assessment Platform')}</p>
                 </div>
               </div>
 
@@ -202,7 +179,7 @@ export default function Certificate() {
                   <div className="text-center">
                     <Shield className="w-8 h-8 text-white mx-auto" />
                     <span className="text-[8px] font-bold text-white uppercase tracking-widest mt-1 block">ISHAMI</span>
-                    <span className="text-[7px] text-yellow-100 uppercase tracking-widest">CERTIFIED</span>
+                    <span className="text-[7px] text-yellow-100 uppercase tracking-widest">{t('cert.certified', 'CERTIFIED')}</span>
                   </div>
                 </div>
               </div>
@@ -216,9 +193,9 @@ export default function Certificate() {
                 <div className="h-px flex-1 max-w-[100px] bg-gradient-to-l from-transparent to-yellow-500/50" />
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-yellow-500 tracking-wide font-[family-name:var(--font-heading)]">
-                CERTIFICATE OF COMPLETION
+                {t('cert.completion_title', 'CERTIFICATE OF COMPLETION')}
               </h2>
-              <p className="text-slate-300 mt-3 text-sm sm:text-base">This certificate is proudly presented to</p>
+              <p className="text-slate-300 mt-3 text-sm sm:text-base">{t('cert.presentedTo', 'This certificate is proudly presented to')}</p>
             </div>
 
             {/* Recipient Name */}
@@ -235,8 +212,7 @@ export default function Certificate() {
 
             {/* Description */}
             <p className="text-center text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed text-sm sm:text-base">
-              for successfully completing the <span className="text-yellow-400 font-semibold">{quizTitle}</span> Program
-              and demonstrating satisfactory knowledge of traffic regulations, road signs, and safe road-user behavior.
+              {t('cert.description', 'for successfully completing the {quizTitle} Program and demonstrating satisfactory knowledge of traffic regulations, road signs, and safe road-user behavior.').replace('{quizTitle}', quizTitle)}
             </p>
 
             {/* Two-column layout: Areas + Details */}
@@ -244,7 +220,7 @@ export default function Certificate() {
               {/* Left: Areas of Understanding */}
               <div className="flex-1">
                 <h4 className="text-center text-yellow-500 font-bold uppercase tracking-widest text-sm mb-6 font-[family-name:var(--font-heading)]">
-                  Areas of Understanding
+                  {t('cert.areasTitle', 'Areas of Understanding')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {areasOfUnderstanding.map((area, idx) => (
@@ -269,9 +245,9 @@ export default function Certificate() {
                       <Trophy className="w-5 h-5 text-yellow-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Training Result</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.trainingResult', 'Training Result')}</p>
                       <p className={`text-lg font-bold ${passed ? 'text-green-400' : 'text-red-400'}`}>
-                        {passed ? 'PASS' : 'FAIL'}
+                        {passed ? t('cert.pass', 'PASS') : t('cert.fail', 'FAIL')}
                       </p>
                     </div>
                   </div>
@@ -282,7 +258,7 @@ export default function Certificate() {
                       <BarChart3 className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Final Score</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.finalScore', 'Final Score')}</p>
                       <p className="text-lg font-bold text-white">{percentage}%</p>
                     </div>
                   </div>
@@ -293,8 +269,8 @@ export default function Certificate() {
                       <FileText className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Training Level</p>
-                      <p className="text-sm font-semibold text-white">Traffic Rules Understanding</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.trainingLevel', 'Training Level')}</p>
+                      <p className="text-sm font-semibold text-white">{t('cert.training_level_value', 'Traffic Rules Understanding')}</p>
                     </div>
                   </div>
 
@@ -304,7 +280,7 @@ export default function Certificate() {
                       <Hash className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Certificate No.</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.certificateNo', 'Certificate No.')}</p>
                       <p className="text-sm font-bold text-white font-[family-name:var(--font-mono)]">{certificateNo}</p>
                     </div>
                   </div>
@@ -315,7 +291,7 @@ export default function Certificate() {
                       <Calendar className="w-5 h-5 text-orange-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Date Issued</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.dateIssued', 'Date Issued')}</p>
                       <p className="text-sm font-semibold text-white">{issuedDate}</p>
                     </div>
                   </div>
@@ -326,7 +302,7 @@ export default function Certificate() {
                       <Calendar className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">Valid Until</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('cert.valid_until', 'Valid Until')}</p>
                       <p className="text-sm font-semibold text-white">{expiresDate}</p>
                     </div>
                   </div>
@@ -341,9 +317,9 @@ export default function Certificate() {
                   <Shield className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest">Certificate Verification</p>
+                  <p className="text-xs text-blue-400 font-semibold uppercase tracking-widest">{t('cert.verification.title', 'Certificate Verification')}</p>
                   <p className="text-sm text-slate-300">Certificate ID: <span className="text-white font-[family-name:var(--font-mono)] font-bold">{certificateNo}</span></p>
-                  <p className="text-xs text-slate-400 mt-1">Scan QR code or visit link to verify authenticity:</p>
+                  <p className="text-xs text-slate-400 mt-1">{t('cert.verification.scan_text', 'Scan QR code or visit link to verify authenticity:')}</p>
                   <a
                     href={`https://ishami.rw/verify/${certificateNo}`}
                     target="_blank"
@@ -363,13 +339,12 @@ export default function Certificate() {
                     alt="Certificate QR Code"
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      // Fallback: generate a simple SVG QR-like pattern
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                     }}
                   />
                 </div>
-                <p className="text-[9px] text-slate-400 mt-2 uppercase tracking-wider">Scan to Verify</p>
+                <p className="text-[9px] text-slate-400 mt-2 uppercase tracking-wider">{t('cert.verification.scan_to_verify', 'Scan to Verify')}</p>
               </div>
             </div>
 
@@ -384,8 +359,8 @@ export default function Certificate() {
                   />
                 </div>
                 <div className="h-px w-28 bg-white/30 mx-auto mb-2" />
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Managing Director</p>
-                <p className="text-[9px] text-slate-400">ISHAMI Platform</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{t('cert.signatures.managing_director', 'Managing Director')}</p>
+                <p className="text-[9px] text-slate-400">{t('cert.signatures.platform', 'ISHAMI Platform')}</p>
               </div>
 
               {/* ISHAMI Official Seal */}
@@ -394,30 +369,30 @@ export default function Certificate() {
                   <div className="text-center">
                     <Award className="w-8 h-8 text-yellow-500 mx-auto" />
                     <span className="text-[7px] text-yellow-500 uppercase tracking-widest font-bold block mt-1">ISHAMI</span>
-                    <span className="text-[6px] text-yellow-400/70 uppercase tracking-widest">CERTIFIED</span>
+                    <span className="text-[6px] text-yellow-400/70 uppercase tracking-widest">{t('cert.certified', 'CERTIFIED')}</span>
                   </div>
                 </div>
-                <p className="text-[9px] text-slate-400">Safe Roads, Safe Lives</p>
-                <p className="text-[9px] text-slate-400">Build a Better Rwanda</p>
+                <div className="h-px w-28 bg-white/30 mx-auto mb-2" />
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{t('cert.signatures.motto_line1', 'Safe Roads, Safe Lives')}</p>
+                <p className="text-[9px] text-slate-400">{t('cert.signatures.motto_line2', 'Build a Better Rwanda')}</p>
               </div>
 
               <div className="text-center">
                 <div className="mb-2 h-16 flex items-center justify-center">
-                  <svg viewBox="0 0 140 40" className="w-32 h-12 mx-auto">
-                    <path d="M10 32 C20 8, 35 35, 50 15 C60 5, 75 30, 90 12 C100 2, 115 28, 130 18" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+                  <FileText className="w-12 h-12 text-slate-500" />
                 </div>
                 <div className="h-px w-28 bg-white/30 mx-auto mb-2" />
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Assessment Officer</p>
-                <p className="text-[9px] text-slate-400">ISHAMI Platform</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">{t('cert.signatures.assessment_officer', 'Assessment Officer')}</p>
+                <p className="text-[9px] text-slate-400">{t('cert.signatures.platform', 'ISHAMI Platform')}</p>
               </div>
             </div>
 
-            {/* Footer note */}
-            <p className="text-center text-[10px] text-slate-500 mt-6 flex items-center justify-center gap-1">
-              <CheckCircle2 className="w-3 h-3 text-green-500" />
-              This certificate can be electronically verified through the Ishami platform.
-            </p>
+            {/* Footer Note */}
+            <div className="mt-8 pt-6 border-t border-white/10 text-center">
+              <p className="text-[10px] text-slate-500 italic">
+                {t('cert.footer_note', 'This certificate can be electronically verified through the Ishami platform.')}
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -426,7 +401,7 @@ export default function Certificate() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center mt-8"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
         >
           <button
             onClick={handleDownloadPDF}
@@ -434,13 +409,13 @@ export default function Certificate() {
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50"
           >
             <Download className="w-5 h-5" />
-            {downloading ? (lang === 'en' ? 'Downloading...' : 'Gukurura...') : (lang === 'en' ? 'Download PDF Certificate' : 'Kurura Icyemezo PDF')}
+            {downloading ? t('cert.actions.downloading', 'Downloading...') : t('cert.actions.download_pdf', 'Download PDF Certificate')}
           </button>
           <button
             onClick={() => navigate('/leaderboard')}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300"
           >
-            View Leaderboard
+            {t('cert.actions.view_leaderboard', 'View Leaderboard')}
           </button>
         </motion.div>
       </div>

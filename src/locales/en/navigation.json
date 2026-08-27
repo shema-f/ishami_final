@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "home": "Home",
+    "aiAssistant": "AI Assistant",
+    "quiz": "Quiz",
+    "simulation": "3D Simulation",
+    "resources": "Resources",
+    "leaderboard": "Leaderboard",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "signOut": "Sign Out"
+  },
+  "footer": {
+    "subtitle": "Traffic Rules",
+    "description": "Master Rwanda Traffic Rules with interactive quizzes, AI assistance, and 3D simulations.",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "contactUs": "Contact Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "rights": "All rights reserved.",
+    "madeIn": "Made with",
+    "partnership": "In partnership with"
+  },
+  "root": {
+    "installTitle": "Install ISHAMI App",
+    "installDesc": "Get the best experience by installing our app. Works offline!",
+    "installNow": "Install Now",
+    "maybeLater": "Maybe Later"
+  },
+  "common": {
+    "select": "Select Scenario",
+    "estimated": "min",
+    "objectives": "Objectives",
+    "difficulty": "Difficulty"
+  }
+}

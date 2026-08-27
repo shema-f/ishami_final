@@ -5,11 +5,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 import { quizAPI, paymentAPI } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
-const quizImages: Record<string, any> = import.meta.glob('../assets/*.png', { eager: true });
+const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
   const n = Math.min(idx + 1, 20);
-  const key1 = `../assets/quiz${n}.png`;
-  const key2 = `../assets/quiz ${n}.png`;
+  const key1 = `../assets/quiz${n}.webp`;
+  const key2 = `../assets/quiz ${n}.webp`;
   const mod = (quizImages[key1] as any) || (quizImages[key2] as any);
   return typeof mod === 'string' ? mod : mod?.default || '';
 };
@@ -77,7 +77,6 @@ export default function Quiz() {
   const toggleQuizLang = async () => {
     const newLang = quizLang === 'rw' ? 'en' : 'rw';
     setQuizLang(newLang);
-    // If a quiz is active, reload questions with new language
     if (selectedQuiz) {
       try {
         const res = await quizAPI.getQuiz(selectedQuiz.id, newLang);
@@ -188,7 +187,6 @@ export default function Quiz() {
         } catch (e) {
           console.error('Failed to submit quiz:', e);
         }
-        // Save quiz history to localStorage for the Profile page
         const percentage = Math.round((score / questions.length) * 100);
         const passed = percentage >= 70;
         const historyEntry = {
@@ -204,7 +202,6 @@ export default function Quiz() {
         const history = existing ? JSON.parse(existing) : [];
         history.unshift(historyEntry);
         localStorage.setItem('quizHistory', JSON.stringify(history.slice(0, 50)));
-        // Save certificate data if passed
         if (passed) {
           const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
           const expiryDate = new Date();
@@ -225,7 +222,6 @@ export default function Quiz() {
     })();
   }, [quizCompleted]);
 
-  // Confetti component
   const Confetti = () => {
     const colors = ['#2563EB', '#16A34A', '#FACC15', '#DC2626', '#8B5CF6'];
     return (
@@ -254,7 +250,6 @@ export default function Quiz() {
       <div className="min-h-screen py-12 px-4 flex items-center justify-center">
         {passed && <Confetti />}
         
-        {/* Background glow */}
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
         
         <motion.div
@@ -276,21 +271,21 @@ export default function Quiz() {
           </motion.div>
           
           <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-            {passed ? 'Congratulations! 🎉' : 'Keep Practicing! 💪'}
+            {passed ? t('quiz.results.congratulations', 'Congratulations! 🎉') : t('quiz.results.keep_practicing', 'Keep Practicing! 💪')}
           </h1>
           
           <p className="text-gray-400 mb-6">
-            Your Score: <span className={`text-4xl font-bold ${passed ? 'text-green-400' : 'text-orange-400'}`}>{score}/{questions.length}</span>
+            {t('quiz.results.your_score', 'Your Score:')} <span className={`text-4xl font-bold ${passed ? 'text-green-400' : 'text-orange-400'}`}>{score}/{questions.length}</span>
             <span className="block mt-2 text-lg">({percentage}%)</span>
           </p>
 
           {passed ? (
             <p className="text-gray-300 mb-8">
-              Excellent work! You're ready for the real driving test. Keep up the great work!
+              {t('quiz.results.excellent_work', "Excellent work! You're ready for the real driving test. Keep up the great work!")}
             </p>
           ) : (
             <p className="text-gray-300 mb-8">
-              You need 70% to pass. Review the materials and try again. You got this!
+              {t('quiz.results.need_70_percent', 'You need 70% to pass. Review the materials and try again. You got this!')}
             </p>
           )}
 
@@ -300,7 +295,7 @@ export default function Quiz() {
                 onClick={() => navigate('/certificate')}
                 className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 flex items-center justify-center gap-2"
               >
-                🎓 Get Your Certificate
+                {t('quiz.results.get_certificate', '🎓 Get Your Certificate')}
               </button>
             ) : (
               <button
@@ -315,7 +310,7 @@ export default function Quiz() {
                 }}
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
               >
-                Try Again
+                {t('quiz.results.try_again', 'Try Again')}
                 <ArrowRight className="w-5 h-5" />
               </button>
             )}
@@ -323,7 +318,7 @@ export default function Quiz() {
               onClick={() => navigate('/leaderboard')}
               className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300"
             >
-              View Leaderboard
+              {t('quiz.results.view_leaderboard', 'View Leaderboard')}
             </button>
           </div>
         </motion.div>
@@ -347,7 +342,6 @@ export default function Quiz() {
                 </h1>
                 <p className="text-gray-400">{t('quiz.subtitle', 'Each quiz contains 20 questions. Test your knowledge!')}</p>
               </div>
-              {/* Language Toggle */}
               <button
                 onClick={toggleQuizLang}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
@@ -379,13 +373,13 @@ export default function Quiz() {
                       <Sparkles className="w-3 h-3" />
                       <span>{q.category}</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-1">{lang === 'en' ? 'Quiz' : 'Ikizamini'} {idx + 1}</h3>
-                    <p className="text-sm text-gray-400 mb-4">{q.questionCount} {lang === 'en' ? 'questions' : 'ibibazo'}</p>
+                    <h3 className="text-lg font-semibold text-white mb-1">{quizLang === 'en' ? 'Quiz' : 'Ikizamini'} {idx + 1}</h3>
+                    <p className="text-sm text-gray-400 mb-4">{q.questionCount} {quizLang === 'en' ? 'questions' : 'ibibazo'}</p>
                     <button 
                       onClick={() => startQuiz(q)} 
                       className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      {lang === 'en' ? 'Start Quiz' : 'Tangira'}
+                      {quizLang === 'en' ? t('quiz.start', 'Start Quiz') : t('quiz.start', 'Tangira')}
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -417,7 +411,7 @@ export default function Quiz() {
                   <Clock className={`w-5 h-5 ${isTimeRunningOut ? 'text-red-400' : 'text-blue-400'}`} />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Time Left</p>
+                  <p className="text-xs text-gray-500">{t('quiz.quiz_list.time_left', 'Time Left')}</p>
                   <p className={`text-xl font-bold font-[family-name:var(--font-mono)] ${isTimeRunningOut ? 'text-red-400' : 'text-white'}`}>
                     {formatTime(timeLeft)}
                   </p>
@@ -427,7 +421,7 @@ export default function Quiz() {
               {/* Progress */}
               <div className="flex-1 max-w-xs">
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-xs text-gray-500">Progress</p>
+                  <p className="text-xs text-gray-500">{t('quiz.quiz_list.progress', 'Progress')}</p>
                   <p className="text-xs text-white font-medium">
                     {currentQuestion + 1}/{questions.length}
                   </p>
@@ -447,12 +441,12 @@ export default function Quiz() {
                   <Award className="w-5 h-5 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Score</p>
+                  <p className="text-xs text-gray-500">{t('quiz.quiz_list.score', 'Score')}</p>
                   <p className="text-xl font-bold text-white font-[family-name:var(--font-mono)]">{score}</p>
                 </div>
               </div>
 
-              {/* Language Toggle (during quiz) */}
+              {/* Language Toggle */}
               <button
                 onClick={toggleQuizLang}
                 className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
@@ -478,7 +472,7 @@ export default function Quiz() {
               <span className="text-sm text-blue-400 font-medium">{selectedQuiz.category}</span>
             </div>
 
-            {/* Image (if provided) */}
+            {/* Image */}
             {question.image && (
               <div className="mb-6">
                 <img src={question.image as any} alt="Question" className="w-full max-h-48 object-contain rounded-xl border border-white/10 bg-white/5" />
@@ -567,7 +561,7 @@ export default function Quiz() {
                 }`}
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm">{lang === 'en' ? 'Previous' : 'Ibanza'}</span>
+                <span className="text-sm">{t('quiz.quiz_list.previous', 'Previous')}</span>
               </button>
               <button
                 onClick={handleNext}
@@ -578,7 +572,7 @@ export default function Quiz() {
                     : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/30'
                 }`}
               >
-                {currentQuestion < questions.length - 1 ? (lang === 'en' ? 'Next Question' : 'Ibazo Rikurikira') : (lang === 'en' ? 'Finish Quiz' : 'Komeza')}
+                {currentQuestion < questions.length - 1 ? t('quiz.quiz_list.next_question', 'Next Question') : t('quiz.quiz_list.finish_quiz', 'Finish Quiz')}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </motion.div>
@@ -602,89 +596,34 @@ export default function Quiz() {
           >
             <div className="text-center">
               <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
-                <Sparkles className="w-10 h-10 text-white" />
+                <Zap className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Unlock Pro Access</h2>
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock Pro Access')}</h2>
               <p className="text-gray-400 mb-6">
-                You've completed 6 free questions! Unlock all 20 questions and premium features for only{' '}
-                <span className="text-[#00A3AD] font-semibold">100 RWF</span> (testing) or{' '}
-                <span className="text-blue-400 font-semibold">1,000 RWF</span> in production.
+                {t('quiz.paywall.description', "You've completed 6 free questions! Unlock all 20 questions and premium features for only")} <span className="text-blue-400 font-semibold">{lang === 'en' ? '100 RWF' : '100 RWF'}</span>
               </p>
               
-              <div className="bg-white/5 rounded-2xl p-4 mb-6 border border-white/10">
-                <h3 className="text-white font-semibold mb-3 text-left">Pro Features:</h3>
-                <ul className="text-left space-y-2">
-                  {[
-                    'Unlimited quiz attempts',
-                    'Full 3D simulation access',
-                    'Unlimited AI assistant questions',
-                    'Premium resources download'
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center text-gray-300 text-sm">
-                      <Zap className="w-4 h-4 text-blue-400 mr-2 flex-shrink-0" />
-                      {feature}
-                    </li>
+              <div className="space-y-3 mb-6">
+                <p className="text-sm font-semibold text-white text-left">{t('quiz.paywall.pro_features_title', 'Pro Features:')}</p>
+                <div className="space-y-2">
+                  {['unlimited_quizzes', 'full_simulation', 'unlimited_ai', 'premium_resources'].map((key) => (
+                    <div key={key} className="flex items-center gap-3 text-left">
+                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                      <span className="text-sm text-gray-300">{t(`quiz.paywall.features.${key}`)}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="space-y-3">
-                <input
-                  type="tel"
-                  placeholder="Phone number (e.g. 0788xxxxxx)"
-                  value={payPhone}
-                  onChange={(e) => setPayPhone(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={async () => {
-                    if (!user) { navigate('/auth'); return; }
-                    if (!payPhone) { setPaymentError('Enter phone number'); return; }
-                    try {
-                      setPaying(true);
-                      setPaymentError(null);
-                      // Use Paypack for payment collection
-                      const res = await paymentAPI.paypackCashin({ amount: 100, phone: payPhone, product: 'pro' });
-                      setTxnId(res.transactionId);
-                      setPaymentStatus('PENDING');
-                      let tries = 0;
-                      const iv = setInterval(async () => {
-                        tries++;
-                        try {
-                          const s = await paymentAPI.paypackStatus(res.transactionId);
-                          setPaymentStatus(s.status);
-                          if (s.status === 'SUCCESS') {
-                            clearInterval(iv);
-                            setPaying(false);
-                            updateUser({ isPro: true });
-                            setShowPaywall(false);
-                          } else if (s.status === 'FAILED' || tries > 40) {
-                            clearInterval(iv);
-                            setPaying(false);
-                          }
-                        } catch {
-                          clearInterval(iv);
-                          setPaying(false);
-                        }
-                      }, 3000);
-                    } catch (e: any) {
-                      setPaying(false);
-                      const errMsg = e?.message || 'Payment failed';
-                      setPaymentError(errMsg.includes('number not found') ? 'Your phone number is not approved on Paypack. Please add it on the Paypack dashboard → Approved Numbers.' : errMsg);
-                    }
-                  }}
-                  disabled={paying}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-[#00A3AD] to-[#008891] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#00A3AD]/30 transition-all duration-300 disabled:opacity-50"
-                >
-                  {paying ? 'Processing...' : 'Pay with Mobile Money - 100 RWF'}
+                <button className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300">
+                  {t('quiz.paywall.pay_button', 'Pay with Mobile Money - 100 RWF')}
                 </button>
-                {paymentError && <div className="text-red-400 text-sm">{paymentError}</div>}
-                {txnId && paymentStatus === 'PENDING' && <div className="text-sm text-gray-400">📱 Check your phone for USSD prompt...</div>}
                 <button
                   onClick={() => setShowPaywall(false)}
                   className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
                 >
-                  Maybe Later
+                  {t('quiz.paywall.maybe_later', 'Maybe Later')}
                 </button>
               </div>
             </div>

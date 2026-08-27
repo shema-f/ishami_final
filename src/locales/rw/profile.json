@@ -1,0 +1,69 @@
+{
+  "auth_required": {
+    "message": "Nyamuneka injira kugira ngo urebe umwirondoro wawe.",
+    "button": "Injira"
+  },
+  "stats": {
+    "quizzes_taken": "Ibizamini Byakozwe",
+    "best_score": "Amanota Meza Cyane",
+    "average_score": "Impuzandengo y'Amanota",
+    "quizzes_passed": "Ibizamini Byatsinzwe"
+  },
+  "settings": {
+    "title": "Igenamiterere ry'Umwirondoro",
+    "username_label": "Izina Ukoresha",
+    "username_placeholder": "Injiza izina rishya ukoresha",
+    "email_label": "Imeri",
+    "change_password_label": "Guhindura Ijambobanga",
+    "current_password_placeholder": "Ijambobanga usanganywe",
+    "new_password_placeholder": "Ijambobanga rishya",
+    "confirm_password_placeholder": "Emeza ijambobanga rishya",
+    "update_password": "Vugurura Ijambobanga",
+    "saving": "Birabikwa...",
+    "cancel": "Kureka"
+  },
+  "quiz_history": {
+    "title": "Amateka y'Ibizamini",
+    "no_history": "Nta kizamini urakora na kimwe",
+    "start_quiz": "Tangira Ikizamini"
+  },
+  "achievements": {
+    "title": "Ibyagezweho",
+    "badges": {
+      "first_quiz": {
+        "title": "Ikizamini cya Mbere",
+        "desc": "Usoje ikizamini cyawe cya mbere"
+      },
+      "hot_streak": {
+        "title": "Umuvuduko Wikurikiranya",
+        "desc": "Gutsinda ibizamini 3 byikurikiranya"
+      },
+      "perfect_score": {
+        "title": "Amanota 100%",
+        "desc": "Gutsindira amanota 100% ku kizamini"
+      },
+      "champion": {
+        "title": "Inshingano y'Indashyikirwa",
+        "desc": "Kurenza amanota 90%"
+      },
+      "scholar": {
+        "title": "Umunyeshuri w'Umwete",
+        "desc": "Gukora ibizamini 10"
+      },
+      "pro_member": {
+        "title": "Umunyamuryango wa Pro",
+        "desc": "Kuzamura kuri konti ya Pro"
+      }
+    }
+  },
+  "pro_badge": "Umunyamuryango wa Pro",
+  "logout": "Sohoka",
+  "toast": {
+    "username_empty": "Izina ukoresha ntirishobora gusigara ryera",
+    "username_updated": "Izina ukoresha ryavuguruwe neza!",
+    "password_fill_all": "Nyamuneka uzuze imyanya yose y'ijambobanga",
+    "passwords_no_match": "Amagambo banga mashya ntabwo ahuye",
+    "password_too_short": "Ijambobanga rigomba kuba rigizwe n'inyuguti nibura 6",
+    "password_updated": "Ijambobanga ryavuguruwe neza!"
+  }
+}

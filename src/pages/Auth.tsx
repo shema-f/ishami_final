@@ -11,10 +11,10 @@ import { useTranslation } from '../contexts/I18nContext';
 export default function Auth() {
   const { t, lang } = useTranslation();
   const features = [
-    lang === 'rw' ? 'Ibazo nshya n\'ibyo kuri EXAM' : 'Interactive Quizzes with real exam questions',
-    lang === 'rw' ? 'AI musigati igihe ukoresheje' : 'AI Assistant for instant answers',
-    lang === 'rw' ? 'Kumenya ibintu ukurikiranaho n\'abandi' : 'Track Progress and compete with others',
-    lang === 'rw' ? '3D Simulation yo gutwara imodoka' : '3D Driving Simulations',
+    t('auth.features.quizzes'),
+    t('auth.features.ai_assistant'),
+    t('auth.features.track_progress'),
+    t('auth.features.simulation'),
   ];
   const [isSignIn, setIsSignIn] = useState(true);
   const [email, setEmail] = useState('');
@@ -92,7 +92,7 @@ export default function Auth() {
       const idToken = oauthCred?.idToken;
       
       if (!idToken) {
-        setError('Google sign-in did not return an ID token');
+        setError(t('auth.errors.google_sign_in_token', 'Google sign-in did not return an ID token'));
         setLoading(false);
         return;
       }
@@ -101,11 +101,11 @@ export default function Auth() {
       navigate('/');
     } catch (e: any) {
       if (e?.code === 'auth/popup-blocked') {
-        setError('Popup was blocked. Please allow popups for this site.');
+        setError(t('auth.errors.popup_blocked', 'Popup was blocked. Please allow popups for this site.'));
       } else if (e?.code === 'auth/popup-closed-by-user') {
-        setError('Sign-in cancelled.');
+        setError(t('auth.errors.sign_in_cancelled', 'Sign-in cancelled.'));
       } else {
-        setError(e?.message || 'Google sign-in failed');
+        setError(e?.message || t('auth.errors.google_sign_in_failed', 'Google sign-in failed'));
       }
     } finally {
       setLoading(false);
@@ -122,7 +122,7 @@ export default function Auth() {
       const accessToken = oauthCred?.accessToken;
       
       if (!accessToken) {
-        setError('Facebook sign-in did not return an Access token');
+        setError(t('auth.errors.facebook_sign_in_token', 'Facebook sign-in did not return an Access token'));
         setLoading(false);
         return;
       }
@@ -132,11 +132,11 @@ export default function Auth() {
       navigate('/');
     } catch (e: any) {
       if (e?.code === 'auth/popup-blocked') {
-        setError('Popup was blocked. Please allow popups for this site.');
+        setError(t('auth.errors.popup_blocked', 'Popup was blocked. Please allow popups for this site.'));
       } else if (e?.code === 'auth/popup-closed-by-user') {
-        setError('Sign-in cancelled.');
+        setError(t('auth.errors.sign_in_cancelled', 'Sign-in cancelled.'));
       } else {
-        setError(e?.message || 'Facebook sign-in failed');
+        setError(e?.message || t('auth.errors.facebook_sign_in_failed', 'Facebook sign-in failed'));
       }
     } finally {
       setLoading(false);
@@ -151,19 +151,19 @@ export default function Auth() {
     try {
       if (isSignIn) {
         if (!identifier) {
-          setError('Email or phone is required');
+          setError(t('auth.errors.email_phone_required', 'Email or phone is required'));
           setLoading(false);
           return;
         }
         await login(identifier, password);
       } else {
         if (!username) {
-          setError('Username is required');
+          setError(t('auth.errors.username_required', 'Username is required'));
           setLoading(false);
           return;
         }
         if (!identifier) {
-          setError('Email or phone is required');
+          setError(t('auth.errors.email_phone_required', 'Email or phone is required'));
           setLoading(false);
           return;
         }
@@ -171,7 +171,7 @@ export default function Auth() {
         try {
           const check = await authAPI.checkIdentifier(identifier.trim());
           if (check?.exists) {
-            setError('Account already exists. Please sign in.');
+            setError(t('auth.errors.account_exists', 'Account already exists. Please sign in.'));
             setIsSignIn(true);
             setLoading(false);
             return;
@@ -182,7 +182,7 @@ export default function Auth() {
         } catch (e: any) {
           const msg = String(e?.message || '').toLowerCase();
           if (msg.includes('account already exists')) {
-            setError('Account already exists. Please sign in.');
+            setError(t('auth.errors.account_exists', 'Account already exists. Please sign in.'));
             setIsSignIn(true);
             return;
           }
@@ -191,7 +191,7 @@ export default function Auth() {
       }
       navigate('/quiz');
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      setError(err.message || t('auth.errors.auth_failed', 'Authentication failed'));
     } finally {
       setLoading(false);
     }
@@ -315,7 +315,7 @@ export default function Auth() {
             {!isSignIn && (
               <div>
                 <label className="block text-gray-300 mb-2 text-sm font-medium">
-                  Username
+                  {t('auth.form.username_label', 'Username')}
                 </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -323,7 +323,7 @@ export default function Auth() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder={t('auth.form.username_placeholder', 'Enter your username')}
                     required={!isSignIn}
                     className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                   />
@@ -333,7 +333,7 @@ export default function Auth() {
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm font-medium">
-                Email or Phone
+                {t('auth.form.email_phone_label', 'Email or Phone')}
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -341,7 +341,7 @@ export default function Auth() {
                   type="text"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="name@example.com or +2507xxxxxxx"
+                  placeholder={t('auth.form.email_phone_placeholder', 'name@example.com or +2507xxxxxxx')}
                   required
                   className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                 />
@@ -350,7 +350,7 @@ export default function Auth() {
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm font-medium">
-                Password
+                {t('auth.form.password_label', 'Password')}
               </label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -358,7 +358,7 @@ export default function Auth() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.form.password_placeholder', 'Enter your password')}
                   required
                   className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                 />
@@ -379,10 +379,10 @@ export default function Auth() {
                     type="checkbox"
                     className="w-4 h-4 text-blue-500 border-white/20 rounded focus:ring-blue-500 bg-white/5"
                   />
-                  <span className="text-gray-400 text-sm">Remember me</span>
+                  <span className="text-gray-400 text-sm">{t('auth.form.remember_me', 'Remember me')}</span>
                 </label>
                 <button type="button" onClick={() => setShowForgot(true)} className="text-blue-400 text-sm hover:text-blue-300 transition-colors">
-                  Forgot password?
+                  {t('auth.form.forgot_password', 'Forgot password?')}
                 </button>
               </div>
             )}
@@ -398,11 +398,11 @@ export default function Auth() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Please wait...
+                  {t('auth.button.please_wait', 'Please wait...')}
                 </span>
               ) : (
                 <>
-                  {isSignIn ? 'Sign In' : 'Create Account'}
+                  {isSignIn ? t('auth.button.sign_in', 'Sign In') : t('auth.button.sign_up', 'Create Account')}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -412,12 +412,12 @@ export default function Auth() {
           {showForgot && (
             <div className="mt-6 space-y-4">
               <div>
-                <label className="block text-gray-300 mb-2 text-sm font-medium">Email or Phone</label>
+                <label className="block text-gray-300 mb-2 text-sm font-medium">{t('auth.forgot_password_modal.email_phone_label', 'Email or Phone')}</label>
                 <input
                   type="text"
                   value={forgotIdentifier}
                   onChange={(e) => setForgotIdentifier(e.target.value)}
-                  placeholder="Enter email or phone"
+                  placeholder={t('auth.forgot_password_modal.email_phone_placeholder', 'Enter email or phone')}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
                 />
               </div>
@@ -433,14 +433,14 @@ export default function Auth() {
                 }}
                 className="w-full py-3 bg-white/10 text-white rounded-xl hover:bg-white/15 transition-colors font-medium"
               >
-                Send Reset Link
+                {t('auth.forgot_password_modal.send_reset_link', 'Send Reset Link')}
               </button>
               <div className="text-center">
                 <button 
                   onClick={() => setShowForgot(false)}
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  Cancel
+                  {t('auth.forgot_password_modal.cancel', 'Cancel')}
                 </button>
               </div>
               {forgotStatus && (
@@ -457,7 +457,7 @@ export default function Auth() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-[#111827] text-gray-400">
-                  Or continue with
+                  {t('auth.social.or_continue_with', 'Or continue with')}
                 </span>
               </div>
             </div>
@@ -473,7 +473,7 @@ export default function Auth() {
                   <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.6-5.3l-6.2-5.1c-2 1.7-4.7 2.7-7.4 2.7-5.1 0-9.4-3.3-11-7.9l-6.6 5.1C9.9 39.8 16.5 44 24 44z"/>
                   <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.5 5.7-6.5 7.2l6.2 5.1C37.8 37.7 44 32.9 44 24c0-1.2-.1-2.3-.4-3.5z"/>
                 </svg>
-                <span className="text-gray-300">Google</span>
+                <span className="text-gray-300">{t('auth.social.google', 'Google')}</span>
               </button>
               <button
                 onClick={() => handleFacebookFirebaseSignIn()}
@@ -482,19 +482,19 @@ export default function Auth() {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2">
                   <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.093 10.125 24v-8.437H7.078V12.07h3.047V9.41c0-3.008 1.792-4.668 4.533-4.668 1.313 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.953.93-1.953 1.887v2.253h3.328l-.532 3.493h-2.796V24C19.612 23.093 24 18.1 24 12.073z"/>
                 </svg>
-                <span className="text-gray-300">Facebook</span>
+                <span className="text-gray-300">{t('auth.social.facebook', 'Facebook')}</span>
               </button>
             </div>
           </div>
 
           <p className="mt-6 text-center text-gray-500 text-sm">
-            By continuing, you agree to our{' '}
+            {t('auth.legal.by_continuing', 'By continuing, you agree to our')}{' '}
             <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Terms of Service
+              {t('auth.legal.terms_of_service', 'Terms of Service')}
             </a>{' '}
-            and{' '}
+            {t('auth.legal.and', 'and')}{' '}
             <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Privacy Policy
+              {t('auth.legal.privacy_policy', 'Privacy Policy')}
             </a>
           </p>
         </motion.div>
