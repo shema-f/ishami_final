@@ -1,0 +1,355 @@
+import { useState } from 'react';
+import { motion } from 'motion/react';
+import { Plus, Edit2, Trash2, Save, X, FileText, Eye } from 'lucide-react';
+import { articles, type Article } from '../../data/articles';
+
+interface ArticleFormData {
+  title_en: string;
+  title_rw: string;
+  excerpt_en: string;
+  excerpt_rw: string;
+  content_en: string;
+  content_rw: string;
+  category: string;
+  category_rw: string;
+  image: string;
+  readTime: string;
+}
+
+const emptyForm: ArticleFormData = {
+  title_en: '',
+  title_rw: '',
+  excerpt_en: '',
+  excerpt_rw: '',
+  content_en: '',
+  content_rw: '',
+  category: '',
+  category_rw: '',
+  image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop',
+  readTime: '5 min read',
+};
+
+export default function AdminArticles() {
+  const [articleList, setArticleList] = useState<Article[]>(articles);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<ArticleFormData>(emptyForm);
+  const [activeTab, setActiveTab] = useState<'articles' | 'add'>('articles');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (editingId) {
+      // Update existing article
+      setArticleList(prev => prev.map(a => 
+        a.id === editingId 
+          ? { ...a, ...formData, slug: formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') }
+          : a
+      ));
+    } else {
+      // Add new article
+      const newArticle: Article = {
+        id: String(Date.now()),
+        slug: formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        ...formData,
+        date: new Date().toISOString().split('T')[0],
+        author: 'ISHAMI Team',
+      };
+      setArticleList(prev => [newArticle, ...prev]);
+    }
+    
+    setFormData(emptyForm);
+    setEditingId(null);
+    setShowForm(false);
+    setActiveTab('articles');
+  };
+
+  const handleEdit = (article: Article) => {
+    setFormData({
+      title_en: article.title_en,
+      title_rw: article.title_rw,
+      excerpt_en: article.excerpt_en,
+      excerpt_rw: article.excerpt_rw,
+      content_en: article.content_en,
+      content_rw: article.content_rw,
+      category: article.category,
+      category_rw: article.category_rw,
+      image: article.image,
+      readTime: article.readTime,
+    });
+    setEditingId(article.id);
+    setShowForm(true);
+    setActiveTab('add');
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Are you sure you want to delete this article?')) {
+      setArticleList(prev => prev.filter(a => a.id !== id));
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(emptyForm);
+    setEditingId(null);
+    setShowForm(false);
+    setActiveTab('articles');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0e14] p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Article Management</h1>
+          <p className="text-gray-400">Create, edit, and manage blog articles</p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => { setActiveTab('articles'); setShowForm(false); setEditingId(null); }}
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
+              activeTab === 'articles'
+                ? 'bg-blue-500 text-white'
+                : 'bg-white/5 text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <FileText className="w-4 h-4 inline mr-2" />
+            Articles ({articleList.length})
+          </button>
+          <button
+            onClick={() => { setActiveTab('add'); setShowForm(true); setEditingId(null); setFormData(emptyForm); }}
+            className={`px-6 py-3 rounded-xl font-medium transition-all ${
+              activeTab === 'add'
+                ? 'bg-blue-500 text-white'
+                : 'bg-white/5 text-gray-300 hover:bg-white/10'
+            }`}
+          >
+            <Plus className="w-4 h-4 inline mr-2" />
+            {editingId ? 'Edit Article' : 'Add Article'}
+          </button>
+        </div>
+
+        {/* Articles List */}
+        {activeTab === 'articles' && (
+          <div className="space-y-4">
+            {articleList.map((article) => (
+              <motion.div
+                key={article.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                    <img src={article.image} alt={article.title_en} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-bold truncate">{article.title_en}</h3>
+                    <p className="text-gray-400 text-sm truncate">{article.title_rw}</p>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">{article.category}</span>
+                      <span>{article.readTime}</span>
+                      <span>{article.date}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`/blog/${article.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+                      title="Preview"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </a>
+                    <button
+                      onClick={() => handleEdit(article)}
+                      className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(article.id)}
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Article Form */}
+        {activeTab === 'add' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-6">
+              {editingId ? 'Edit Article' : 'Add New Article'}
+            </h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Title Section */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Title (English)</label>
+                  <input
+                    type="text"
+                    value={formData.title_en}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title_en: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Article title in English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Title (Kinyarwanda)</label>
+                  <input
+                    type="text"
+                    value={formData.title_rw}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title_rw: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ishi ry'inyandiko mu Kinyarwanda"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Excerpt Section */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Excerpt (English)</label>
+                  <textarea
+                    value={formData.excerpt_en}
+                    onChange={(e) => setFormData(prev => ({ ...prev, excerpt_en: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                    placeholder="Brief summary in English"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Excerpt (Kinyarwanda)</label>
+                  <textarea
+                    value={formData.excerpt_rw}
+                    onChange={(e) => setFormData(prev => ({ ...prev, excerpt_rw: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                    placeholder="Ibisobanuro mu Kinyarwanda"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Content Section */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Content (English)</label>
+                  <textarea
+                    value={formData.content_en}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+                    rows={12}
+                    placeholder="Full article content in English (supports Markdown)"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Content (Kinyarwanda)</label>
+                  <textarea
+                    value={formData.content_rw}
+                    onChange={(e) => setFormData(prev => ({ ...prev, content_rw: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+                    rows={12}
+                    placeholder="Ibikubiyemo mu Kinyarwanda"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Category and Meta */}
+              <div className="grid md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Category (English)</label>
+                  <input
+                    type="text"
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Driving Guide"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Category (Kinyarwanda)</label>
+                  <input
+                    type="text"
+                    value={formData.category_rw}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category_rw: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Amabwiriza yo Gutwara"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Read Time</label>
+                  <input
+                    type="text"
+                    value={formData.readTime}
+                    onChange={(e) => setFormData(prev => ({ ...prev, readTime: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., 5 min read"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              {/* Image Preview */}
+              {formData.image && (
+                <div className="rounded-xl overflow-hidden border border-white/10 h-48">
+                  <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-6 py-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-all flex items-center gap-2"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  {editingId ? 'Update Article' : 'Publish Article'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}

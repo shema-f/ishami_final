@@ -35,6 +35,7 @@ const AdminQuestions = lazy(() => import("../pages/admin/Questions"));
 const AdminPayments = lazy(() => import("../pages/admin/Payments"));
 const AdminIremboApplications = lazy(() => import("../pages/admin/IremboApplications"));
 const AdminResources = lazy(() => import("../pages/admin/Resources"));
+const AdminArticles = lazy(() => import("../pages/admin/Articles"));
 const AdminNotifications = lazy(() => import("../pages/admin/Notifications"));
 const AdminFraudLogs = lazy(() => import("../pages/admin/FraudLogs"));
 
@@ -78,6 +79,7 @@ export const router = createBrowserRouter([
       { path: "payments", Component: AdminPayments },
       { path: "irembo", Component: AdminIremboApplications },
       { path: "resources", Component: AdminResources },
+      { path: "articles", Component: AdminArticles },
       { path: "notifications", Component: AdminNotifications },
       { path: "fraud-logs", Component: AdminFraudLogs },
       { path: "*", Component: () => <div className="p-8 text-center">Page coming soon...</div> },

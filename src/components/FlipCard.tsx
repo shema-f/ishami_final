@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { HelpCircle, CheckCircle2, ArrowRight, Lightbulb, ShieldCheck, Car, Gauge, TriangleAlert, OctagonX } from 'lucide-react';
-import { flipcardQuestions } from '../data/flipcardQuestions';
+import { flipCardQuestions } from '../data/flipcardQuestions';
 import { useTranslation } from '../contexts/I18nContext';
 
 interface CardQuestion {

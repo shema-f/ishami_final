@@ -7,6 +7,7 @@ import { useTranslation } from '../contexts/I18nContext';
 import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeContext';
 import Comments from '../components/Comments';
 import ReadingModeToggle from '../components/ReadingModeToggle';
+import BlogSidebar from '../components/BlogSidebar';
 
 function ArticleCard({ article }: { article: Article }) {
   const { lang } = useTranslation();
@@ -573,36 +574,28 @@ export default function Blog() {
           </div>
         </motion.div>
 
-        {/* Ferrivox Ltd Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/20 rounded-2xl p-6 mb-12 text-center"
-        >
-          <p className="text-sm text-gray-400 mb-1">{lang === 'rw' ? 'Ibikorwa by\' Ishirahamwe' : 'In partnership with'}</p>
-          <h3 className="text-lg font-bold text-white font-[family-name:var(--font-heading)]">Ferrivox Ltd</h3>
-          <p className="text-gray-400 text-sm">{lang === 'rw' ? 'Ishirahamwe ry\'Ikoranabuhanga n\'Ubufasha bw\'Amakuru' : 'Software Development & Data Engineering Company'}</p>
-        </motion.div>
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Articles Section */}
+          <div className="flex-1">
+            {/* Articles Count */}
+            <div className="mb-6 text-gray-400 text-sm">
+              {filteredArticles.length === articles.length 
+                ? (lang === 'rw' ? `Inyandiko ${articles.length}` : `${articles.length} articles`)
+                : (lang === 'rw' ? `Inyandiko ${filteredArticles.length} kuri ${articles.length}` : `${filteredArticles.length} of ${articles.length} articles`)
+              }
+            </div>
 
-        {/* Articles Count */}
-        <div className="mb-6 text-gray-400 text-sm">
-          {filteredArticles.length === articles.length 
-            ? (lang === 'rw' ? `Inyandiko ${articles.length}` : `${articles.length} articles`)
-            : (lang === 'rw' ? `Inyandiko ${filteredArticles.length} kuri ${articles.length}` : `${filteredArticles.length} of ${articles.length} articles`)
-          }
-        </div>
-
-        {/* Articles Grid */}
-        <AnimatePresence mode="wait">
-          {filteredArticles.length > 0 ? (
-            <motion.div
-              key="results"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
+            {/* Articles Grid */}
+            <AnimatePresence mode="wait">
+              {filteredArticles.length > 0 ? (
+                <motion.div
+                  key="results"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid md:grid-cols-2 gap-6"
+                >
               {filteredArticles.map((article, index) => (
                 <motion.div
                   key={article.id}
@@ -639,6 +632,15 @@ export default function Blog() {
             </motion.div>
           )}
         </AnimatePresence>
+          </div>
+
+          {/* Sidebar */}
+          <div className="w-full lg:w-80 shrink-0">
+            <div className="lg:sticky lg:top-24">
+              <BlogSidebar />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
