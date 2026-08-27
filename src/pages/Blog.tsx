@@ -190,6 +190,80 @@ function calculateReadingTime(content: string): number {
   return Math.max(1, Math.ceil(words / wordsPerMinute));
 }
 
+function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
+  const { lang } = useTranslation();
+
+  const relatedArticles = useMemo(() => {
+    const category = lang === 'rw' ? currentArticle.category_rw : currentArticle.category;
+    return articles
+      .filter(a => 
+        a.id !== currentArticle.id && 
+        (lang === 'rw' ? a.category_rw : a.category) === category
+      )
+      .slice(0, 2);
+  }, [currentArticle, lang]);
+
+  // If no same-category articles, get 2 random articles
+  const displayArticles = useMemo(() => {
+    if (relatedArticles.length >= 2) return relatedArticles;
+    return articles
+      .filter(a => a.id !== currentArticle.id && !relatedArticles.find(r => r.id === a.id))
+      .slice(0, 2 - relatedArticles.length)
+      .concat(relatedArticles);
+  }, [relatedArticles, currentArticle]);
+
+  if (displayArticles.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+      className="mt-12 mb-8"
+    >
+      <h2 className="text-2xl font-bold text-white mb-6 font-[family-name:var(--font-heading)]">
+        {lang === 'rw' ? 'Inyandiko Zikurikira' : 'Related Articles'}
+      </h2>
+      <div className="grid md:grid-cols-2 gap-6">
+        {displayArticles.map((related) => (
+          <Link key={related.id} to={`/blog/${related.slug}`}>
+            <motion.div
+              whileHover={{ y: -4 }}
+              className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
+            >
+              <div className="relative h-40 overflow-hidden">
+                <img
+                  src={related.image}
+                  alt={lang === 'rw' ? related.title_rw : related.title_en}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute top-3 left-3">
+                  <span className="px-2 py-1 bg-blue-500/90 backdrop-blur-sm text-white text-xs rounded-full font-semibold">
+                    {lang === 'rw' ? related.category_rw : related.category}
+                  </span>
+                </div>
+              </div>
+              <div className="p-5">
+                <h3 className="text-white font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2 font-[family-name:var(--font-heading)]">
+                  {lang === 'rw' ? related.title_rw : related.title_en}
+                </h3>
+                <p className="text-gray-400 text-sm line-clamp-2">
+                  {lang === 'rw' ? related.excerpt_rw : related.excerpt_en}
+                </p>
+                <div className="mt-3 flex items-center gap-2 text-gray-500 text-xs">
+                  <Clock className="w-3 h-3" />
+                  <span>{related.readTime}</span>
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 function ArticleDetail({ article }: { article: Article }) {
   const { lang } = useTranslation();
 
@@ -323,6 +397,9 @@ function ArticleDetail({ article }: { article: Article }) {
             })}
           </div>
         </motion.div>
+
+        {/* Related Articles */}
+        <RelatedArticles currentArticle={article} />
 
         {/* Ferrivox Ltd Banner */}
         <motion.div
