@@ -504,9 +504,15 @@ export default function Blog() {
     return Array.from(cats);
   }, [lang]);
 
-  // Filter articles
+  // Filter articles (only show published and past scheduled)
   const filteredArticles = useMemo(() => {
+    const now = new Date().toISOString();
     return articles.filter(article => {
+      // Only show published articles or scheduled articles whose publish date has passed
+      const isPublished = article.status === 'published';
+      const isScheduledAndReady = article.status === 'scheduled' && article.publishDate && article.publishDate <= now;
+      if (!isPublished && !isScheduledAndReady) return false;
+
       const title = lang === 'rw' ? article.title_rw : article.title_en;
       const excerpt = lang === 'rw' ? article.excerpt_rw : article.excerpt_en;
       const category = lang === 'rw' ? article.category_rw : article.category;

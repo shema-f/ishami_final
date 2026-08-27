@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Edit2, Trash2, Save, X, FileText, Eye } from 'lucide-react';
-import { articles, type Article } from '../../data/articles';
+import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit } from 'lucide-react';
+import { articles, type Article, type ArticleStatus } from '../../data/articles';
 
 interface ArticleFormData {
   title_en: string;
@@ -14,6 +14,8 @@ interface ArticleFormData {
   category_rw: string;
   image: string;
   readTime: string;
+  status: ArticleStatus;
+  publishDate: string;
 }
 
 const emptyForm: ArticleFormData = {
@@ -27,6 +29,8 @@ const emptyForm: ArticleFormData = {
   category_rw: '',
   image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop',
   readTime: '5 min read',
+  status: 'draft',
+  publishDate: '',
 };
 
 export default function AdminArticles() {
@@ -35,6 +39,7 @@ export default function AdminArticles() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<ArticleFormData>(emptyForm);
   const [activeTab, setActiveTab] = useState<'articles' | 'add'>('articles');
+  const [statusFilter, setStatusFilter] = useState<'all' | ArticleStatus>('all');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +81,8 @@ export default function AdminArticles() {
       category_rw: article.category_rw,
       image: article.image,
       readTime: article.readTime,
+      status: article.status,
+      publishDate: article.publishDate || '',
     });
     setEditingId(article.id);
     setShowForm(true);
@@ -105,7 +112,7 @@ export default function AdminArticles() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <button
             onClick={() => { setActiveTab('articles'); setShowForm(false); setEditingId(null); }}
             className={`px-6 py-3 rounded-xl font-medium transition-all ${
@@ -130,10 +137,36 @@ export default function AdminArticles() {
           </button>
         </div>
 
+        {/* Status Filter */}
+        {activeTab === 'articles' && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {(['all', 'published', 'draft', 'scheduled'] as const).map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  statusFilter === status
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
+                {status !== 'all' && (
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 rounded text-xs">
+                    {articleList.filter(a => a.status === status).length}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Articles List */}
         {activeTab === 'articles' && (
           <div className="space-y-4">
-            {articleList.map((article) => (
+            {articleList
+              .filter(a => statusFilter === 'all' || a.status === statusFilter)
+              .map((article) => (
               <motion.div
                 key={article.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -151,6 +184,16 @@ export default function AdminArticles() {
                       <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded">{article.category}</span>
                       <span>{article.readTime}</span>
                       <span>{article.date}</span>
+                      <span className={`px-2 py-0.5 rounded flex items-center gap-1 ${
+                        article.status === 'published' ? 'bg-green-500/20 text-green-400' :
+                        article.status === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-purple-500/20 text-purple-400'
+                      }`}>
+                        {article.status === 'published' && <Send className="w-3 h-3" />}
+                        {article.status === 'draft' && <FileEdit className="w-3 h-3" />}
+                        {article.status === 'scheduled' && <Clock className="w-3 h-3" />}
+                        {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -328,6 +371,33 @@ export default function AdminArticles() {
                 </div>
               )}
 
+              {/* Status and Scheduling */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as ArticleStatus }))}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="draft" className="bg-gray-800">Draft</option>
+                    <option value="published" className="bg-gray-800">Published</option>
+                    <option value="scheduled" className="bg-gray-800">Scheduled</option>
+                  </select>
+                </div>
+                {formData.status === 'scheduled' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Publish Date</label>
+                    <input
+                      type="datetime-local"
+                      value={formData.publishDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, publishDate: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Actions */}
               <div className="flex justify-end gap-3">
                 <button
@@ -343,7 +413,9 @@ export default function AdminArticles() {
                   className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
-                  {editingId ? 'Update Article' : 'Publish Article'}
+                  {editingId ? 'Update Article' : 
+                    formData.status === 'draft' ? 'Save as Draft' :
+                    formData.status === 'scheduled' ? 'Schedule Article' : 'Publish Article'}
                 </button>
               </div>
             </form>

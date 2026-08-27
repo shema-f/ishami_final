@@ -1,6 +1,8 @@
 // Blog/Articles Data — Bilingual (English + Kinyarwanda)
 // ISHAMI Platform Articles & Ferrivox Ltd
 
+export type ArticleStatus = 'published' | 'draft' | 'scheduled';
+
 export interface Article {
   id: string;
   slug: string;
@@ -16,6 +18,8 @@ export interface Article {
   readTime: string;
   date: string;
   author: string;
+  status: ArticleStatus;
+  publishDate?: string; // ISO date string for scheduled articles
 }
 
 export const articles: Article[] = [
@@ -133,6 +137,7 @@ Imiterere y'imisozi y'u Rwanda n'imvura igwa mu bihe bitandukanye bisaba ubuhang
     readTime: '10 min read',
     date: '2025-01-15',
     author: 'ISHAMI Team',
+    status: 'published',
   },
   {
     id: '2',
@@ -208,6 +213,7 @@ Rwanda yubahiriza Iparamiyamo ya Vienna ku Bbyapa byo mu Muhanda n'Ibimenyetso. 
     readTime: '8 min read',
     date: '2025-01-10',
     author: 'ISHAMI Team',
+    status: 'published',
   },
   {
     id: '3',
@@ -317,6 +323,7 @@ Ushize gutsinda ikizamini cyo gutwara mu muhanda, ushobora kwiyongera ku ruhushy
     readTime: '7 min read',
     date: '2025-01-05',
     author: 'ISHAMI Team',
+    status: 'published',
   },
   {
     id: '4',
@@ -505,6 +512,7 @@ Nijoro mu mvura ni uburyo bwo gutwara bukomeye cane:
     readTime: '9 min read',
     date: '2025-02-10',
     author: 'ISHAMI Team',
+    status: 'published',
   },
   {
     id: '5',
@@ -754,6 +762,7 @@ Ibi bihantu birabujijwe buri gihe:
     readTime: '8 min read',
     date: '2025-02-20',
     author: 'ISHAMI Team',
+    status: 'published',
   },
 ];
 
