@@ -2,12 +2,15 @@ import { RouterProvider } from 'react-router';
 import { router } from './utils/routes';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { ChatProvider } from './contexts/ChatContext';
 
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <ChatProvider>
+          <RouterProvider router={router} />
+        </ChatProvider>
       </AuthProvider>
     </ThemeProvider>
   );
