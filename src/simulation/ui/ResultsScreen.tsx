@@ -76,7 +76,7 @@ export default function ResultsScreen({ state, onRetry, onReturn }: ResultsScree
                 {GUIDED_START_CONFIG.title}
               </h2>
               <p className="text-sm text-blue-400 mt-1">
-                Gutangira Gutwara
+                {GUIDED_START_CONFIG.titleRW || 'Gutangira Gutwara'}
               </p>
             </motion.div>
 

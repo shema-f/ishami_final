@@ -127,7 +127,7 @@ function RoutePreviewOverlay({
         className="absolute top-4 left-0 right-0 text-center"
       >
         <div className="text-[10px] text-blue-300 uppercase tracking-[0.35em] font-semibold mb-1">
-          {lang === 'rw' ? 'Izere ry\'Inzira' : 'ROUTE PREVIEW'}
+          {t('sim.route_preview.title', 'ROUTE PREVIEW')}
         </div>
         <h2
           className="text-2xl md:text-3xl font-black text-white drop-shadow-2xl"
@@ -156,8 +156,7 @@ function RoutePreviewOverlay({
                     <span className="text-green-400 text-sm font-bold">A</span>
                   </div>
                   <div>
-                    <div className="text-[9px] text-green-400 uppercase font-bold tracking-wider">
-                      {lang === 'rw' ? 'Tangira' : 'START'}
+                    <div className="text-[9px] text-green-400 uppercase font-bold tracking-wider">                       {t('sim.route_preview.start', 'START')}
                     </div>
                     <div className="text-xs text-white font-semibold">
                       {startWp.objective}
@@ -179,8 +178,7 @@ function RoutePreviewOverlay({
                 {/* DESTINATION */}
                 <div className="flex items-center gap-2 flex-1 justify-end text-right">
                   <div>
-                    <div className="text-[9px] text-red-400 uppercase font-bold tracking-wider">
-                      {lang === 'rw' ? 'Ushika' : 'DESTINATION'}
+                    <div className="text-[9px] text-red-400 uppercase font-bold tracking-wider">                       {t('sim.route_preview.destination', 'DESTINATION')}
                     </div>
                     <div className="text-xs text-white font-semibold">
                       {endWp.objective}
@@ -242,9 +240,9 @@ function RoutePreviewOverlay({
               {activeIdx === 0 ? 'A' : activeIdx === waypoints.length - 1 ? 'B' : activeIdx + 1}
             </span>
             <span className="text-xs text-slate-400 font-medium">
-              {activeIdx === 0 ? (lang === 'rw' ? 'Intambwe yo gutangira' : 'Starting point')
-              : activeIdx === waypoints.length - 1 ? (lang === 'rw' ? 'Aho ushitse' : 'Final destination')
-              : `Step ${activeIdx + 1}`}
+              {activeIdx === 0 ? t('sim.route_preview.starting_point', 'Starting point')
+              : activeIdx === waypoints.length - 1 ? t('sim.route_preview.final_destination', 'Final destination')
+              : t('sim.route_preview.step', 'Step {number}').replace('{number}', String(activeIdx + 1))}
             </span>
           </div>
           <p className="text-white text-sm font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -268,14 +266,14 @@ function RoutePreviewOverlay({
           >
             <div className="bg-[#111827]/95 backdrop-blur-xl rounded-2xl border border-white/10 p-3 shadow-xl">
               <div className="text-[9px] text-amber-400 uppercase tracking-wider font-bold mb-2">
-                {lang === 'rw' ? 'Ibyerekerano' : 'Mission Criteria'}
+                {t('sim.mission_criteria.title', 'Mission Criteria')}
               </div>
 
               {/* Speed limit */}
               <div className="flex items-center gap-2 mb-1.5 px-2 py-1 rounded-lg bg-white/5">
                 <span className="text-sm">⚡</span>
                 <div>
-                  <div className="text-[8px] text-slate-500">{lang === 'rw' ? 'Imigabane' : 'Speed Limit'}</div>
+                  <div className="text-[8px] text-slate-500">{t('sim.mission_criteria.speed_limit', 'Speed Limit')}</div>
                   <div className="text-[11px] text-white font-bold">{scenarioConfig.speedLimit || 30} km/h</div>
                 </div>
               </div>
@@ -284,7 +282,7 @@ function RoutePreviewOverlay({
               <div className="flex items-center gap-2 mb-1.5 px-2 py-1 rounded-lg bg-white/5">
                 <span className="text-sm">⏱️</span>
                 <div>
-                  <div className="text-[8px] text-slate-500">{lang === 'rw' ? 'Igihe' : 'Time'}</div>
+                  <div className="text-[8px] text-slate-500">{t('sim.mission_criteria.time', 'Time')}</div>
                   <div className="text-[11px] text-white font-bold">{scenarioConfig.estimatedTime}</div>
                 </div>
               </div>
@@ -302,23 +300,23 @@ function RoutePreviewOverlay({
               <div className="text-[9px] text-slate-400 space-y-1 border-t border-white/5 pt-2">
                 <div className="flex items-center gap-1">
                   <span className="text-green-400">✓</span>
-                  <span>{lang === 'rw' ? 'Kurikiza inzira' : 'Follow the highlighted route'}</span>
+                  <span>{t('sim.mission_criteria.follow_route', 'Follow the highlighted route')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-green-400">✓</span>
-                  <span>{lang === 'rw' ? 'Kubanza ibyerekezo' : 'Signal at every turn'}</span>
+                  <span>{t('sim.mission_criteria.signal_turns', 'Signal at every turn')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-green-400">✓</span>
-                  <span>{lang === 'rw' ? 'Gukurikiza imigabane' : `Max ${scenarioConfig.speedLimit || 30} km/h`}</span>
+                  <span>{`Max ${scenarioConfig.speedLimit || 30} km/h`}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-red-400">✗</span>
-                  <span>{lang === 'rw' ? 'Ntukagende mu nzu' : 'No building collisions'}</span>
+                  <span>{t('sim.mission_criteria.no_collisions', 'No building collisions')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-red-400">✗</span>
-                  <span>{lang === 'rw' ? 'Ntukagende cyihuse' : 'No speeding'}</span>
+                  <span>{t('sim.mission_criteria.no_speeding', 'No speeding')}</span>
                 </div>
               </div>
             </div>

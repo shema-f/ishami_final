@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Eye, Power, CheckCircle2, MousePointer2, Keyboard, ArrowDown,
 } from 'lucide-react';
+import { useTranslation } from '../../contexts/I18nContext';
 import type { InstructorStage, SimulationState, GearState } from '../core/SimulationState';
 
 interface PreparationPanelProps {
@@ -85,6 +86,7 @@ export default function PreparationPanel({
   onGearSelect,
   onEngineStart,
 }: PreparationPanelProps) {
+  const { t, lang } = useTranslation();
   const stageIndex = PREP_STAGES.indexOf(stage);
   const isActive = stageIndex >= 0 && stageIndex <= PREP_STAGES.indexOf('FIRST_GEAR');
 
@@ -101,7 +103,7 @@ export default function PreparationPanel({
 
         <div className="p-4">
           <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3">
-            Vehicle Preparation
+            {lang === 'rw' ? 'Gutegura Ikinyabiziga' : 'Vehicle Preparation'}
           </div>
 
           {/* Step list */}

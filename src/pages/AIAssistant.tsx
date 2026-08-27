@@ -362,9 +362,8 @@ export default function AIAssistant() {
       const m = String(e?.message || '');
       const rateLimited = /429/.test(m) || /rate limit/i.test(m);
       const lang = uiLang;
-      const text = rateLimited
-        ? (lang === 'rw' ? "Wasabye byinshi icyarimwe. Ongeza gutegereza hanyuma wongere. #GerayoAmahoro" : "Too many requests right now. Please wait a moment and try again. #GerayoAmahoro")
-        : (lang === 'rw' ? "Seriveri ifite ikibazo. Ongera ugerageze nyuma y'akanya. #GerayoAmahoro" : "The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro");
+      const text = rateLimited        ? t('ai.errors.rate_limited', 'Too many requests right now. Please wait a moment and try again. #GerayoAmahoro')
+         : t('ai.errors.server_error', 'The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro');
       addMessage(convId, { id: nextMsgIdRef.current++, text, isUser: false, timestamp: new Date(), structured: { language: lang, intent: 'error', topic: 'general', confidence: 'medium', warnings: ['server_error'] } });
     } finally {
       setIsLoading(false);
@@ -646,7 +645,7 @@ export default function AIAssistant() {
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <p className="text-sm text-gray-400">{uiLang === 'rw' ? "Gutangira amajambo..." : "Loading conversations..."}</p>
+                  <p className="text-sm text-gray-400">{lang === 'rw' ? "Gutangira amajambo..." : "Loading conversations..."}</p>
                 </div>
               </div>
             ) : (
@@ -696,14 +695,14 @@ export default function AIAssistant() {
                               onClick={cancelEditing}
                               className="px-3 py-1 text-xs text-gray-300 hover:text-white transition-colors"
                             >
-                              {uiLang === 'rw' ? 'Hagarika' : 'Cancel'}
+                              {t('irembo.payment_dialog.cancel', 'Cancel')}
                             </button>
                             <button
                               onClick={() => saveEdit(message.id)}
                               disabled={!editingText.trim()}
                               className="px-3 py-1 text-xs bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-30"
                             >
-                              {uiLang === 'rw' ? 'Bika & Ongera' : 'Save & Resend'}
+                              {lang === 'rw' ? 'Bika & Ongera' : 'Save & Resend'}
                             </button>
                           </div>
                         </div>
@@ -717,7 +716,7 @@ export default function AIAssistant() {
                       )}
                       {message.structured?.sources && message.structured.sources.length > 0 && !message.isUser && (
                         <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-gray-400">
-                          <span className="opacity-70">{uiLang === 'rw' ? "Inyandiko zibonetswe:" : "Sources:"}</span>
+                          <span className="opacity-70">{lang === 'rw' ? "Inyandiko zibonetswe:" : "Sources:"}</span>
                           {message.structured.sources.slice(0, 4).map((s: any, i: number) => (
                             <span key={i} className="bg-white/5 border border-white/5 rounded px-1.5 py-0.5">
                               {s.type.replace(/_/g, ' ')} · {String(s.id || '').slice(0, 18)}
@@ -729,7 +728,7 @@ export default function AIAssistant() {
                     {!message.isUser && (
                       <button onClick={() => shareToWhatsApp(message.text)} className="flex items-center gap-2 text-green-400 hover:text-green-300 text-sm mt-2 transition-colors">
                         <MessageCircle className="w-4 h-4" />
-                        {uiLang === 'rw' ? "Tungura WhatsApp" : "Share on WhatsApp"}
+                        {lang === 'rw' ? "Tungura WhatsApp" : "Share on WhatsApp"}
                       </button>
                     )}
                   </div>
@@ -742,7 +741,7 @@ export default function AIAssistant() {
                     <div className="max-w-[82%]">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-6 h-6 rounded-lg bg-green-500/20 flex items-center justify-center"><Bot className="w-4 h-4 text-green-400" /></div>
-                        <span className="text-sm text-gray-500">Moto-Sensei {uiLang === 'rw' ? "yandika..." : "is thinking..."}</span>
+                        <span className="text-sm text-gray-500">Moto-Sensei {lang === 'rw' ? "yandika..." : "is thinking..."}</span>
                       </div>
                       <div className="p-4 rounded-2xl bg-white/10 border border-white/5 rounded-tl-sm">
                         <div className="flex gap-2">
@@ -766,7 +765,7 @@ export default function AIAssistant() {
                   value={input}
                   onChange={(e) => { setInput(e.target.value); const d = detectUiLangHint(e.target.value); if (d !== 'mixed') setUiLang(d); }}
                   onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder={uiLang === 'rw' ? "Kubaza icyo ukeneye ku mategeko y'umuhanda..." : uiLang === 'en' ? "Ask about traffic rules, signs, exams, safety..." : "Kubaza / Ask: amategeko, ibyapa, ikizamini..."}
+                  placeholder={lang === 'rw' ? "Kubaza icyo ukeneye ku mategeko y'umuhanda..." : lang === 'en' ? "Ask about traffic rules, signs, exams, safety..." : "Kubaza / Ask: amategeko, ibyapa, ikizamini..."}
                   className="flex-1 px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
                   disabled={isTyping || isLoading}
                 />
@@ -793,18 +792,18 @@ export default function AIAssistant() {
               <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{uiLang === 'rw' ? "Hinduriza Pro" : "Upgrade to Pro"}</h2>
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Upgrade to Pro')}</h2>
               <p className="text-gray-400 mb-6">
-                {uiLang === 'rw'
+                {lang === 'rw'
                   ? "Ukoresheje ibibazo 5 bisanzwe! Vugura Pro ugire ibibazo byose bidakemera Moto-Sensei — 1,000 RWF gusa."
                   : "You've used your 5 free questions! Unlock unlimited Moto-Sensei AI assistance for only 1,000 RWF."}
               </p>
               <div className="space-y-3">
                 <button className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300">
-                  {uiLang === 'rw' ? "Guhinduriza Pro — 1,000 RWF" : "Upgrade Now — 1,000 RWF"}
+                  {lang === 'rw' ? "Guhinduriza Pro — 1,000 RWF" : "Upgrade Now — 1,000 RWF"}
                 </button>
                 <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors">
-                  {uiLang === 'rw' ? "Nyuma yo" : "Maybe Later"}
+                  {t('quiz.paywall.maybe_later', 'Maybe Later')}
                 </button>
               </div>
             </div>
@@ -820,9 +819,9 @@ export default function AIAssistant() {
               <div className="inline-flex p-4 bg-rose-500/20 rounded-3xl mb-6">
                 <Trash2 className="w-10 h-10 text-rose-400" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">{uiLang === 'rw' ? 'Siba Intindiro?' : 'Delete Conversation?'}</h2>
+              <h2 className="text-xl font-bold text-white mb-2">{lang === 'rw' ? 'Siba Intindiro?' : 'Delete Conversation?'}</h2>
               <p className="text-gray-400 mb-6 text-sm">
-                {uiLang === 'rw'
+                {lang === 'rw'
                   ? `"${deleteTarget.title}" irasibwa. Iki gikorwa ntigishobora kugaruka.`
                   : `"${deleteTarget.title}" will be permanently deleted. This action cannot be undone.`}
               </p>
@@ -831,13 +830,13 @@ export default function AIAssistant() {
                   onClick={() => setDeleteTarget(null)}
                   className="flex-1 px-4 py-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-colors"
                 >
-                  {uiLang === 'rw' ? 'Hagarika' : 'Cancel'}
+                  {t('irembo.payment_dialog.cancel', 'Cancel')}
                 </button>
                 <button
                   onClick={confirmDelete}
                   className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold transition-colors"
                 >
-                  {uiLang === 'rw' ? 'Siba' : 'Delete'}
+                  {lang === 'rw' ? 'Siba' : 'Delete'}
                 </button>
               </div>
             </div>
