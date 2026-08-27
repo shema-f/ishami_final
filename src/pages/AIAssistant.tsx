@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
 import { aiAPI } from '../services/api';
@@ -104,6 +104,7 @@ export default function AIAssistant() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const stickToBottomRef = useRef(true);
@@ -318,6 +319,15 @@ export default function AIAssistant() {
 
   const messages = activeConversation?.messages || [];
 
+  const filteredConversations = searchQuery.trim()
+    ? conversations.filter(conv => {
+        const q = searchQuery.toLowerCase();
+        const titleMatch = conv.title.toLowerCase().includes(q);
+        const msgMatch = conv.messages.some(m => m.text.toLowerCase().includes(q));
+        return titleMatch || msgMatch;
+      })
+    : conversations;
+
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="fixed top-20 right-10 w-72 h-72 bg-green-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -340,7 +350,7 @@ export default function AIAssistant() {
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
-          <div className="p-4 border-b border-white/10">
+          <div className="p-4 border-b border-white/10 space-y-3">
             <button
               onClick={handleNewChat}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all duration-300"
@@ -348,10 +358,36 @@ export default function AIAssistant() {
               <Plus className="w-5 h-5" />
               {uiLang === 'rw' ? "Igifunguro gishya" : "New Chat"}
             </button>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={uiLang === 'rw' ? "Rondera inyandiko..." : "Search chats..."}
+                className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-green-500/50 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-gray-500 hover:text-white transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {conversations.map((conv) => (
+            {filteredConversations.length === 0 && searchQuery && (
+              <div className="text-center py-8">
+                <Search className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">
+                  {uiLang === 'rw' ? "Nta ntindiro yabonetse" : "No conversations found"}
+                </p>
+              </div>
+            )}
+            {filteredConversations.map((conv) => (
               <motion.div
                 key={conv.id}
                 initial={{ opacity: 0, x: -20 }}
