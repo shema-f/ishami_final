@@ -1,7 +1,7 @@
-import { motion } from 'motion/react';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router';
-import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check } from 'lucide-react';
+import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X } from 'lucide-react';
 import { articles, type Article } from '../data/articles';
 import { useTranslation } from '../contexts/I18nContext';
 
@@ -317,6 +317,31 @@ function ArticleDetail({ article }: { article: Article }) {
 export default function Blog() {
   const { slug } = useParams();
   const { lang, t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = new Set(articles.map(a => lang === 'rw' ? a.category_rw : a.category));
+    return Array.from(cats);
+  }, [lang]);
+
+  // Filter articles
+  const filteredArticles = useMemo(() => {
+    return articles.filter(article => {
+      const title = lang === 'rw' ? article.title_rw : article.title_en;
+      const excerpt = lang === 'rw' ? article.excerpt_rw : article.excerpt_en;
+      const category = lang === 'rw' ? article.category_rw : article.category;
+      
+      const matchesSearch = !searchQuery || 
+        title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesCategory = !selectedCategory || category === selectedCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, selectedCategory, lang]);
 
   // If slug is provided, show article detail
   if (slug) {
@@ -357,11 +382,74 @@ export default function Blog() {
           </p>
         </motion.div>
 
-        {/* Ferrivox Ltd Banner */}
+        {/* Search and Filter Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={lang === 'rw' ? 'Shakisha inyandiko...' : 'Search articles...'}
+                className="w-full pl-12 pr-12 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Category Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 text-gray-400 mr-2">
+              <Filter className="w-4 h-4" />
+              <span className="text-sm font-medium">{lang === 'rw' ? 'Gushungura:' : 'Filter:'}</span>
+            </div>
+            
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                !selectedCategory
+                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                  : 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              {lang === 'rw' ? 'Byose' : 'All'}
+            </button>
+            
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category === selectedCategory ? null : category)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  selectedCategory === category
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Ferrivox Ltd Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
           className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/20 rounded-2xl p-6 mb-12 text-center"
         >
           <p className="text-sm text-gray-400 mb-1">{lang === 'rw' ? 'Ibikorwa by\' Ishirahamwe' : 'In partnership with'}</p>
@@ -369,19 +457,60 @@ export default function Blog() {
           <p className="text-gray-400 text-sm">{lang === 'rw' ? 'Ishirahamwe ry\'Ikoranabuhanga n\'Ubufasha bw\'Amakuru' : 'Software Development & Data Engineering Company'}</p>
         </motion.div>
 
-        {/* Articles Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article, index) => (
-            <motion.div
-              key={article.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <ArticleCard article={article} />
-            </motion.div>
-          ))}
+        {/* Articles Count */}
+        <div className="mb-6 text-gray-400 text-sm">
+          {filteredArticles.length === articles.length 
+            ? (lang === 'rw' ? `Inyandiko ${articles.length}` : `${articles.length} articles`)
+            : (lang === 'rw' ? `Inyandiko ${filteredArticles.length} kuri ${articles.length}` : `${filteredArticles.length} of ${articles.length} articles`)
+          }
         </div>
+
+        {/* Articles Grid */}
+        <AnimatePresence mode="wait">
+          {filteredArticles.length > 0 ? (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {filteredArticles.map((article, index) => (
+                <motion.div
+                  key={article.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <ArticleCard article={article} />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="text-center py-20"
+            >
+              <Search className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+              <h3 className="text-xl font-bold text-white mb-2">{lang === 'rw' ? 'Nta nyandiko zibonetse' : 'No articles found'}</h3>
+              <p className="text-gray-400 mb-6">
+                {lang === 'rw' 
+                  ? 'Kurikira inama cyangwa uzure amagambo yindi' 
+                  : 'Try adjusting your search or filter criteria'}
+              </p>
+              <button
+                onClick={() => { setSearchQuery(''); setSelectedCategory(null); }}
+                className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all"
+              >
+                {lang === 'rw' ? 'Siba Gushungura' : 'Clear Filters'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
