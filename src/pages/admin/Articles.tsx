@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit, Search, CheckSquare, Square, Check } from 'lucide-react';
 import { articles, type Article, type ArticleStatus, type ArticleSEO } from '../../data/articles';
 import ImageUpload from '../../components/ImageUpload';
 
@@ -49,6 +49,17 @@ export default function AdminArticles() {
   const [formData, setFormData] = useState<ArticleFormData>(emptyForm);
   const [activeTab, setActiveTab] = useState<'articles' | 'add'>('articles');
   const [statusFilter, setStatusFilter] = useState<'all' | ArticleStatus>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState<'publish' | 'draft' | 'delete' | ''>('');
+  const [showBulkSchedule, setShowBulkSchedule] = useState(false);
+  const [bulkScheduleDate, setBulkScheduleDate] = useState('');
+
+  const filteredArticles = useMemo(() => {
+    return articleList.filter(a => statusFilter === 'all' || a.status === statusFilter);
+  }, [articleList, statusFilter]);
+
+  const allSelected = filteredArticles.length > 0 && filteredArticles.every(a => selectedIds.has(a.id));
+  const someSelected = selectedIds.size > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,13 +114,73 @@ export default function AdminArticles() {
     setEditingId(article.id);
     setShowForm(true);
     setActiveTab('add');
-  };
-
-  const handleDelete = (id: string) => {
+  };  const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this article?')) {
       setArticleList(prev => prev.filter(a => a.id !== id));
     }
   };
+
+  // Bulk selection handlers
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredArticles.map(a => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  // Bulk action handlers
+  const handleBulkAction = () => {
+    if (selectedIds.size === 0) return;
+
+    if (bulkAction === 'delete') {
+      if (confirm(`Are you sure you want to delete ${selectedIds.size} article(s)?`)) {
+        setArticleList(prev => prev.filter(a => !selectedIds.has(a.id)));
+        setSelectedIds(new Set());
+      }
+    } else if (bulkAction === 'publish') {
+      setArticleList(prev => prev.map(a => 
+        selectedIds.has(a.id) ? { ...a, status: 'published' as ArticleStatus } : a
+      ));
+      setSelectedIds(new Set());
+    } else if (bulkAction === 'draft') {
+      setArticleList(prev => prev.map(a => 
+        selectedIds.has(a.id) ? { ...a, status: 'draft' as ArticleStatus } : a
+      ));
+      setSelectedIds(new Set());
+    } else if (bulkAction === 'schedule') {
+      setShowBulkSchedule(true);
+      return;
+    }
+    setBulkAction('');
+  };
+
+  const handleBulkSchedule = () => {
+    if (!bulkScheduleDate || selectedIds.size === 0) return;
+    
+    setArticleList(prev => prev.map(a => 
+      selectedIds.has(a.id) 
+        ? { ...a, status: 'scheduled' as ArticleStatus, publishDate: bulkScheduleDate }
+        : a
+    ));
+    setSelectedIds(new Set());
+    setBulkAction('');
+    setShowBulkSchedule(false);
+    setBulkScheduleDate('');
+  };
+
 
   const handleCancel = () => {
     setFormData(emptyForm);
@@ -177,19 +248,118 @@ export default function AdminArticles() {
           </div>
         )}
 
+        {/* Bulk Actions Toolbar */}
+        {activeTab === 'articles' && someSelected && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 mb-4 flex flex-wrap items-center gap-4"
+          >
+            <span className="text-blue-400 font-medium">
+              {selectedIds.size} article(s) selected
+            </span>
+            <div className="flex items-center gap-2">
+              <select
+                value={bulkAction}
+                onChange={(e) => setBulkAction(e.target.value as typeof bulkAction)}
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select action...</option>
+                <option value="publish">Publish</option>
+                <option value="draft">Save as Draft</option>
+                <option value="schedule">Schedule</option>
+                <option value="delete">Delete</option>
+              </select>
+              <button
+                onClick={handleBulkAction}
+                disabled={!bulkAction}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Apply
+              </button>
+            </div>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-auto text-gray-400 hover:text-white text-sm"
+            >
+              Clear selection
+            </button>
+          </motion.div>
+        )}
+
+        {/* Bulk Schedule Modal */}
+        {showBulkSchedule && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4 mb-4"
+          >
+            <h4 className="text-white font-medium mb-3">Schedule {selectedIds.size} article(s)</h4>
+            <div className="flex items-center gap-3">
+              <input
+                type="datetime-local"
+                value={bulkScheduleDate}
+                onChange={(e) => setBulkScheduleDate(e.target.value)}
+                className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <button
+                onClick={handleBulkSchedule}
+                disabled={!bulkScheduleDate}
+                className="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Schedule
+              </button>
+              <button
+                onClick={() => { setShowBulkSchedule(false); setBulkScheduleDate(''); }}
+                className="px-4 py-2 bg-white/10 text-gray-300 rounded-lg text-sm hover:bg-white/20 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Articles List */}
         {activeTab === 'articles' && (
           <div className="space-y-4">
-            {articleList
-              .filter(a => statusFilter === 'all' || a.status === statusFilter)
-              .map((article) => (
+            {/* Select All Header */}
+            {filteredArticles.length > 0 && (
+              <div className="flex items-center gap-4 px-4 py-2 text-gray-400 text-sm">
+                <button
+                  onClick={toggleSelectAll}
+                  className="flex items-center gap-2 hover:text-white transition-colors"
+                >
+                  {allSelected ? (
+                    <CheckSquare className="w-4 h-4 text-blue-400" />
+                  ) : (
+                    <Square className="w-4 h-4" />
+                  )}
+                  <span>Select all</span>
+                </button>
+              </div>
+            )}
+
+            {filteredArticles.map((article) => (
               <motion.div
                 key={article.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4"
+                className={`bg-white/5 backdrop-blur-xl rounded-2xl border p-4 transition-all ${
+                  selectedIds.has(article.id) ? 'border-blue-500/50 bg-blue-500/5' : 'border-white/10'
+                }`}
               >
                 <div className="flex items-center gap-4">
+                  {/* Checkbox */}
+                  <button
+                    onClick={() => toggleSelect(article.id)}
+                    className="shrink-0"
+                  >
+                    {selectedIds.has(article.id) ? (
+                      <CheckSquare className="w-5 h-5 text-blue-400" />
+                    ) : (
+                      <Square className="w-5 h-5 text-gray-500 hover:text-white transition-colors" />
+                    )}
+                  </button>
                   <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
                     <img src={article.image} alt={article.title_en} className="w-full h-full object-cover" />
                   </div>
