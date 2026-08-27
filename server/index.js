@@ -255,6 +255,25 @@ const Certificate = model('Certificate', CertificateSchema);
 
 // AIInteraction moved to models/AIInteraction.js
 
+const ConversationMessageSchema = new Schema({
+  id: { type: Number, required: true },
+  text: { type: String, required: true },
+  isUser: { type: Boolean, required: true },
+  timestamp: { type: Date, default: Date.now },
+  image: { type: String, default: null },
+  structured: { type: Schema.Types.Mixed, default: null }
+}, { _id: false });
+
+const ConversationSchema = new Schema({
+  userId: { type: Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, default: 'New Chat' },
+  messages: { type: [ConversationMessageSchema], default: [] },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+ConversationSchema.index({ userId: 1, updatedAt: -1 });
+const Conversation = model('Conversation', ConversationSchema);
+
 async function seed() {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@ishami.rw';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
@@ -516,7 +535,8 @@ await Promise.all([
   Simulation.syncIndexes(),
   Notification.syncIndexes(),
   FraudLog.syncIndexes(),
-  Certificate.syncIndexes()
+  Certificate.syncIndexes(),
+  Conversation.syncIndexes()
 ]);
 await seed();
 
@@ -3287,6 +3307,121 @@ const quizSubmitLimiter = rateLimit({
 app.post('/api/quiz/submit', quizSubmitLimiter, authMiddleware, async (req, res) => {
   // This overrides the earlier POST /api/quiz/submit handler
   // ...existing handler runs here
+});
+
+// ============ CONVERSATION (CHAT HISTORY) APIs ============
+
+app.get('/api/conversations', authMiddleware, async (req, res) => {
+  try {
+    const conversations = await Conversation.find({ userId: req.user._id })
+      .sort({ updatedAt: -1 })
+      .select('-__v')
+      .lean();
+    res.json({ conversations });
+  } catch (e) {
+    console.error('[Route /api/conversations] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to load conversations' });
+  }
+});
+
+app.post('/api/conversations', authMiddleware, async (req, res) => {
+  try {
+    const { title, messages } = req.body || {};
+    const conversation = await Conversation.create({
+      userId: req.user._id,
+      title: title || 'New Chat',
+      messages: Array.isArray(messages) ? messages : [],
+      updatedAt: new Date()
+    });
+    res.json({ conversation });
+  } catch (e) {
+    console.error('[Route POST /api/conversations] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to create conversation' });
+  }
+});
+
+app.get('/api/conversations/:conversationId', authMiddleware, async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({
+      _id: req.params.conversationId,
+      userId: req.user._id
+    }).lean();
+    if (!conversation) return res.status(404).json({ message: 'Conversation not found' });
+    res.json({ conversation });
+  } catch (e) {
+    console.error('[Route GET /api/conversations/:id] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to load conversation' });
+  }
+});
+
+app.put('/api/conversations/:conversationId', authMiddleware, async (req, res) => {
+  try {
+    const { title, messages } = req.body || {};
+    const update = { updatedAt: new Date() };
+    if (title !== undefined) update.title = title;
+    if (Array.isArray(messages)) update.messages = messages;
+
+    const conversation = await Conversation.findOneAndUpdate(
+      { _id: req.params.conversationId, userId: req.user._id },
+      { $set: update },
+      { new: true }
+    ).lean();
+    if (!conversation) return res.status(404).json({ message: 'Conversation not found' });
+    res.json({ conversation });
+  } catch (e) {
+    console.error('[Route PUT /api/conversations/:id] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to update conversation' });
+  }
+});
+
+app.delete('/api/conversations/:conversationId', authMiddleware, async (req, res) => {
+  try {
+    const result = await Conversation.deleteOne({
+      _id: req.params.conversationId,
+      userId: req.user._id
+    });
+    if (result.deletedCount === 0) return res.status(404).json({ message: 'Conversation not found' });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('[Route DELETE /api/conversations/:id] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to delete conversation' });
+  }
+});
+
+// Batch sync: upsert multiple conversations at once (for initial sync from localStorage)
+app.post('/api/conversations/sync', authMiddleware, async (req, res) => {
+  try {
+    const { conversations = [] } = req.body || {};
+    if (!Array.isArray(conversations) || conversations.length === 0) {
+      return res.json({ synced: 0 });
+    }
+    const ops = conversations.map(conv => ({
+      updateOne: {
+        filter: { _id: conv.id, userId: req.user._id },
+        update: {
+          $set: {
+            title: conv.title || 'New Chat',
+            messages: conv.messages || [],
+            updatedAt: conv.updatedAt || new Date()
+          },
+          $setOnInsert: {
+            userId: req.user._id,
+            createdAt: conv.createdAt || new Date()
+          }
+        },
+        upsert: true
+      }
+    }));
+    await Conversation.bulkWrite(ops);
+    const allConversations = await Conversation.find({ userId: req.user._id })
+      .sort({ updatedAt: -1 })
+      .select('-__v')
+      .lean();
+    res.json({ conversations: allConversations, synced: conversations.length });
+  } catch (e) {
+    console.error('[Route POST /api/conversations/sync] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to sync conversations' });
+  }
 });
 
 app.get('/', (_req, res) => res.json({ status: 'ok', name: 'ISHAMI backend', version: '0.1.0' }));

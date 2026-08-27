@@ -461,6 +461,76 @@ export const simulationAPI = {
 };
 
 // ============================================
+// CONVERSATION (CHAT HISTORY) APIs
+// ============================================
+
+export const conversationAPI = {
+  /**
+   * Get all conversations for the current user
+   * Backend endpoint: GET /api/conversations
+   */
+  list: async () => {
+    const res = await apiCall('/api/conversations');
+    return res.conversations || [];
+  },
+
+  /**
+   * Get a single conversation by ID
+   * Backend endpoint: GET /api/conversations/:id
+   */
+  get: async (conversationId: string) => {
+    const res = await apiCall(`/api/conversations/${conversationId}`);
+    return res.conversation;
+  },
+
+  /**
+   * Create a new conversation
+   * Backend endpoint: POST /api/conversations
+   */
+  create: async (data: { title?: string; messages?: any[] }) => {
+    const res = await apiCall('/api/conversations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return res.conversation;
+  },
+
+  /**
+   * Update a conversation (title, messages)
+   * Backend endpoint: PUT /api/conversations/:id
+   */
+  update: async (conversationId: string, data: { title?: string; messages?: any[] }) => {
+    const res = await apiCall(`/api/conversations/${conversationId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return res.conversation;
+  },
+
+  /**
+   * Delete a conversation
+   * Backend endpoint: DELETE /api/conversations/:id
+   */
+  delete: async (conversationId: string) => {
+    return apiCall(`/api/conversations/${conversationId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Batch sync multiple conversations from localStorage
+   * Backend endpoint: POST /api/conversations/sync
+   */
+  sync: async (conversations: any[]) => {
+    const res = await apiCall('/api/conversations/sync', {
+      method: 'POST',
+      body: JSON.stringify({ conversations }),
+    });
+    return res.conversations || [];
+  },
+};
+
+// ============================================
 // ADMIN APIs
 // ============================================
 
@@ -708,6 +778,7 @@ export default {
   leaderboard: leaderboardAPI,
   irembo: iremboAPI,
   simulation: simulationAPI,
+  conversations: conversationAPI,
   admin: adminAPI,
   newsletter: newsletterAPI,
 };

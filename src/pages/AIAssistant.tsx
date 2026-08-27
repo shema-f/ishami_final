@@ -90,6 +90,7 @@ export default function AIAssistant() {
     addMessage,
     updateMessage,
     removeMessage,
+    isLoading: isChatLoading,
   } = useChat();
 
   const [input, setInput] = useState('');
@@ -438,6 +439,18 @@ export default function AIAssistant() {
 
           {/* Chat Container */}
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+            {isChatLoading ? (
+              <div className="h-[520px] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                  <p className="text-sm text-gray-400">{uiLang === 'rw' ? "Gutangira amajambo..." : "Loading conversations..."}</p>
+                </div>
+              </div>
+            ) : (
             <div ref={chatRef} onScroll={handleChatScroll} className="h-[520px] overflow-y-auto p-6 space-y-4 custom-scrollbar">
               {messages.map((message) => (
                 <motion.div key={message.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
@@ -508,6 +521,7 @@ export default function AIAssistant() {
                 )}
               </AnimatePresence>
             </div>
+            )}
 
             {/* Input Area */}
             <div className="border-t border-white/10 p-4 bg-white/5">
