@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload, Search, Pencil, Check } from 'lucide-react';
+import { Send, Sparkles, MessageCircle, Bot, User, ArrowUp, Shield, BookOpen, AlertTriangle, Languages, CheckCircle2, HelpCircle, Plus, Trash2, Menu, X, Download, Upload, Search, Pencil, Check, Share2, Link, LinkOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
-import { aiAPI } from '../services/api';
+import { aiAPI, conversationAPI } from '../services/api';
 
 interface AIStructured {
   language?: 'en' | 'rw' | 'mixed';
@@ -108,6 +108,8 @@ export default function AIAssistant() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
+  const [shareStatus, setShareStatus] = useState<Record<string, string>>({});
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const stickToBottomRef = useRef(true);
@@ -188,6 +190,43 @@ export default function AIAssistant() {
       removeMessage(conversationId, msgId);
       if (streamErr?.name === 'AbortError') throw streamErr;
       return null;
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent, convId: string) => {
+    e.stopPropagation();
+    try {
+      if (shareStatus[convId]) {
+        // Already shared — copy link
+        const url = `${window.location.origin}/shared/${shareStatus[convId]}`;
+        await navigator.clipboard.writeText(url);
+        setCopiedToken(shareStatus[convId]);
+        setTimeout(() => setCopiedToken(null), 2000);
+      } else {
+        // Generate share token
+        const token = await conversationAPI.share(convId);
+        setShareStatus(prev => ({ ...prev, [convId]: token }));
+        const url = `${window.location.origin}/shared/${token}`;
+        await navigator.clipboard.writeText(url);
+        setCopiedToken(token);
+        setTimeout(() => setCopiedToken(null), 2000);
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
+  const handleUnshare = async (e: React.MouseEvent, convId: string) => {
+    e.stopPropagation();
+    try {
+      await conversationAPI.unshare(convId);
+      setShareStatus(prev => {
+        const next = { ...prev };
+        delete next[convId];
+        return next;
+      });
+    } catch (err) {
+      console.error('Unshare failed:', err);
     }
   };
 
@@ -475,12 +514,21 @@ export default function AIAssistant() {
                       {new Date(conv.updatedAt).toLocaleDateString()} · {conv.messages.length} {uiLang === 'rw' ? "ubusobanuro" : "messages"}
                     </p>
                   </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: conv.id, title: conv.title }); }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={(e) => handleShare(e, conv.id)}
+                      className={`p-1 transition-all ${shareStatus[conv.id] ? 'text-green-400 hover:text-green-300' : 'text-gray-500 hover:text-green-400'}`}
+                      title={shareStatus[conv.id] ? (copiedToken === shareStatus[conv.id] ? 'Copied!' : 'Copy link') : 'Share'}
+                    >
+                      {shareStatus[conv.id] ? <Link className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: conv.id, title: conv.title }); }}
+                      className="p-1 text-gray-500 hover:text-red-400 transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}

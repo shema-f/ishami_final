@@ -1,33 +1,39 @@
 import { createBrowserRouter } from "react-router";
+import { lazy } from "react";
 import Root from "../components/Root";
 import AdminLayout from "../components/AdminLayout";
+
+// Eagerly load Home (the landing page users see first)
 import Home from "../pages/Home";
-import AIAssistant from "../pages/AIAssistant";
-import Quiz from "../pages/Quiz";
-import Resources from "../pages/Resources";
-import Leaderboard from "../pages/Leaderboard";
-import Auth from "../pages/Auth";
-import ResetPassword from "../pages/ResetPassword";
-import Irembo from "../pages/Irembo";
-import NotFound from "../pages/NotFound";
-import PrivacyPolicy from "../pages/PrivacyPolicy";
-import Terms from "../pages/Terms";
-import CookiePolicy from "../pages/CookiePolicy";
-import Profile from "../pages/Profile";
-import Certificate from "../pages/Certificate";
-import TestPayment from "../pages/TestPayment";
-import Simulation from "../pages/Simulation";
-import ScenarioSelect from "../simulation/ui/ScenarioSelect";
+
+// Lazy-load everything else — code-split into separate chunks
+const AIAssistant = lazy(() => import("../pages/AIAssistant"));
+const Quiz = lazy(() => import("../pages/Quiz"));
+const Resources = lazy(() => import("../pages/Resources"));
+const Leaderboard = lazy(() => import("../pages/Leaderboard"));
+const Auth = lazy(() => import("../pages/Auth"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
+const Irembo = lazy(() => import("../pages/Irembo"));
+const NotFound = lazy(() => import("../pages/NotFound"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const Terms = lazy(() => import("../pages/Terms"));
+const CookiePolicy = lazy(() => import("../pages/CookiePolicy"));
+const Profile = lazy(() => import("../pages/Profile"));
+const Certificate = lazy(() => import("../pages/Certificate"));
+const TestPayment = lazy(() => import("../pages/TestPayment"));
+const Simulation = lazy(() => import("../pages/Simulation"));
+const ScenarioSelect = lazy(() => import("../simulation/ui/ScenarioSelect"));
+const SharedChat = lazy(() => import("../pages/SharedChat"));
 
 // Admin Pages
-import AdminDashboard from "../pages/admin/Dashboard";
-import AdminUsers from "../pages/admin/Users";
-import AdminQuestions from "../pages/admin/Questions";
-import AdminPayments from "../pages/admin/Payments";
-import AdminIremboApplications from "../pages/admin/IremboApplications";
-import AdminResources from "../pages/admin/Resources";
-import AdminNotifications from "../pages/admin/Notifications";
-import AdminFraudLogs from "../pages/admin/FraudLogs";
+const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
+const AdminUsers = lazy(() => import("../pages/admin/Users"));
+const AdminQuestions = lazy(() => import("../pages/admin/Questions"));
+const AdminPayments = lazy(() => import("../pages/admin/Payments"));
+const AdminIremboApplications = lazy(() => import("../pages/admin/IremboApplications"));
+const AdminResources = lazy(() => import("../pages/admin/Resources"));
+const AdminNotifications = lazy(() => import("../pages/admin/Notifications"));
+const AdminFraudLogs = lazy(() => import("../pages/admin/FraudLogs"));
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +57,7 @@ export const router = createBrowserRouter([
       { path: "simulation", Component: ScenarioSelect },
       { path: "simulation/play", Component: Simulation },
       { path: "simulation/:scenarioId", Component: Simulation },
+      { path: "shared/:token", Component: SharedChat },
       { path: "*", Component: NotFound },
     ],
   },

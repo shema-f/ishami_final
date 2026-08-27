@@ -528,6 +528,36 @@ export const conversationAPI = {
     });
     return res.conversations || [];
   },
+
+  /**
+   * Generate a shareable link for a conversation
+   * Backend endpoint: POST /api/conversations/:id/share
+   */
+  share: async (conversationId: string) => {
+    const res = await apiCall(`/api/conversations/${conversationId}/share`, {
+      method: 'POST',
+    });
+    return res.shareToken;
+  },
+
+  /**
+   * Stop sharing a conversation
+   * Backend endpoint: DELETE /api/conversations/:id/share
+   */
+  unshare: async (conversationId: string) => {
+    return apiCall(`/api/conversations/${conversationId}/share`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Get a shared conversation by token (public, no auth required)
+   * Backend endpoint: GET /api/shared/:token
+   */
+  getShared: async (token: string) => {
+    const res = await apiCall(`/api/shared/${token}`);
+    return res.conversation;
+  },
 };
 
 // ============================================

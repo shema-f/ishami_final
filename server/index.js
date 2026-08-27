@@ -268,10 +268,12 @@ const ConversationSchema = new Schema({
   userId: { type: Types.ObjectId, ref: 'User', required: true },
   title: { type: String, default: 'New Chat' },
   messages: { type: [ConversationMessageSchema], default: [] },
+  shareToken: { type: String, default: null, sparse: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
 ConversationSchema.index({ userId: 1, updatedAt: -1 });
+ConversationSchema.index({ shareToken: 1 }, { sparse: true });
 const Conversation = model('Conversation', ConversationSchema);
 
 async function seed() {
@@ -3421,6 +3423,52 @@ app.post('/api/conversations/sync', authMiddleware, async (req, res) => {
   } catch (e) {
     console.error('[Route POST /api/conversations/sync] error:', e?.stack || e);
     res.status(500).json({ message: 'Failed to sync conversations' });
+  }
+});
+
+// ── Share a conversation (generate unique link) ──
+app.post('/api/conversations/:conversationId/share', authMiddleware, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ _id: req.params.conversationId, userId: req.user._id });
+    if (!conv) return res.status(404).json({ message: 'Conversation not found' });
+    if (!conv.shareToken) {
+      conv.shareToken = uuidv4().replace(/-/g, '').slice(0, 12);
+      await conv.save();
+    }
+    res.json({ shareToken: conv.shareToken });
+  } catch (e) {
+    console.error('[Route POST /api/conversations/:id/share] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to share conversation' });
+  }
+});
+
+// ── Stop sharing a conversation ──
+app.delete('/api/conversations/:conversationId/share', authMiddleware, async (req, res) => {
+  try {
+    const conv = await Conversation.findOneAndUpdate(
+      { _id: req.params.conversationId, userId: req.user._id },
+      { $set: { shareToken: null } },
+      { new: true }
+    );
+    if (!conv) return res.status(404).json({ message: 'Conversation not found' });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('[Route DELETE /api/conversations/:id/share] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to unshare conversation' });
+  }
+});
+
+// ── Public: view a shared conversation (no auth required) ──
+app.get('/api/shared/:token', optionalAuthMiddleware, async (req, res) => {
+  try {
+    const conv = await Conversation.findOne({ shareToken: req.params.token })
+      .select('title messages createdAt updatedAt shareToken')
+      .lean();
+    if (!conv) return res.status(404).json({ message: 'Shared conversation not found or has been unshared' });
+    res.json({ conversation: conv });
+  } catch (e) {
+    console.error('[Route GET /api/shared/:token] error:', e?.stack || e);
+    res.status(500).json({ message: 'Failed to load shared conversation' });
   }
 });
 
