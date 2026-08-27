@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
-import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2 } from 'lucide-react';
+import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink } from 'lucide-react';
 import { useState, lazy, Suspense } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
@@ -223,6 +223,79 @@ export default function Home() {
           <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /></div>}>
             <FlipCard />
           </Suspense>
+        </div>
+      </section>
+
+      {/* Articles / Blog Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+              <Newspaper className="w-4 h-4 text-blue-400" />
+              <span className="text-sm text-blue-400 font-medium">{t('home.blog_section.badge', 'Articles & Blog')}</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {t('home.blog_section.title', 'Read Our Latest Articles')}
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              {t('home.blog_section.desc', 'Stay updated with driving tips, traffic rules guides, and licensing information — in English and Kinyarwanda.')}
+            </p>
+          </motion.div>
+
+          {/* Featured Article Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <Link to="/blog/complete-guide-driving-rwanda" className="block group">
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                <div className="md:flex">
+                  <div className="md:w-1/2 h-64 md:h-auto">
+                    <img
+                      src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop"
+                      alt="Complete Guide to Driving in Rwanda"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="md:w-1/2 p-8 flex flex-col justify-center">
+                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold w-fit mb-4">
+                      {lang === 'rw' ? 'Amabwiriza yo Gutwara' : 'Driving Guide'}
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors">
+                      {lang === 'rw' ? "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety" : "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety"}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-6 line-clamp-3">
+                      {lang === 'rw'
+                        ? "Gutwara ikinyabiziga mu Rwanda bisaba gusobanukirwa neza amategeko y'umuhanda, uburyo ikoranabuhanga rikoreshwa mu kubungabunga umutekano."
+                        : "Driving in Rwanda requires a firm grasp of traffic regulations, digital enforcement systems, and terrain-specific driving techniques."}
+                    </p>
+                    <div className="flex items-center text-blue-400 text-sm font-medium">
+                      <span>{lang === 'rw' ? 'Soma byinshi' : 'Read the full guide'}</span>
+                      <ExternalLink className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+
+          <div className="text-center">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/15 text-white rounded-xl font-semibold hover:bg-white/10 transition-all duration-300"
+            >
+              <span>{t('home.blog_section.view_all', 'View All Articles')}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

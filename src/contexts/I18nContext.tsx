@@ -123,6 +123,24 @@ const translations: Translations = {
   'home.newsletter.success': { en: '✓ Thank you for subscribing! Check your email for confirmation.', rw: "✓ Urakoze kwiyandikisha! Reba muri imeri yawe ubutumwa bwo kwemeza." },
   'home.newsletter.error': { en: 'Subscription failed. Please try again.', rw: "Kwiyandikisha byanze. Ongera ugerageze." },
 
+  // ==== BLOG / ARTICLES ====
+  'nav.blog':              { en: 'Blog', rw: 'Inyandiko' },
+  'blog.title':            { en: 'Articles & Blog', rw: "Inyandiko n'Amateka" },
+  'blog.subtitle':         { en: 'Read traffic rules, driving guides, and important articles in both English and Kinyarwanda.', rw: "Soma amategeko y'umuhanda, amabwiriza yo gutwara, n'inkuru zingenzi ziri mu Kinyarwanda n'Icyongereza." },
+  'blog.ferrivox':         { en: 'In partnership with', rw: 'Ku bufatanye na' },
+  'blog.ferrivox_tagline': { en: 'Software Development & Data Engineering Company', rw: "Ishirahamwe ry'Ikoranabuhanga n'Ubufasha bw'Amakuru" },
+  'blog.read_more':        { en: 'Read more', rw: 'Soma byinshi' },
+  'blog.back_to_articles': { en: 'Back to Articles', rw: 'Subira inyuma' },
+  'blog.back_to_list':     { en: 'Back to articles', rw: 'Subira ku nyandiko' },
+  'blog.not_found':        { en: 'Article not found', rw: 'Inyandiko ntibonetse' },
+  'blog.powered_by':       { en: 'Powered by', rw: 'Ibikorwa by' },
+  'blog.visit_ferrivox':   { en: 'Visit Ferrivox', rw: 'Sura Ferrivox' },
+
+  'home.blog_section.badge':    { en: 'Articles & Blog', rw: "Inyandiko n'Amateka" },
+  'home.blog_section.title':    { en: 'Read Our Latest Articles', rw: 'Soma Inyandiko Dutangaye' },
+  'home.blog_section.desc':     { en: 'Stay updated with driving tips, traffic rules guides, and licensing information — in English and Kinyarwanda.', rw: "Guma uzi amakuru y'ubuhanga bwo gutwara, amabwiriza y'amategeko y'umuhanda, n'amakuru y'uruhushya — mu Kinyarwanda n'Icyongereza." },
+  'home.blog_section.view_all': { en: 'View All Articles', rw: 'Reba Inyandiko Zose' },
+
   // ==== AUTH PAGE ====
   'auth.welcome':       { en: 'Welcome to ISHAMI', rw: 'Murakaza neza kuri ISHAMI' },
   'auth.tagline':       { en: 'Master Rwanda Traffic Rules with AI-powered learning', rw: "Menya Amategeko y'Umuhanda ukoresheje AI" },
