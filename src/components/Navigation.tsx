@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router';
-import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 import { useNotifications } from '../contexts/NotificationsContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +15,7 @@ export default function Navigation() {
   const location = useLocation();
   const { t, lang, setLang } = useTranslation();
   const { unreadCount } = useNotifications();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +56,7 @@ export default function Navigation() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-[#16171C]/85 backdrop-blur-xl border-b border-white/15 shadow-lg shadow-black/30' 
+          ? 'bg-white/85 dark:bg-[#16171C]/85 backdrop-blur-xl border-b border-black/5 dark:border-white/15 shadow-lg shadow-black/5 dark:shadow-black/30' 
           : 'bg-transparent'
       }`}
     >
@@ -67,16 +69,16 @@ export default function Navigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-black/20 ring-1 ring-white/15 bg-white/5 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-black/10 dark:shadow-black/20 ring-1 ring-black/5 dark:ring-white/15 bg-white dark:bg-white/5 flex items-center justify-center">
                 <img src="/apple-touch-icon.png" alt="ISHAMI Logo" className="w-full h-full object-contain" />
               </div>
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00A3AD] to-blue-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
             </motion.div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-white font-[family-name:var(--font-heading)] tracking-tight">
+              <span className="text-xl font-bold text-gray-900 dark:text-white font-[family-name:var(--font-heading)] tracking-tight">
                 ISHAMI
               </span>
-              <span className="text-[10px] text-slate-400 tracking-wider uppercase -mt-1">{t('footer.subtitle')}</span>
+              <span className="text-[10px] text-gray-500 dark:text-slate-400 tracking-wider uppercase -mt-1">{t('footer.subtitle')}</span>
             </div>
           </Link>
 
@@ -88,8 +90,8 @@ export default function Navigation() {
                 to={item.path}
                 className={`relative px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
                   isActive(item.path)
-                    ? 'text-white'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
               >
                 {isActive(item.path) && (
@@ -112,8 +114,8 @@ export default function Navigation() {
                 }}
                 className={`relative px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center gap-1 ${
                   isBlogActive
-                    ? 'text-white'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
               >
                 {isBlogActive && (
@@ -139,7 +141,7 @@ export default function Navigation() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-2 w-56 bg-[#16171C] border border-white/10 rounded-xl shadow-2xl shadow-black/30 overflow-hidden z-50"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#16171C] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/30 overflow-hidden z-50"
                   >
                     {blogSubItems.map((item) => (
                       <Link
@@ -148,8 +150,8 @@ export default function Navigation() {
                         onClick={() => setBlogDropdownOpen(false)}
                         className={`flex items-center gap-3 px-4 py-3 transition-all ${
                           isActive(item.path)
-                            ? 'bg-blue-500/20 text-blue-400'
-                            : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                            ? 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
                         }`}
                       >
                         {item.icon}
@@ -166,14 +168,47 @@ export default function Navigation() {
               </AnimatePresence>
             </div>
 
+            {/* Theme Toggle */}
+            <div className="ml-2">
+              <button
+                onClick={toggleTheme}
+                className="relative w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-all duration-300 flex items-center justify-center group"
+                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                <AnimatePresence mode="wait">
+                  {isDark ? (
+                    <motion.div
+                      key="sun"
+                      initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Sun className="w-4 h-4 text-amber-400" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="moon"
+                      initial={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                      exit={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Moon className="w-4 h-4 text-blue-400" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </div>
+
             {/* Desktop Language Switcher */}
-            <div className="ml-2 inline-flex items-center gap-0.5 px-1 py-1 rounded-xl bg-slate-800/60 border border-slate-700/50">
+            <div className="ml-1 inline-flex items-center gap-0.5 px-1 py-1 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50">
               <button
                 onClick={() => setLang('en')}
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   lang === 'en'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
                 title="English"
               >
@@ -184,7 +219,7 @@ export default function Navigation() {
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   lang === 'rw'
                     ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
                 title="Kinyarwanda"
               >
@@ -199,11 +234,11 @@ export default function Navigation() {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/profile"
-                  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:bg-slate-700/60 transition-colors group"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-colors group"
                 >
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-sm text-slate-200 font-medium group-hover:text-white">{user?.username || 'User'}</span>
-                  <User className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300" />
+                  <span className="text-sm text-gray-700 dark:text-slate-200 font-medium group-hover:text-gray-900 dark:group-hover:text-white">{user?.username || 'User'}</span>
+                  <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 group-hover:text-gray-600 dark:group-hover:text-slate-300" />
                 </Link>
                 <button
                   onClick={() => {
@@ -211,7 +246,7 @@ export default function Navigation() {
                     localStorage.removeItem('user');
                     window.location.href = '/';
                   }}
-                  className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors font-medium"
+                  className="px-4 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
                 >
                   {t('nav.signOut')}
                 </button>
@@ -220,7 +255,7 @@ export default function Navigation() {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/auth"
-                  className="px-5 py-2.5 text-slate-300 hover:text-white transition-colors font-medium"
+                  className="px-5 py-2.5 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
                 >
                   {t('nav.signIn')}
                 </Link>
@@ -239,7 +274,7 @@ export default function Navigation() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-white hover:bg-slate-700/60 transition-colors"
+            className="lg:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-colors"
           >
             {isOpen ? (
               <X className="w-5 h-5" />
@@ -257,18 +292,28 @@ export default function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-white/15 bg-[#16171C]/95 backdrop-blur-xl"
+            className="lg:hidden border-t border-black/5 dark:border-white/15 bg-white/95 dark:bg-[#16171C]/95 backdrop-blur-xl"
           >
             <div className="px-4 py-6 space-y-2">
-              {/* Mobile Language Switcher */}
-              <div className="mb-4 inline-flex items-center gap-1 px-1 py-1 rounded-xl bg-slate-800/60 border border-slate-700/50">
+              {/* Mobile Theme Toggle + Language Switcher */}
+              <div className="mb-4 flex items-center gap-3">
+                {/* Theme Toggle (Mobile) */}
+                <button
+                  onClick={toggleTheme}
+                  className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-all duration-300 flex items-center justify-center"
+                  title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-400" />}
+                </button>
+
+                <div className="inline-flex items-center gap-1 px-1 py-1 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50">
                 <Globe className="w-4 h-4 text-slate-400 ml-2 mr-1" />
                 <button
                   onClick={() => setLang('en')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     lang === 'en'
                       ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
                 >
                   🇬🇧 EN
@@ -278,11 +323,12 @@ export default function Navigation() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     lang === 'rw'
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
                 >
                   🇷🇼 RW
                 </button>
+              </div>
               </div>
 
               {navItems.map((item, index) => (
@@ -297,8 +343,8 @@ export default function Navigation() {
                     onClick={() => setIsOpen(false)}
                     className={`block px-4 py-3 rounded-xl transition-all font-medium ${
                       isActive(item.path)
-                        ? 'bg-blue-500/15 text-white border border-blue-500/20'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                        ? 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 dark:text-white border border-blue-500/20'
+                        : 'text-gray-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     {item.label}
@@ -312,7 +358,7 @@ export default function Navigation() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: navItems.length * 0.05 }}
               >
-                <div className={`px-4 py-2 text-xs uppercase tracking-wider text-slate-500 font-semibold ${isBlogActive ? 'text-blue-400' : ''}`}>
+                <div className={`px-4 py-2 text-xs uppercase tracking-wider text-gray-400 dark:text-slate-500 font-semibold ${isBlogActive ? 'text-blue-500 dark:text-blue-400' : ''}`}>
                   {t('nav.blog')}
                 </div>
                 {blogSubItems.map((item) => (
@@ -322,8 +368,8 @@ export default function Navigation() {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center justify-between px-4 py-2.5 ml-2 rounded-xl transition-all font-medium ${
                       isActive(item.path)
-                        ? 'bg-blue-500/15 text-white border border-blue-500/20'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                        ? 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 dark:text-white border border-blue-500/20'
+                        : 'text-gray-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -339,17 +385,17 @@ export default function Navigation() {
                 ))}
               </motion.div>
               
-              <div className="pt-4 space-y-3 border-t border-slate-700/50">
+              <div className="pt-4 space-y-3 border-t border-gray-200 dark:border-slate-700/50">
 
                 {isAuthenticated ? (
                   <>
                     <Link
                       to="/profile"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors"
                     >
                       <User className="w-4 h-4" />
-                      <span>Signed in as <span className="text-white font-medium">{user?.username}</span></span>
+                      <span>Signed in as <span className="text-gray-900 dark:text-white font-medium">{user?.username}</span></span>
                     </Link>
                     <button
                       onClick={() => {
@@ -367,7 +413,7 @@ export default function Navigation() {
                     <Link
                       to="/auth"
                       onClick={() => setIsOpen(false)}
-                      className="block px-4 py-3 text-center text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors font-medium"
+                      className="block px-4 py-3 text-center text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors font-medium"
                     >
                       {t('nav.signIn')}
                     </Link>
