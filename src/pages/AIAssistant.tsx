@@ -462,9 +462,9 @@ export default function AIAssistant() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080c18]">
+    <div className="min-h-screen bg-[#080c18] pt-16">
       {/* ─── Desktop Layout ─────────────────────────── */}
-      <div className="hidden md:flex h-screen">
+      <div className="hidden md:flex h-[calc(100vh-4rem)]">
         {/* Left Sidebar */}
         <aside className="w-72 lg:w-80 bg-[#0d1225]/95 backdrop-blur-xl border-r border-white/5 flex flex-col shrink-0">
           {/* Sidebar Header */}
@@ -785,78 +785,13 @@ export default function AIAssistant() {
               </div>
             </div>
 
-            {/* Right Panel — Learning Progress */}
-            <aside className="hidden xl:flex w-72 bg-[#0d1225]/95 backdrop-blur-xl border-l border-white/5 flex-col shrink-0 overflow-y-auto custom-scrollbar">
-              <div className="p-4 border-b border-white/5">
-                <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-blue-400" />
-                  {lang === 'rw' ? 'Izozya ry\'Ukwiga' : 'Learning Progress'}
-                </h3>
-              </div>
 
-              {/* Stats */}
-              <div className="p-4 grid grid-cols-2 gap-3">
-                <div className="bg-white/5 rounded-xl p-3 border border-white/8">
-                  <div className="text-2xl font-bold text-white">{totalProgress}</div>
-                  <div className="text-[11px] text-gray-500">{lang === 'rw' ? 'Ibibazo' : 'Questions'}</div>
-                </div>
-                <div className="bg-white/5 rounded-xl p-3 border border-white/8">
-                  <div className="text-2xl font-bold text-white">{topicsExplored}<span className="text-sm text-gray-500">/{LEARNING_TOPICS.length}</span></div>
-                  <div className="text-[11px] text-gray-500">{lang === 'rw' ? 'Ingingo' : 'Topics'}</div>
-                </div>
-                <div className="bg-white/5 rounded-xl p-3 border border-white/8">
-                  <div className="text-2xl font-bold text-white flex items-center gap-1">🔥 {learningStreak}</div>
-                  <div className="text-[11px] text-gray-500">{lang === 'rw' ? 'Igisigarane' : 'Streak'}</div>
-                </div>
-                <div className="bg-white/5 rounded-xl p-3 border border-white/8">
-                  <div className="text-2xl font-bold text-emerald-400">{user?.isPro ? '✓' : 'Free'}</div>
-                  <div className="text-[11px] text-gray-500">{lang === 'rw' ? 'Urwego' : 'Plan'}</div>
-                </div>
-              </div>
-
-              {/* Topic Progress */}
-              <div className="p-4">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{lang === 'rw' ? 'Ingingo zakoreshejwe' : 'Topics Explored'}</h4>
-                <div className="space-y-2">
-                  {learningProgress.map((topic) => {
-                    const topicInfo = LEARNING_TOPICS.find(t => t.id === topic.topicId);
-                    if (!topicInfo) return null;
-                    const progress = Math.min(topic.questionsAsked / 5, 1);
-                    return (
-                      <div key={topic.topicId} className="bg-white/5 rounded-lg p-2.5 border border-white/5">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-sm">{topicInfo.icon}</span>
-                          <span className="text-xs text-white/80 flex-1">{lang === 'rw' ? topicInfo.label_rw : topicInfo.label_en}</span>
-                          <span className="text-[10px] text-gray-500">{topic.questionsAsked}</span>
-                        </div>
-                        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500" style={{ width: `${progress * 100}%` }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Current Mode Info */}
-              <div className="p-4 mt-auto">
-                <div className="bg-white/5 rounded-xl p-3 border border-white/8">
-                  <div className="flex items-center gap-2 mb-2">
-                    {(() => { const Icon = LEARNING_MODES.find(m => m.id === learningMode)?.icon || MessageCircle; return <Icon className="w-4 h-4 text-blue-400" />; })()}
-                    <span className="text-xs font-semibold text-white">{lang === 'rw' ? LEARNING_MODES.find(m => m.id === learningMode)?.label_rw : LEARNING_MODES.find(m => m.id === learningMode)?.label_en}</span>
-                  </div>
-                  <p className="text-[11px] text-gray-400">
-                    {lang === 'rw' ? LEARNING_MODES.find(m => m.id === learningMode)?.desc_rw : LEARNING_MODES.find(m => m.id === learningMode)?.desc_en}
-                  </p>
-                </div>
-              </div>
-            </aside>
           </div>
         </div>
       </div>
 
       {/* ─── Mobile Layout ──────────────────────────── */}
-      <div className="md:hidden flex flex-col h-screen">
+      <div className="md:hidden flex flex-col h-[calc(100vh-4rem)]">
         {/* Mobile Header */}
         <header className="h-14 bg-[#0d1225]/95 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-3 shrink-0 z-20">
           <div className="flex items-center gap-2">
@@ -908,23 +843,7 @@ export default function AIAssistant() {
                     </div>
                   ))}
                 </div>
-                {/* Mobile sidebar - Progress summary */}
-                <div className="p-4 border-t border-white/5">
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-white/5 rounded-lg p-2 text-center">
-                      <div className="text-lg font-bold text-white">{totalProgress}</div>
-                      <div className="text-[9px] text-gray-500">{lang === 'rw' ? 'Ibibazo' : 'Qs'}</div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-2 text-center">
-                      <div className="text-lg font-bold text-white">{topicsExplored}</div>
-                      <div className="text-[9px] text-gray-500">{lang === 'rw' ? 'Ingingo' : 'Topics'}</div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-2 text-center">
-                      <div className="text-lg font-bold text-white">🔥{learningStreak}</div>
-                      <div className="text-[9px] text-gray-500">{lang === 'rw' ? 'Igisigarane' : 'Streak'}</div>
-                    </div>
-                  </div>
-                </div>
+
               </motion.div>
             </>
           )}
