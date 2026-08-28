@@ -41,6 +41,7 @@ const AdminNotifications = lazy(() => import("../pages/admin/Notifications"));
 const AdminFraudLogs = lazy(() => import("../pages/admin/FraudLogs"));
 const AdminApiKeys = lazy(() => import("../pages/admin/ApiKeys"));
 const ApiDocs = lazy(() => import("../pages/ApiDocs"));
+const Developers = lazy(() => import("../pages/Developers"));
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       { path: "blog/bookmarks", Component: Bookmarks },
       { path: "blog/notifications", Component: Notifications },
       { path: "api-docs", Component: ApiDocs },
+      { path: "developers", Component: Developers },
       { path: "*", Component: NotFound },
     ],
   },

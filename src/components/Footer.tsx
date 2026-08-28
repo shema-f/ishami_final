@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Youtube, Mail, ChevronDown, Heart, ExternalLink, Globe } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail, ChevronDown, Heart, ExternalLink, Globe, Code } from 'lucide-react';
 import { Link } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from '../contexts/I18nContext';
@@ -148,6 +148,7 @@ export default function Footer() {
                 { path: '/quiz', label: t('nav.quiz') },
                 { path: '/resources', label: t('nav.resources') },
                 { path: '/leaderboard', label: t('nav.leaderboard') },
+                { path: '/developers', label: lang === 'rw' ? 'ISHAMI kwa Abakoresha' : 'ISHAMI for Developers', icon: <Code className="w-3 h-3" /> },
               ].map((item) => (
                 <li key={item.path}>
                   <Link 
@@ -155,6 +156,7 @@ export default function Footer() {
                     className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2 group"
                   >
                     <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-blue-500 transition-colors" />
+                    {'icon' in item && item.icon}
                     {item.label}
                   </Link>
                 </li>
