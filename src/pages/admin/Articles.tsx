@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Edit2, Trash2, Save, X, FileText, Eye, Clock, Send, FileEdit, Search, CheckSquare, Square, Check } from 'lucide-react';
-import { articles, type Article, type ArticleStatus, type ArticleSEO } from '../../data/articles';
+import { type Article, type ArticleStatus, type ArticleSEO } from '../../data/articles';
+import { getAdminArticles, saveArticle, deleteArticle as removeArticle } from '../../lib/articleStore';
 import ImageUpload from '../../components/ImageUpload';
 
 interface ArticleFormData {
@@ -43,7 +44,7 @@ const emptyForm: ArticleFormData = {
 };
 
 export default function AdminArticles() {
-  const [articleList, setArticleList] = useState<Article[]>(articles);
+  const [articleList, setArticleList] = useState<Article[]>(getAdminArticles());
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<ArticleFormData>(emptyForm);
@@ -66,11 +67,14 @@ export default function AdminArticles() {
     
     if (editingId) {
       // Update existing article
-      setArticleList(prev => prev.map(a => 
+      const updated = articleList.map(a => 
         a.id === editingId 
           ? { ...a, ...formData, slug: formData.title_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') }
           : a
-      ));
+      );
+      setArticleList(updated);
+      const article = updated.find(a => a.id === editingId);
+      if (article) saveArticle(article);
     } else {
       // Add new article
       const newArticle: Article = {
@@ -80,6 +84,7 @@ export default function AdminArticles() {
         date: new Date().toISOString().split('T')[0],
         author: 'ISHAMI Team',
       };
+      saveArticle(newArticle);
       setArticleList(prev => [newArticle, ...prev]);
     }
     
@@ -116,6 +121,7 @@ export default function AdminArticles() {
     setActiveTab('add');
   };  const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this article?')) {
+      removeArticle(id);
       setArticleList(prev => prev.filter(a => a.id !== id));
     }
   };
@@ -147,18 +153,23 @@ export default function AdminArticles() {
 
     if (bulkAction === 'delete') {
       if (confirm(`Are you sure you want to delete ${selectedIds.size} article(s)?`)) {
+        for (const id of selectedIds) removeArticle(id);
         setArticleList(prev => prev.filter(a => !selectedIds.has(a.id)));
         setSelectedIds(new Set());
       }
     } else if (bulkAction === 'publish') {
-      setArticleList(prev => prev.map(a => 
+      const updated = articleList.map(a => 
         selectedIds.has(a.id) ? { ...a, status: 'published' as ArticleStatus } : a
-      ));
+      );
+      setArticleList(updated);
+      for (const id of selectedIds) { const art = updated.find(a => a.id === id); if (art) saveArticle(art); }
       setSelectedIds(new Set());
     } else if (bulkAction === 'draft') {
-      setArticleList(prev => prev.map(a => 
+      const updated = articleList.map(a => 
         selectedIds.has(a.id) ? { ...a, status: 'draft' as ArticleStatus } : a
-      ));
+      );
+      setArticleList(updated);
+      for (const id of selectedIds) { const art = updated.find(a => a.id === id); if (art) saveArticle(art); }
       setSelectedIds(new Set());
     } else if (bulkAction === 'schedule') {
       setShowBulkSchedule(true);
@@ -170,11 +181,13 @@ export default function AdminArticles() {
   const handleBulkSchedule = () => {
     if (!bulkScheduleDate || selectedIds.size === 0) return;
     
-    setArticleList(prev => prev.map(a => 
+    const updated = articleList.map(a => 
       selectedIds.has(a.id) 
         ? { ...a, status: 'scheduled' as ArticleStatus, publishDate: bulkScheduleDate }
         : a
-    ));
+    );
+    setArticleList(updated);
+    for (const id of selectedIds) { const art = updated.find(a => a.id === id); if (art) saveArticle(art); }
     setSelectedIds(new Set());
     setBulkAction('');
     setShowBulkSchedule(false);

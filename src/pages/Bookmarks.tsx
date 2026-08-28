@@ -2,7 +2,8 @@ import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Bookmark, Clock, Trash2, ArrowRight, BookOpen, History } from 'lucide-react';
-import { articles, type Article } from '../data/articles';
+import { type Article } from '../data/articles';
+import { getAllArticles } from '../lib/articleStore';
 import { useTranslation } from '../contexts/I18nContext';
 import { useBookmarks } from '../contexts/BookmarksContext';
 
@@ -11,11 +12,12 @@ export default function Bookmarks() {
   const { bookmarks, readingHistory, removeBookmark, clearHistory, removeFromHistory } = useBookmarks();
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'history'>('bookmarks');
 
-  const bookmarkedArticles = articles.filter(a => bookmarks.includes(a.id));
+  const allArticles = getAllArticles();
+  const bookmarkedArticles = allArticles.filter(a => bookmarks.includes(a.id));
   
   const historyWithArticles = readingHistory.map(item => ({
     ...item,
-    article: articles.find(a => a.id === item.articleId),
+    article: allArticles.find(a => a.id === item.articleId),
   })).filter(item => item.article);
 
   const formatDate = (timestamp: number) => {

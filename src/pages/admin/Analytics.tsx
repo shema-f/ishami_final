@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { BarChart3, Eye, Clock, TrendingUp, Users, ArrowUpRight, Calendar } from 'lucide-react';
 import { useArticleAnalytics, type ArticleStats } from '../../contexts/ArticleAnalyticsContext';
-import { articles } from '../../data/articles';
+import { getAllArticles } from '../../lib/articleStore';
 
 export default function AdminAnalytics() {
   const { getAllStats, getMostViewed, getRecentViews } = useArticleAnalytics();
@@ -37,7 +37,7 @@ export default function AdminAnalytics() {
   };
 
   const getArticleTitle = (articleId: string) => {
-    const article = articles.find(a => a.id === articleId);
+    const article = getAllArticles().find(a => a.id === articleId);
     return article ? article.title_en : 'Unknown Article';
   };
 

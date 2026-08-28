@@ -2,7 +2,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
 import { Clock, ArrowLeft, BookOpen, Share2, ExternalLink, Copy, Check, Search, Filter, X, Eye } from 'lucide-react';
-import { articles, type Article } from '../data/articles';
+import { type Article } from '../data/articles';
+import { getAllArticles } from '../lib/articleStore';
 import { useTranslation } from '../contexts/I18nContext';
 import { useReadingMode, getReadingModeStyles } from '../contexts/ReadingModeContext';
 import Comments from '../components/Comments';
@@ -209,25 +210,26 @@ function calculateReadingTime(content: string): number {
 
 function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
   const { lang } = useTranslation();
+  const allArticles = useMemo(() => getAllArticles(), []);
 
   const relatedArticles = useMemo(() => {
     const category = lang === 'rw' ? currentArticle.category_rw : currentArticle.category;
-    return articles
+    return allArticles
       .filter(a => 
         a.id !== currentArticle.id && 
         (lang === 'rw' ? a.category_rw : a.category) === category
       )
       .slice(0, 2);
-  }, [currentArticle, lang]);
+  }, [currentArticle, lang, allArticles]);
 
   // If no same-category articles, get 2 random articles
   const displayArticles = useMemo(() => {
     if (relatedArticles.length >= 2) return relatedArticles;
-    return articles
+    return allArticles
       .filter(a => a.id !== currentArticle.id && !relatedArticles.find(r => r.id === a.id))
       .slice(0, 2 - relatedArticles.length)
       .concat(relatedArticles);
-  }, [relatedArticles, currentArticle]);
+  }, [relatedArticles, currentArticle, allArticles]);
 
   if (displayArticles.length === 0) return null;
 
@@ -502,11 +504,14 @@ export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  // Load articles from shared store (seed + admin-created)
+  const articles = useMemo(() => getAllArticles(), []);
+
   // Get unique categories
   const categories = useMemo(() => {
     const cats = new Set(articles.map(a => lang === 'rw' ? a.category_rw : a.category));
     return Array.from(cats);
-  }, [lang]);
+  }, [lang, articles]);
 
   // Filter articles (only show published and past scheduled)
   const filteredArticles = useMemo(() => {

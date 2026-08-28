@@ -5,7 +5,7 @@ import { useComments, type Comment } from '../contexts/CommentsContext';
 import { useNotifications } from '../contexts/NotificationsContext';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
-import { articles } from '../data/articles';
+import { getAllArticles } from '../lib/articleStore';
 
 interface CommentsProps {
   articleId: string;
@@ -25,7 +25,7 @@ export default function Comments({ articleId }: CommentsProps) {
 
   const comments = getArticleComments(articleId);
   const displayComments = showAll ? comments : comments.slice(0, 5);
-  const article = articles.find(a => a.id === articleId);
+  const article = getAllArticles().find(a => a.id === articleId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,7 +177,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
   const [replyEmail, setReplyEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const article = articles.find(a => a.id === articleId);
+  const article = getAllArticles().find(a => a.id === articleId);
 
   const formatTime = (timestamp: number) => {
     const now = Date.now();
