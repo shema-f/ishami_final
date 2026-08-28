@@ -86,7 +86,7 @@ export default function Irembo() {
       setProcessing(true);
       setPaymentError(null);
       const init = await paymentAPI.paypackCashin({
-        amount: 100,
+        amount: 5500,
         phone: paymentPhone,
         product: 'irembo',
         iremboData: {
@@ -281,18 +281,42 @@ export default function Irembo() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="inline-flex p-4 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full mb-4">
-            <FileCheck className="w-12 h-12 text-white" />
+          <div className="inline-flex mb-4">
+            <img
+              src="/irembo.png"
+              alt="Irembo Help Desk"
+              className="w-24 h-24 rounded-full object-contain shadow-xl shadow-blue-500/20"
+              onError={(e) => {
+                // Fallback to the blue circle icon if image fails to load
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden inline-flex p-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full">
+              <FileCheck className="w-12 h-12 text-white" />
+            </div>
           </div>
-          <h1 className="text-gray-900 dark:text-white mb-4">
+          <h1 className="text-gray-900 dark:text-white mb-4 text-2xl sm:text-3xl font-bold font-[family-name:var(--font-heading)]">
             {t('irembo.title', 'Irembo Driving Test Registration')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg">
             {t('irembo.subtitle', "We'll help you register for your driving code exam through Irembo")}
-            <span className="block mt-1 text-[#00A3AD]">
-              {t('irembo.service_fee', 'Service Fee: 5,500 RWF')}
-            </span>
           </p>
+          {/* Pricing Cards */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-gray-200/20 dark:border-gray-700/20">
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{lang === 'rw' ? 'Uruhushya rw\'Agateganyo' : 'Provisional License'}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">5,500 <span className="text-sm font-normal">RWF</span></div>
+            </div>
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-[#00A3AD]/30">
+              <div className="text-xs text-[#00A3AD] uppercase tracking-wider mb-1 font-semibold">{lang === 'rw' ? 'Uruhushya rwa Burundu' : 'Permanent License'}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">10,500 <span className="text-sm font-normal">RWF</span></div>
+            </div>
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-gray-200/20 dark:border-gray-700/20">
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{lang === 'rw' ? 'Ibiciro by\'Imikoreshereze' : 'Pro Features'}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">1,000 <span className="text-sm font-normal">RWF</span></div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Information Banner */}

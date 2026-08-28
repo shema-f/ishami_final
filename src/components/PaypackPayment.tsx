@@ -15,7 +15,7 @@ interface PaypackPaymentProps {
 type PaymentStatus = 'idle' | 'initiating' | 'pending' | 'success' | 'failed' | 'error';
 
 export default function PaypackPayment({
-  amount = 100, // Default to 100 RWF for testing
+  amount = 1000, // Default to 1000 RWF for pro features
   product = 'pro',
   onSuccess,
   onCancel,

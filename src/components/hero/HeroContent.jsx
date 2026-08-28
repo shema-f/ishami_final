@@ -1,8 +1,13 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router'
 import { ArrowRight, Car, Sparkles } from 'lucide-react'
+import { useTranslation } from '../../contexts/I18nContext'
 
 export default function HeroContent() {
+  const { t, lang } = useTranslation()
+  
+  const isRw = lang === 'rw'
+
   return (
     <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
       <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 h-full flex items-center">
@@ -22,50 +27,98 @@ export default function HeroContent() {
               className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-3 sm:mb-4 backdrop-blur-sm"
             >
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-400 shrink-0" />
-              <span className="text-[10px] sm:text-xs md:text-sm text-blue-400 font-medium">Learn Traffic Rules Smarter</span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-blue-400 font-medium">
+                {isRw ? 'Wiga Amategeko mu buryo bushya' : 'Learn Traffic Rules Smarter'}
+              </span>
             </motion.div>
 
             {/* Heading — scales from 2xl to 6xl across breakpoints */}
             <div className="mb-3 sm:mb-4">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.8 }}
-                className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
-              >
-                PASS YOUR
-              </motion.h1>
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2, duration: 0.8 }}
-                className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
-              >
-                RWANDA DRIVING
-              </motion.h1>
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.4, duration: 0.8 }}
-                className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
-              >
-                TEST WITH
-              </motion.h1>
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.6, duration: 0.8 }}
-                className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mt-0.5 sm:mt-1"
-              >
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 font-[family-name:var(--font-heading)] leading-[1.05] inline-block"
-                  style={{
-                    textShadow: '0 0 40px rgba(0, 136, 255, 0.3)',
-                    filter: 'drop-shadow(0 0 20px rgba(0, 136, 255, 0.2))'
-                  }}
-                >
-                  CONFIDENCE
-                </span>
-              </motion.h1>
+              {isRw ? (
+                <>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    TSWINA
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    IKIZAMINI
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.4, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    CYO GUTWARA MU
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.6, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mt-0.5 sm:mt-1"
+                  >
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 font-[family-name:var(--font-heading)] leading-[1.05] inline-block"
+                      style={{
+                        textShadow: '0 0 40px rgba(0, 136, 255, 0.3)',
+                        filter: 'drop-shadow(0 0 20px rgba(0, 136, 255, 0.2))'
+                      }}
+                    >
+                      RWANDA 🇷🇼
+                    </span>
+                  </motion.h1>
+                </>
+              ) : (
+                <>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    PASS YOUR
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    RWANDA DRIVING
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.4, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white font-[family-name:var(--font-heading)] leading-[1.05]"
+                  >
+                    TEST WITH
+                  </motion.h1>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.6, duration: 0.8 }}
+                    className="text-[1.65rem] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mt-0.5 sm:mt-1"
+                  >
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 font-[family-name:var(--font-heading)] leading-[1.05] inline-block"
+                      style={{
+                        textShadow: '0 0 40px rgba(0, 136, 255, 0.3)',
+                        filter: 'drop-shadow(0 0 20px rgba(0, 136, 255, 0.2))'
+                      }}
+                    >
+                      CONFIDENCE
+                    </span>
+                  </motion.h1>
+                </>
+              )}
             </div>
 
             {/* Description */}
@@ -75,7 +128,9 @@ export default function HeroContent() {
               transition={{ delay: 1.8, duration: 0.8 }}
               className="text-xs sm:text-sm md:text-base text-slate-400 mb-4 sm:mb-5 max-w-sm sm:max-w-md mx-auto lg:mx-0 leading-relaxed backdrop-blur-sm bg-black/30 p-2.5 sm:p-3 rounded-xl border border-white/5"
             >
-              Master Rwanda traffic rules through interactive learning, AI assistance, quizzes, and realistic 3D driving simulations.
+              {isRw
+                ? "Menya amategeko y'umuhanda mu Rwanda ukoresheje amasomo yagenzuwe, ubufasha bwa AI, ibibazo, n'igeragezo ry'ubwoko bw'ikizamini rya 3D."
+                : "Master Rwanda traffic rules through interactive learning, AI assistance, quizzes, and realistic 3D driving simulations."}
             </motion.p>
 
             {/* Buttons — full-width on mobile, inline on desktop */}
@@ -89,7 +144,7 @@ export default function HeroContent() {
                 to="/quiz"
                 className="group w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl sm:rounded-[14px] font-semibold text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-0.5 backdrop-blur-sm"
               >
-                Start Learning
+                {isRw ? 'Tangura Kwiga' : 'Start Learning'}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
@@ -98,7 +153,7 @@ export default function HeroContent() {
                 className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-white/10 backdrop-blur-xl text-slate-200 rounded-xl sm:rounded-[14px] font-semibold text-sm sm:text-base border border-white/20 hover:bg-white/15 hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <Car className="w-4 h-4 shrink-0" />
-                Explore 3D Simulation
+                {isRw ? 'Raba Igeragezo rya 3D' : 'Explore 3D Simulation'}
               </Link>
             </motion.div>
           </motion.div>
@@ -127,7 +182,9 @@ export default function HeroContent() {
             className="w-1 h-2 rounded-full bg-blue-400"
           />
         </motion.div>
-        <span className="text-[9px] sm:text-[10px] text-slate-500 tracking-wider uppercase">Scroll to explore</span>
+        <span className="text-[9px] sm:text-[10px] text-slate-500 tracking-wider uppercase">
+          {isRw ? 'Kanda hasi kugira ngo uronderaho' : 'Scroll to explore'}
+        </span>
       </motion.div>
 
       {/* Bottom gradient fade — taller on mobile to clear browser UI */}

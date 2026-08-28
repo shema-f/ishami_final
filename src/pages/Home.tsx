@@ -256,23 +256,27 @@ export default function Home() {
             className="mb-8"
           >
             <Link to="/blog/complete-guide-driving-rwanda" className="block group">
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-xl shadow-black/20">
                 <div className="md:flex">
-                  <div className="md:w-1/2 h-64 md:h-auto">
+                  <div className="md:w-1/2 h-56 md:h-72 overflow-hidden">
                     <img
-                      src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop"
-                      alt="Complete Guide to Driving in Rwanda"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      src="/traffic-signs.jpg"
+                      alt="Traffic Signs in Rwanda"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=800&h=400&fit=crop';
+                      }}
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
-                  <div className="md:w-1/2 p-8 flex flex-col justify-center">
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold w-fit mb-4">
+                  <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-center">
+                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold w-fit mb-3">
                       {lang === 'rw' ? 'Amabwiriza yo Gutwara' : 'Driving Guide'}
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors">
-                      {lang === 'rw' ? "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety" : "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety"}
+                    <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors">
+                      {lang === 'rw' ? "Amategeko y'Umuhanda mu Rwanda: Ibyapa, Uruhushya, n'Umutekano" : "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety"}
                     </h3>
-                    <p className="text-gray-400 text-sm mb-6 line-clamp-3">
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-3">
                       {lang === 'rw'
                         ? "Gutwara ikinyabiziga mu Rwanda bisaba gusobanukirwa neza amategeko y'umuhanda, uburyo ikoranabuhanga rikoreshwa mu kubungabunga umutekano."
                         : "Driving in Rwanda requires a firm grasp of traffic regulations, digital enforcement systems, and terrain-specific driving techniques."}
@@ -286,6 +290,44 @@ export default function Home() {
               </div>
             </Link>
           </motion.div>
+
+          {/* Quick Blog Cards with animations */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {[
+              { slug: 'speed-limits-rwanda', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=250&fit=crop', tag_en: 'Speed Rules', tag_rw: 'Amategeko y\'Umuvuduko', title_en: 'Understanding Speed Limits', title_rw: 'Kumenya Umuvuduko Ntarengwa' },
+              { slug: 'roundabout-guide', img: 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=400&h=250&fit=crop', tag_en: 'Roundabouts', tag_rw: 'Rond-point', title_en: 'Mastering Roundabouts', title_rw: 'Kwiyegereza ku Rond-point' },
+              { slug: 'parking-rules', img: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400&h=250&fit=crop', tag_en: 'Parking', tag_rw: 'Gupaka', title_en: 'Parking Rules in Kigali', title_rw: 'Amategeko yo Gupaka mu Kigali' },
+            ].map((card, i) => (
+              <motion.div
+                key={card.slug}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 + i * 0.1 }}
+              >
+                <Link to={`/blog/${card.slug}`} className="block group">
+                  <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300">
+                    <div className="relative h-36 overflow-hidden">
+                      <img src={card.img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <span className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500/80 backdrop-blur-sm text-white text-[10px] rounded-full font-semibold">
+                        {lang === 'rw' ? card.tag_rw : card.tag_en}
+                      </span>
+                    </div>
+                    <div className="p-4">
+                      <h4 className="text-white text-sm font-bold font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {lang === 'rw' ? card.title_rw : card.title_en}
+                      </h4>
+                      <div className="mt-3 flex items-center text-blue-400 text-xs font-medium">
+                        <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
+                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
 
           <div className="text-center">
             <Link
