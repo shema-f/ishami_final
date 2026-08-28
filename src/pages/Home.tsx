@@ -494,6 +494,67 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Leaderboard CTA Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#111827] to-[#0a1628] p-8 sm:p-12 border border-white/[0.08] shadow-2xl shadow-black/30"
+          >
+            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-60 h-60 bg-orange-500/10 rounded-full blur-[100px]" />
+            
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10">
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm text-amber-400 font-medium">{lang === 'rw' ? 'Leaderboard' : 'Leaderboard'}</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+                  {lang === 'rw' ? 'Reba abakize mu bucuruzi' : 'See Who\'s Leading the Pack'}
+                </h2>
+                <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
+                  {lang === 'rw'
+                    ? 'Reba abize neza mu bizamini by\'amategeko y\'umuhanda. Ushobora noneho kwinjira mu rubuga!'
+                    : 'See top performers in Rwanda traffic rules quizzes. Compete, climb the ranks, and prove your knowledge!'}
+                </p>
+                <Link
+                  to="/leaderboard"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  <Trophy className="w-5 h-5" />
+                  <span>{lang === 'rw' ? 'Reba Leaderboard' : 'View Leaderboard'}</span>
+                </Link>
+              </div>
+              <div className="w-full lg:w-72">
+                <div className="bg-[#0a0e14]/70 rounded-2xl p-5 border border-white/10">
+                  <div className="space-y-3">
+                    {[
+                      { rank: 1, name: 'Jean P.', score: '95%', medal: '🥇' },
+                      { rank: 2, name: 'Marie U.', score: '92%', medal: '🥈' },
+                      { rank: 3, name: 'David K.', score: '89%', medal: '🥉' },
+                      { rank: 4, name: 'Grace N.', score: '87%', medal: '4️⃣' },
+                      { rank: 5, name: 'Patrick M.', score: '85%', medal: '5️⃣' },
+                    ].map((entry) => (
+                      <div key={entry.rank} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-lg w-7 text-center">{entry.medal}</span>
+                        <div className="flex-1">
+                          <span className="text-xs font-semibold text-white block">{entry.name}</span>
+                          <span className="text-[10px] text-slate-500">{lang === 'rw' ? 'Urwego' : 'Rank'} #{entry.rank}</span>
+                        </div>
+                        <span className="text-sm font-bold text-amber-400">{entry.score}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Newsletter Section */}
       <section className="py-24 px-4">
         <div className="max-w-2xl mx-auto text-center">
