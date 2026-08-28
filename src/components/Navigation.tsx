@@ -1,11 +1,11 @@
 import { Link, useLocation } from 'react-router';
-import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 import { useNotifications } from '../contexts/NotificationsContext';
-import { useTheme } from '../contexts/ThemeContext';
+
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +15,7 @@ export default function Navigation() {
   const location = useLocation();
   const { t, lang, setLang } = useTranslation();
   const { unreadCount } = useNotifications();
-  const { theme, toggleTheme, isDark } = useTheme();
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -168,38 +168,7 @@ export default function Navigation() {
               </AnimatePresence>
             </div>
 
-            {/* Theme Toggle */}
-            <div className="ml-2">
-              <button
-                onClick={toggleTheme}
-                className="relative w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-all duration-300 flex items-center justify-center group"
-                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                <AnimatePresence mode="wait">
-                  {isDark ? (
-                    <motion.div
-                      key="sun"
-                      initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                      exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Sun className="w-4 h-4 text-amber-400" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="moon"
-                      initial={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                      animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                      exit={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Moon className="w-4 h-4 text-blue-400" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
-            </div>
+
 
             {/* Desktop Language Switcher */}
             <div className="ml-1 inline-flex items-center gap-0.5 px-1 py-1 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50">
@@ -295,17 +264,8 @@ export default function Navigation() {
             className="lg:hidden border-t border-black/5 dark:border-white/15 bg-white/95 dark:bg-[#16171C]/95 backdrop-blur-xl"
           >
             <div className="px-4 py-6 space-y-2">
-              {/* Mobile Theme Toggle + Language Switcher */}
+              {/* Mobile Language Switcher */}
               <div className="mb-4 flex items-center gap-3">
-                {/* Theme Toggle (Mobile) */}
-                <button
-                  onClick={toggleTheme}
-                  className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700/60 transition-all duration-300 flex items-center justify-center"
-                  title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-                >
-                  {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-400" />}
-                </button>
-
                 <div className="inline-flex items-center gap-1 px-1 py-1 rounded-xl bg-gray-100 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700/50">
                 <Globe className="w-4 h-4 text-slate-400 ml-2 mr-1" />
                 <button

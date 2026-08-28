@@ -570,26 +570,7 @@ export default function AIAssistant() {
               </div>
             </div>
 
-            {/* Learning Mode Selector */}
-            <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/8">
-              {LEARNING_MODES.map(mode => {
-                const Icon = mode.icon;
-                return (
-                  <button
-                    key={mode.id}
-                    onClick={() => setLearningMode(mode.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      learningMode === mode.id
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span className="hidden lg:inline">{lang === 'rw' ? mode.label_rw : mode.label_en}</span>
-                  </button>
-                );
-              })}
-            </div>
+
           </header>
 
           {/* Chat + Right Panel */}
