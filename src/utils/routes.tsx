@@ -39,6 +39,8 @@ const AdminArticles = lazy(() => import("../pages/admin/Articles"));
 const AdminAnalytics = lazy(() => import("../pages/admin/Analytics"));
 const AdminNotifications = lazy(() => import("../pages/admin/Notifications"));
 const AdminFraudLogs = lazy(() => import("../pages/admin/FraudLogs"));
+const AdminApiKeys = lazy(() => import("../pages/admin/ApiKeys"));
+const ApiDocs = lazy(() => import("../pages/ApiDocs"));
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +69,7 @@ export const router = createBrowserRouter([
       { path: "blog/:slug", Component: Blog },
       { path: "blog/bookmarks", Component: Bookmarks },
       { path: "blog/notifications", Component: Notifications },
+      { path: "api-docs", Component: ApiDocs },
       { path: "*", Component: NotFound },
     ],
   },
@@ -84,6 +87,7 @@ export const router = createBrowserRouter([
       { path: "analytics", Component: AdminAnalytics },
       { path: "notifications", Component: AdminNotifications },
       { path: "fraud-logs", Component: AdminFraudLogs },
+      { path: "api-keys", Component: AdminApiKeys },
       { path: "*", Component: () => <div className="p-8 text-center">Page coming soon...</div> },
     ],
   },

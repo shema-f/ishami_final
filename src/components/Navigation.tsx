@@ -41,6 +41,7 @@ export default function Navigation() {
     { path: '/quiz', label: t('nav.quiz') },
     { path: '/resources', label: t('nav.resources') },
     { path: '/leaderboard', label: t('nav.leaderboard') },
+    { path: '/api-docs', label: 'API' },
   ];
 
   const blogSubItems = [

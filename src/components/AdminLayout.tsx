@@ -1,7 +1,7 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router';
 import { 
   LayoutDashboard, Users, FileQuestion, DollarSign, 
-  FileCheck, Bell, Shield, LogOut, Menu, X, BookOpen, Newspaper, BarChart3
+  FileCheck, Bell, Shield, LogOut, Menu, X, BookOpen, Newspaper, BarChart3, Key
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -31,6 +31,7 @@ export default function AdminLayout() {
     { path: '/admin/irembo', label: 'Irembo', icon: <FileCheck className="w-5 h-5" /> },
     { path: '/admin/notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" /> },
     { path: '/admin/fraud-logs', label: 'Fraud Logs', icon: <Shield className="w-5 h-5" /> },
+    { path: '/admin/api-keys', label: 'API Keys', icon: <Key className="w-5 h-5" /> },
   ];
 
   const isActive = (path: string) => location.pathname === path;
