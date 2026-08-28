@@ -81,7 +81,7 @@ export class GhostCar {
   private currentPosition = new THREE.Vector3();
   private currentRotation = 0;
   private currentTime = 0;
-  private isActive = false;
+  private _isActive = false;
   private ghostMesh: THREE.Group | null = null;
   private trailPositions: THREE.Vector3[] = [];
   private trailMaxPositions = 50;
@@ -165,7 +165,7 @@ export class GhostCar {
   loadReplay(data: ReplayData) {
     this.replayData = data;
     this.currentTime = 0;
-    this.isActive = true;
+    this._isActive = true;
     this.trailPositions = [];
 
     if (this.replayData.frames.length > 0) {
@@ -182,7 +182,7 @@ export class GhostCar {
   }
 
   update(delta: number): boolean {
-    if (!this.isActive || !this.replayData) return false;
+    if (!this._isActive || !this.replayData) return false;
 
     this.currentTime += delta;
 
@@ -199,7 +199,7 @@ export class GhostCar {
     }
 
     if (frameIndex >= frames.length - 1) {
-      this.isActive = false;
+      this._isActive = false;
       if (this.ghostMesh) this.ghostMesh.visible = false;
       return false; // replay finished
     }
@@ -245,12 +245,8 @@ export class GhostCar {
     return this.currentPosition.clone();
   }
 
-  isActive(): boolean {
-    return this.isActive;
-  }
-
   stop() {
-    this.isActive = false;
+    this._isActive = false;
     if (this.ghostMesh) this.ghostMesh.visible = false;
   }
 

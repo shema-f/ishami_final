@@ -5,6 +5,7 @@ import preloadPlugin from './vite.preload-plugin';
 import path from 'path';
 
 export default defineConfig({
+  base: '/',
   plugins: [react(), tailwindcss(), preloadPlugin()],
   publicDir: 'public',
   resolve: {
@@ -52,8 +53,10 @@ export default defineConfig({
       },
     },
     build: {
-      target: 'esnext',
+      target: 'es2020',
       outDir: 'build',
+      modulePreload: { polyfill: true },
+      cssCodeSplit: true,
     },
     server: {
       port: 3000,

@@ -1,112 +1,26 @@
-const CACHE_NAME = 'ishami-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
+// Ishami Service Worker PURGE / SELF-UNREGISTER
+// This worker intentionally removes itself and all caches to eliminate
+// stale-index.html-with-deleted-chunk-hashes MIME type "text/html" crashes
+// on /simulation, /quiz, /ai-assistant, etc.
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
   self.skipWaiting();
 });
 
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
-        });
-      })
-  );
-});
-
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-
-  self.clients.claim();
-});
-
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-quiz-results') {
-    event.waitUntil(syncQuizResults());
-  }
-});
-
-async function syncQuizResults() {
-  console.log('Syncing quiz results...');
-}
-
-self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data ? event.data.text() : 'New update from ISHAMI!',
-    icon: '/android-chrome-192x192.png',
-    badge: '/android-chrome-192x192.png',
-    vibrate: [200, 100, 200],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'Open App',
-        icon: '/android-chrome-192x192.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/android-chrome-192x192.png'
+    (async () => {
+      if ('caches' in self) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
       }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('ISHAMI', options)
+      // Unregister this worker itself
+      await self.registration.unregister();
+      // Force all clients to reload with fresh server content
+      const clients = await self.clients.matchAll({ type: 'window' });
+      clients.forEach((c) => { try { c.navigate(c.url); } catch (_) {} });
+    })()
   );
 });
 
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
-  }
-});
+self.addEventListener('fetch', () => { /* no-op, will unregister */ });
