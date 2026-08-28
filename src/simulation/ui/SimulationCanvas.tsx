@@ -75,7 +75,7 @@ function CityEnvironment({ onSceneReady }: { onSceneReady?: (scene: THREE.Object
 
   const scene = gltf.scene.clone(true);
   return (
-    <group>
+    <group scale={[0.75, 0.75, 0.75]}>
       <primitive object={scene} />
     </group>
   );
@@ -181,11 +181,16 @@ function CarModel({
   const rotationRef = useRef(0);
   const positionRef = useRef(new THREE.Vector3(
     startPos?.[0] ?? 68,
-    (startPos?.[1] ?? 0) + 1.5,
+    (startPos?.[1] ?? 0) + 1.2,
     startPos?.[2] ?? -126
   ));
   const collisionCooldown = useRef(0);
   const lastCollisionPos = useRef(new THREE.Vector3());
+
+  // Rwanda flag colors: Blue (top), Yellow (middle), Green (bottom)
+  const rwandaBlue = useMemo(() => new THREE.Color('#0072C6'), []);
+  const rwandaYellow = useMemo(() => new THREE.Color('#FAD201'), []);
+  const rwandaGreen = useMemo(() => new THREE.Color('#009E60'), []);
 
   useEffect(() => {
     if (!gltf) return;
@@ -195,9 +200,30 @@ function CarModel({
         child.receiveShadow = true;
         child.material.envMapIntensity = 0.5;
         child.material.needsUpdate = true;
+
+        // Apply Rwanda flag colors to car body
+        const name = (child.name || '').toLowerCase();
+        const matName = (child.material?.name || '').toLowerCase();
+        const isBody = name.includes('body') || name.includes('chassis') || name.includes('car') ||
+                       matName.includes('body') || matName.includes('paint');
+        const isAcccent = name.includes('accent') || name.includes('stripe') || name.includes('detail');
+
+        if (isBody) {
+          // Main body: Rwanda blue
+          child.material.color = rwandaBlue;
+          child.material.metalness = 0.6;
+          child.material.roughness = 0.3;
+          child.material.needsUpdate = true;
+        } else if (isAcccent) {
+          // Accent/stripe: Rwanda yellow
+          child.material.color = rwandaYellow;
+          child.material.emissive = rwandaYellow;
+          child.material.emissiveIntensity = 0.15;
+          child.material.needsUpdate = true;
+        }
       }
     });
-  }, [gltf]);
+  }, [gltf, rwandaBlue, rwandaYellow, rwandaGreen]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -292,8 +318,8 @@ function CarModel({
   const scene = gltf.scene.clone(true);
 
   return (
-    <group ref={groupRef} position={startPos ? [startPos[0], startPos[1] + 1.5, startPos[2]] : [68, 1.5, -126]}>
-      <primitive object={scene} scale={1.2} />
+    <group ref={groupRef} position={startPos ? [startPos[0], startPos[1] + 1.2, startPos[2]] : [68, 1.2, -126]}>
+      <primitive object={scene} scale={0.9} />
       {/* Ground shadow disc */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <circleGeometry args={[2, 16]} />

@@ -219,6 +219,167 @@ function AICar({ data, playerPosition }: { data: AICarData; playerPosition: THRE
   );
 }
 
+// ─── Traffic Sign Component ──────────────────────────────
+// Renders various road signs in the simulation
+
+interface TrafficSignProps {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  type: 'stop' | 'speed_limit' | 'yield' | 'pedestrian' | 'no_parking' | 'roundabout' | 'one_way' | 'crossing' | 'hospital' | 'school';
+  speed?: number;
+}
+
+function TrafficSign({ position, rotation = [0, 0, 0], type, speed = 40 }: TrafficSignProps) {
+  const getSignGeometry = () => {
+    switch (type) {
+      case 'stop':
+        return (
+          <group>
+            {/* Red octagon */}
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.4, 0.4, 0.05, 8]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.3} />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.01, 8]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          </group>
+        );
+      case 'speed_limit':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.25, 0.35, 16]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      case 'yield':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]} rotation={[0, 0, Math.PI / 3]}>
+              <boxGeometry args={[0.5, 0.5, 0.05]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.2} />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]} rotation={[0, 0, Math.PI / 3]}>
+              <boxGeometry args={[0.4, 0.4, 0.01]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          </group>
+        );
+      case 'pedestrian':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.25, 0.35, 16]} />
+              <meshStandardMaterial color="#ffcc00" emissive="#ffaa00" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      case 'no_parking':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.25, 0.35, 16]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.2} />
+            </mesh>
+            <mesh position={[0, 2.0, 0.04]} rotation={[0, 0, Math.PI / 4]}>
+              <boxGeometry args={[0.5, 0.06, 0.01]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.3} />
+            </mesh>
+          </group>
+        );
+      case 'roundabout':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#0066cc" emissive="#004499" emissiveIntensity={0.2} />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.1, 0.2, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          </group>
+        );
+      case 'one_way':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <boxGeometry args={[0.6, 0.4, 0.05]} />
+              <meshStandardMaterial color="#0066cc" emissive="#004499" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      case 'crossing':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <boxGeometry args={[0.5, 0.5, 0.05]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <boxGeometry args={[0.4, 0.4, 0.01]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      case 'hospital':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.25, 0.35, 16]} />
+              <meshStandardMaterial color="#cc0000" emissive="#aa0000" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      case 'school':
+        return (
+          <group>
+            <mesh position={[0, 2.0, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.05, 16]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+            <mesh position={[0, 2.0, 0.03]}>
+              <ringGeometry args={[0.25, 0.35, 16]} />
+              <meshStandardMaterial color="#ffcc00" emissive="#ffaa00" emissiveIntensity={0.2} />
+            </mesh>
+          </group>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Pole */}
+      <mesh position={[0, 1.0, 0]}>
+        <cylinderGeometry args={[0.03, 0.04, 2.0, 6]} />
+        <meshStandardMaterial color="#444455" metalness={0.7} roughness={0.4} />
+      </mesh>
+      {getSignGeometry()}
+    </group>
+  );
+}
+
 // ─── Default Traffic Config ────────────────────────────────
 // Traffic lights at major intersections around the city
 
@@ -379,6 +540,70 @@ export default function TrafficSystem({
           playerPosition={playerPos.current}
         />
       ))}
+
+      {/* ═══ TRAFFIC SIGNS — Multiple locations ═══ */}
+      {/* Stop signs at key intersections */}
+      <TrafficSign position={[68, 0, -126]} type="stop" rotation={[0, 0, 0]} />
+      <TrafficSign position={[72, 0, -126]} type="stop" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[68, 0, -180]} type="stop" rotation={[0, 0, 0]} />
+      <TrafficSign position={[144, 0, -162]} type="stop" rotation={[0, Math.PI / 2, 0]} />
+      <TrafficSign position={[144, 0, -126]} type="stop" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[108, 0, -90]} type="stop" rotation={[0, -Math.PI / 2, 0]} />
+
+      {/* Speed limit signs */}
+      <TrafficSign position={[66, 0, -140]} type="speed_limit" speed={40} />
+      <TrafficSign position={[74, 0, -160]} type="speed_limit" speed={30} />
+      <TrafficSign position={[142, 0, -145]} type="speed_limit" speed={50} />
+      <TrafficSign position={[110, 0, -100]} type="speed_limit" speed={40} />
+      <TrafficSign position={[106, 0, -80]} type="speed_limit" speed={30} />
+      <TrafficSign position={[-126, 0, -60]} type="speed_limit" speed={40} />
+
+      {/* Yield signs */}
+      <TrafficSign position={[70, 0, -150]} type="yield" />
+      <TrafficSign position={[140, 0, -150]} type="yield" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[100, 0, -90]} type="yield" rotation={[0, Math.PI / 2, 0]} />
+
+      {/* Pedestrian crossing signs */}
+      <TrafficSign position={[66, 0, -130]} type="pedestrian" />
+      <TrafficSign position={[74, 0, -170]} type="pedestrian" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[140, 0, -155]} type="pedestrian" rotation={[0, Math.PI / 2, 0]} />
+
+      {/* No parking signs */}
+      <TrafficSign position={[64, 0, -120]} type="no_parking" />
+      <TrafficSign position={[76, 0, -135]} type="no_parking" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[148, 0, -135]} type="no_parking" rotation={[0, Math.PI / 2, 0]} />
+
+      {/* Roundabout signs */}
+      <TrafficSign position={[66, 0, -175]} type="roundabout" />
+      <TrafficSign position={[74, 0, -185]} type="roundabout" rotation={[0, Math.PI, 0]} />
+
+      {/* One way signs */}
+      <TrafficSign position={[64, 0, -145]} type="one_way" rotation={[0, -Math.PI / 2, 0]} />
+      <TrafficSign position={[76, 0, -155]} type="one_way" rotation={[0, Math.PI / 2, 0]} />
+
+      {/* School zone signs */}
+      <TrafficSign position={[-124, 0, -50]} type="school" />
+      <TrafficSign position={[-128, 0, -45]} type="school" rotation={[0, Math.PI, 0]} />
+
+      {/* Hospital zone signs */}
+      <TrafficSign position={[-124, 0, -85]} type="hospital" />
+      <TrafficSign position={[-128, 0, -95]} type="hospital" rotation={[0, Math.PI, 0]} />
+
+      {/* Additional stop signs at far intersections */}
+      <TrafficSign position={[0, 0, -36]} type="stop" rotation={[0, 0, 0]} />
+      <TrafficSign position={[0, 0, -72]} type="stop" rotation={[0, Math.PI, 0]} />
+      <TrafficSign position={[-126, 0, -54]} type="stop" rotation={[0, -Math.PI / 2, 0]} />
+      <TrafficSign position={[-126, 0, -90]} type="stop" rotation={[0, Math.PI / 2, 0]} />
+
+      {/* More speed limit signs along main roads */}
+      <TrafficSign position={[66, 0, -100]} type="speed_limit" speed={40} />
+      <TrafficSign position={[74, 0, -110]} type="speed_limit" speed={40} />
+      <TrafficSign position={[66, 0, -200]} type="speed_limit" speed={50} />
+      <TrafficSign position={[74, 0, -210]} type="speed_limit" speed={50} />
+
+      {/* Crossing signs at zebra crossings */}
+      <TrafficSign position={[66, 0, -135]} type="crossing" />
+      <TrafficSign position={[74, 0, -165]} type="crossing" rotation={[0, Math.PI, 0]} />
     </group>
   );
 }
