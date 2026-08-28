@@ -786,20 +786,6 @@ export default function AIAssistant() {
               <h2 className="text-sm font-bold text-white font-[family-name:var(--font-heading)]">Moto-Sensei</h2>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            {LEARNING_MODES.map(mode => {
-              const Icon = mode.icon;
-              return (
-                <button
-                  key={mode.id}
-                  onClick={() => setLearningMode(mode.id)}
-                  className={`p-2 rounded-lg transition-all ${learningMode === mode.id ? 'bg-blue-600 text-white' : 'text-gray-500'}`}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
-              );
-            })}
-          </div>
         </header>
 
         {/* Mobile Sidebar Overlay */}
