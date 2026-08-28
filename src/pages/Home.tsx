@@ -68,9 +68,10 @@ export default function Home() {
   ];
 
   const stats = [
-    { value: '10K+', label: t('home.stats.students', 'Students'), icon: <Target className="w-5 h-5" /> },
-    { value: '500+', label: t('home.stats.questions', 'Questions'), icon: <BookOpen className="w-5 h-5" /> },
-    { value: '95%', label: t('home.stats.pass_rate', 'Pass Rate'), icon: <Trophy className="w-5 h-5" /> },
+    { value: '10K+', label: t('home.stats.students', 'Students'), icon: <Target className="w-5 h-5" />, link: '/quiz' },
+    { value: '500+', label: t('home.stats.questions', 'Questions'), icon: <BookOpen className="w-5 h-5" />, link: '/quiz' },
+    { value: '95%', label: t('home.stats.pass_rate', 'Pass Rate'), icon: <Trophy className="w-5 h-5" />, link: '/quiz' },
+    { value: '🏆', label: lang === 'rw' ? 'Leaderboard' : 'Leaderboard', icon: <Star className="w-5 h-5 text-amber-400" />, link: '/leaderboard' },
   ];
 
   return (

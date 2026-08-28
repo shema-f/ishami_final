@@ -35,19 +35,17 @@ export default function Navigation() {
   }, [blogDropdownOpen]);
 
   const navItems = [
-    { path: '/', label: t('nav.home') },
-    { path: '/simulation', label: t('nav.simulation') },
-    { path: '/ai-assistant', label: t('nav.aiAssistant') },
-    { path: '/quiz', label: t('nav.quiz') },
-    { path: '/resources', label: t('nav.resources') },
-    { path: '/leaderboard', label: t('nav.leaderboard') },
-    { path: '/api-docs', label: 'API' },
+    { path: '/', label: lang === 'rw' ? 'Ahabanza' : 'Home' },
+    { path: '/ai-assistant', label: lang === 'rw' ? 'AI' : 'AI' },
+    { path: '/quiz', label: lang === 'rw' ? 'Ibizamini' : 'Quiz' },
+    { path: '/simulation', label: lang === 'rw' ? '3D Simulation' : 'Simulation' },
+    { path: '/resources', label: lang === 'rw' ? 'Imfashanyigisho' : 'Resources' },
   ];
 
   const blogSubItems = [
-    { path: '/blog', label: t('nav.blog'), icon: <Globe className="w-4 h-4" /> },
-    { path: '/blog/bookmarks', label: t('nav.bookmarks'), icon: <Bookmark className="w-4 h-4" /> },
-    { path: '/blog/notifications', label: t('nav.notifications'), icon: <Bell className="w-4 h-4" />, badge: unreadCount },
+    { path: '/blog', label: lang === 'rw' ? 'Inkuru' : 'Blog', icon: <Globe className="w-4 h-4" /> },
+    { path: '/blog/bookmarks', label: lang === 'rw' ? 'Ibyabikoresheje' : 'Bookmarks', icon: <Bookmark className="w-4 h-4" /> },
+    { path: '/blog/notifications', label: lang === 'rw' ? 'Imyirondoro' : 'Notifications', icon: <Bell className="w-4 h-4" />, badge: unreadCount },
   ];
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
@@ -126,7 +124,7 @@ export default function Navigation() {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10 text-sm">{t('nav.blog')}</span>
+                <span className="relative z-10 text-sm">{lang === 'rw' ? 'Inkuru' : 'Blog'}</span>
                 <ChevronDown className={`relative z-10 w-3 h-3 transition-transform ${blogDropdownOpen ? 'rotate-180' : ''}`} />
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold relative z-10">
@@ -320,7 +318,7 @@ export default function Navigation() {
                 transition={{ delay: navItems.length * 0.05 }}
               >
                 <div className={`px-4 py-2 text-xs uppercase tracking-wider text-gray-400 dark:text-slate-500 font-semibold ${isBlogActive ? 'text-blue-500 dark:text-blue-400' : ''}`}>
-                  {t('nav.blog')}
+                  {lang === 'rw' ? 'Inkuru' : 'Blog'}
                 </div>
                 {blogSubItems.map((item) => (
                   <Link
