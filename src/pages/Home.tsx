@@ -38,32 +38,44 @@ export default function Home() {
       title: t('home.features.quizzes_title', 'Interactive Quizzes'),
       description: t('home.features.quizzes_desc', 'Test your knowledge with timed quizzes based on real Rwanda traffic rules.'),
       link: '/quiz',
-      color: 'from-blue-500 to-blue-600',
-      glow: 'shadow-blue-500/25'
+      iconBg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      glow: 'shadow-blue-500/25',
+      hoverGlow: 'group-hover:from-blue-500/10 group-hover:to-cyan-500/10',
+      borderHover: 'hover:border-blue-500/30',
+      emoji: '📝'
     },
     {
       icon: <Car className="w-6 h-6" />,
       title: t('home.features.simulation_title', '3D Driving Simulation'),
       description: t('home.features.simulation_desc', 'Practice real-world scenarios in immersive 3D environments.'),
       link: '/simulation',
-      color: 'from-purple-500 to-purple-600',
-      glow: 'shadow-purple-500/25'
+      iconBg: 'bg-gradient-to-br from-purple-500 to-violet-600',
+      glow: 'shadow-purple-500/25',
+      hoverGlow: 'group-hover:from-purple-500/10 group-hover:to-pink-500/10',
+      borderHover: 'hover:border-purple-500/30',
+      emoji: '🏎️'
     },
     {
       icon: <Brain className="w-6 h-6" />,
-      title: t('home.features.ai_title', 'AI Assistant - Moto-Sensei'),
+      title: t('home.features.ai_title', 'AI Instructor - Moto-Sensei'),
       description: t('home.features.ai_desc', 'Get instant answers from your friendly Rwandan driving instructor.'),
       link: '/ai-assistant',
-      color: 'from-emerald-500 to-emerald-600',
-      glow: 'shadow-emerald-500/25'
+      iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+      glow: 'shadow-emerald-500/25',
+      hoverGlow: 'group-hover:from-emerald-500/10 group-hover:to-green-500/10',
+      borderHover: 'hover:border-emerald-500/30',
+      emoji: '🤖'
     },
     {
       icon: <BookOpen className="w-6 h-6" />,
       title: t('home.features.resources_title', 'Download Resources'),
       description: t('home.features.resources_desc', 'Access PDFs, videos, and images of traffic signs and rules.'),
       link: '/resources',
-      color: 'from-amber-500 to-amber-600',
-      glow: 'shadow-amber-500/25'
+      iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
+      glow: 'shadow-amber-500/25',
+      hoverGlow: 'group-hover:from-amber-500/10 group-hover:to-yellow-500/10',
+      borderHover: 'hover:border-amber-500/30',
+      emoji: '📚'
     }
   ];
 
@@ -122,16 +134,21 @@ export default function Home() {
                   to={feature.link}
                   className="block group h-full"
                 >
-                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 h-full hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-blue-500/10 overflow-hidden">
+                  <div className={`relative bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 h-full hover:bg-white/[0.08] ${feature.borderHover} transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-blue-500/10 overflow-hidden`}>
                     {/* Hover glow effect */}
-                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/0 to-violet-500/0 group-hover:from-blue-500/10 group-hover:to-violet-500/10 rounded-full blur-3xl transition-all duration-700" />
+                    <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-transparent to-transparent ${feature.hoverGlow} rounded-full blur-3xl transition-all duration-700`} />
+                    
+                    {/* Emoji background */}
+                    <div className="absolute -bottom-2 -right-2 text-6xl opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-500">
+                      {feature.emoji}
+                    </div>
                     
                     {/* Icon */}
-                    <div className="relative inline-flex p-3.5 rounded-2xl bg-gradient-to-br ${feature.color} text-white mb-5 shadow-lg ${feature.glow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <div className={`relative inline-flex p-3.5 rounded-2xl ${feature.iconBg} text-white mb-5 shadow-lg ${feature.glow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
                       {feature.icon}
                     </div>
                     
-                    <h3 className="relative text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">{feature.title}</h3>
+                    <h3 className="relative text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300 font-[family-name:var(--font-heading)]">{feature.title}</h3>
                     <p className="relative text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors duration-300">{feature.description}</p>
                     
                     <div className="relative mt-5 flex items-center text-blue-400 group-hover:text-blue-300">
