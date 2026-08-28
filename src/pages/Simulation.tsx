@@ -87,6 +87,7 @@ function RoutePreviewOverlay({
   scenarioConfig: any;
   lang: string;
 }) {
+  const { t } = useTranslation();
   const [activeIdx, setActiveIdx] = useState(0);
   const [showRoute, setShowRoute] = useState(false);
   const [showCriteria, setShowCriteria] = useState(false);
