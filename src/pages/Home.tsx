@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
-import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink } from 'lucide-react';
+import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket } from 'lucide-react';
 import { useState, lazy, Suspense } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
@@ -108,31 +108,34 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: index * 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <Link
                   to={feature.link}
-                  className="block group"
+                  className="block group h-full"
                 >
-                  <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 h-full hover:bg-white/15 hover:border-white/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10">
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 h-full hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-blue-500/10 overflow-hidden">
+                    {/* Hover glow effect */}
+                    <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-500/0 to-violet-500/0 group-hover:from-blue-500/10 group-hover:to-violet-500/10 rounded-full blur-3xl transition-all duration-700" />
+                    
                     {/* Icon */}
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white mb-4 shadow-lg ${feature.glow} group-hover:scale-110 transition-transform`}>
+                    <div className="relative inline-flex p-3.5 rounded-2xl bg-gradient-to-br ${feature.color} text-white mb-5 shadow-lg ${feature.glow} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                       {feature.icon}
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed">{feature.description}</p>
+                    <h3 className="relative text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors duration-300">{feature.title}</h3>
+                    <p className="relative text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors duration-300">{feature.description}</p>
                     
-                    <div className="mt-4 flex items-center text-blue-400 group-hover:text-blue-300">
-                      <span className="text-sm font-medium">{t('home.learn_more', 'Learn more')}</span>
-                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <div className="relative mt-5 flex items-center text-blue-400 group-hover:text-blue-300">
+                      <span className="text-sm font-semibold">{t('home.learn_more', 'Learn more')}</span>
+                      <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-2 transition-transform duration-300" />
                     </div>
                   </div>
                 </Link>
@@ -256,13 +259,13 @@ export default function Home() {
             className="mb-8"
           >
             <Link to="/blog/complete-guide-driving-rwanda" className="block group">
-              <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-xl shadow-black/20">
+              <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-white/[0.04] backdrop-blur-xl hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500 shadow-2xl shadow-black/20 hover:shadow-blue-500/10 hover:-translate-y-1">
                 <div className="md:flex">
                   <div className="md:w-1/2 h-56 md:h-72 overflow-hidden">
                     <img
                       src="/traffic-signs.jpg"
                       alt="Traffic Signs in Rwanda"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       onError={(e) => {
                         e.currentTarget.src = 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=800&h=400&fit=crop';
                       }}
@@ -292,7 +295,7 @@ export default function Home() {
           </motion.div>
 
           {/* Quick Blog Cards with animations */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
             {[
               { slug: 'speed-limits-rwanda', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=250&fit=crop', tag_en: 'Speed Rules', tag_rw: 'Amategeko y\'Umuvuduko', title_en: 'Understanding Speed Limits', title_rw: 'Kumenya Umuvuduko Ntarengwa' },
               { slug: 'roundabout-guide', img: 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=400&h=250&fit=crop', tag_en: 'Roundabouts', tag_rw: 'Rond-point', title_en: 'Mastering Roundabouts', title_rw: 'Kwiyegereza ku Rond-point' },
@@ -300,27 +303,27 @@ export default function Home() {
             ].map((card, i) => (
               <motion.div
                 key={card.slug}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 + i * 0.1 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: 0.1 + i * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <Link to={`/blog/${card.slug}`} className="block group">
-                  <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:bg-white/10 hover:border-white/20 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300">
-                    <div className="relative h-36 overflow-hidden">
-                      <img src={card.img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                      <span className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500/80 backdrop-blur-sm text-white text-[10px] rounded-full font-semibold">
+                  <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] overflow-hidden hover:bg-white/[0.08] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500">
+                    <div className="relative h-40 overflow-hidden">
+                      <img src={card.img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                      <span className="absolute top-3 left-3 px-3 py-1.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] rounded-full font-bold shadow-lg shadow-blue-500/20">
                         {lang === 'rw' ? card.tag_rw : card.tag_en}
                       </span>
                     </div>
-                    <div className="p-4">
-                      <h4 className="text-white text-sm font-bold font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors line-clamp-2">
+                    <div className="p-5">
+                      <h4 className="text-white text-sm font-bold font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
                         {lang === 'rw' ? card.title_rw : card.title_en}
                       </h4>
-                      <div className="mt-3 flex items-center text-blue-400 text-xs font-medium">
+                      <div className="mt-3 flex items-center text-blue-400 text-xs font-semibold">
                         <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-2 transition-transform duration-300" />
                       </div>
                     </div>
                   </div>
@@ -536,6 +539,103 @@ export default function Home() {
                 </button>
               </form>
             )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ISHAMI for Developers Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0d1225] via-[#111827] to-[#0a1628] p-8 sm:p-12 border border-white/10 shadow-2xl shadow-black/30"
+          >
+            {/* Background glow */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-[100px]" />
+            
+            {/* Geometric pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%238B5CF6' stroke-width='0.5'/%3E%3C/svg%3E")`, backgroundSize: '60px 60px' }} />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6">
+                  <Terminal className="w-4 h-4 text-violet-400" />
+                  <span className="text-sm text-violet-400 font-medium">{lang === 'rw' ? 'ISHAMI kwa Abakoresha' : 'ISHAMI for Developers'}</span>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+                  {lang === 'rw' ? 'Shakisha API yacu' : 'Build with ISHAMI API'}
+                </h2>
+                <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
+                  {lang === 'rw'
+                    ? 'Shakisha uburyo bwo gukoresha API yacu mu kwubaka urubuga rwawe. Ibibazo, Ibyapa by\'Umuhanda, n\'Amakhadi hejuru.'
+                    : 'Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.'}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <Link
+                    to="/developers"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-violet-500/25 transition-all duration-300 hover:-translate-y-0.5"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    <span>{lang === 'rw' ? 'Tangira none' : 'Get Started Free'}</span>
+                  </Link>
+                  <Link
+                    to="/api-docs"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>{lang === 'rw' ? 'Inyandiko' : 'Documentation'}</span>
+                  </Link>
+                </div>
+
+                {/* Quick stats */}
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { value: '25+', label: 'Quiz Questions' },
+                    { value: '30+', label: 'Road Signs' },
+                    { value: '25+', label: 'Flip Cards' },
+                  ].map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-lg font-bold text-white">{stat.value}</span>
+                      <span className="text-xs text-gray-500">{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Code preview card */}
+              <div className="w-full lg:w-auto lg:max-w-sm">
+                <div className="bg-[#0a0e14] rounded-2xl p-5 border border-white/10 shadow-2xl">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                    <span className="text-[10px] text-gray-500 ml-2">api-example.js</span>
+                  </div>
+                  <pre className="font-mono text-[11px] text-gray-300 overflow-x-auto"><code>{`// Fetch Rwanda quiz questions
+const res = await fetch(
+  'https://ishami.rw/api/public/quiz',
+  {
+    headers: {
+      'X-API-Key': 'ishami_pub_...'
+    }
+  }
+);
+const { data } = await res.json();
+// → 25 quiz questions ready!`}</code></pre>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                    <div className="w-5 h-5 rounded bg-violet-500/20 flex items-center justify-center">
+                      <Code className="w-3 h-3 text-violet-400" />
+                    </div>
+                    <span className="text-[10px] text-gray-500">Powered by Ferrivox Ltd</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
