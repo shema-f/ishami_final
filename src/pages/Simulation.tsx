@@ -819,6 +819,9 @@ export default function Simulation() {
       replayRecorderRef.current.start();
     }
 
+    // Slower tick on low-end phones saves battery + CPU
+    const tickMs = isMobile ? 50 : 33;
+
     const interval = setInterval(() => {
       const keys = keysRef.current;
 
@@ -840,6 +843,23 @@ export default function Simulation() {
       if (keys.has('KeyD') || keys.has('ArrowRight')) steerAngle += 1;
       if (touchSteerRef.current !== 0) steerAngle = touchSteerRef.current;
       steerAngle = Math.max(-1, Math.min(1, steerAngle));
+
+      // ─── Arcade Auto-Gear: S → Reverse when stopped, W → Drive1 when stopped ───
+      // (Works for keyboard + mobile pedals. Clutch-less / automatic friendly.)
+      const currentGear = gearRef.current;
+      const nearStop = Math.abs(speed) < 0.25;
+      if (phase === 'driving' && engineRunningRef.current && !clutch) {
+        if (brake && !accel && nearStop && currentGear !== 'R' && currentGear !== 'N') {
+          gearRef.current = 'R';
+          handleGearSelect('R');
+        } else if (accel && !brake && nearStop && currentGear === 'R') {
+          gearRef.current = '1';
+          handleGearSelect('1');
+        } else if (accel && !brake && nearStop && (currentGear === 'N')) {
+          gearRef.current = '1';
+          handleGearSelect('1');
+        }
+      }
 
       clutchRef.current = clutch;
       handbrakeRef.current = handbrake;
@@ -876,13 +896,13 @@ export default function Simulation() {
       } else {
         audioRef.current.stopTireScreech();
       }
-    }, 33);
+    }, tickMs);
 
     return () => {
       clearInterval(interval);
       audioRef.current.stopTireScreech();
     };
-  }, [phase, speed]);
+  }, [phase, speed, isMobile]);
 
   // ─── Speed Update Callback ──────────────────────────
   const handleSpeedUpdate = useCallback((newSpeed: number, newRpm: number) => {
