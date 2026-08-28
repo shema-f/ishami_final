@@ -13,6 +13,8 @@ export interface Collider {
   radius: number;            // for sphere/cylinder
   height: number;            // for cylinder
   isStatic: boolean;
+  min: THREE.Vector3;
+  max: THREE.Vector3;
 }
 
 export interface CollisionResult {
@@ -26,9 +28,49 @@ export interface CollisionResult {
 export class CollisionSystem {
   private colliders: Collider[] = [];
   private playerRadius = 1.2; // car bounding radius — slightly larger for safety
+  private gridCellSize = 20;
+  private grid: Map<string, Collider[]> = new Map();
 
   addCollider(collider: Collider) {
     this.colliders.push(collider);
+
+    if (collider.type === 'box') {
+      collider.min = new THREE.Vector3(
+        collider.position.x - collider.size.x,
+        collider.position.y - collider.size.y,
+        collider.position.z - collider.size.z
+      );
+      collider.max = new THREE.Vector3(
+        collider.position.x + collider.size.x,
+        collider.position.y + collider.size.y,
+        collider.position.z + collider.size.z
+      );
+    } else if (collider.type === 'sphere' || collider.type === 'cylinder') {
+      const r = collider.radius;
+      const h = collider.type === 'cylinder' ? collider.height * 0.5 : r;
+      collider.min = new THREE.Vector3(
+        collider.position.x - r,
+        collider.position.y - h,
+        collider.position.z - r
+      );
+      collider.max = new THREE.Vector3(
+        collider.position.x + r,
+        collider.position.y + h,
+        collider.position.z + r
+      );
+    }
+
+    const minCX = Math.floor((collider.min.x - this.gridCellSize) / this.gridCellSize);
+    const maxCX = Math.floor((collider.max.x + this.gridCellSize) / this.gridCellSize);
+    const minCZ = Math.floor((collider.min.z - this.gridCellSize) / this.gridCellSize);
+    const maxCZ = Math.floor((collider.max.z + this.gridCellSize) / this.gridCellSize);
+    for (let cx = minCX; cx <= maxCX; cx++) {
+      for (let cz = minCZ; cz <= maxCZ; cz++) {
+        const key = `${cx},${cz}`;
+        if (!this.grid.has(key)) this.grid.set(key, []);
+        this.grid.get(key)!.push(collider);
+      }
+    }
   }
 
   removeCollider(id: string) {
@@ -37,6 +79,7 @@ export class CollisionSystem {
 
   clear() {
     this.colliders = [];
+    this.grid.clear();
   }
 
   // Auto-generate colliders from a GLTF scene
@@ -85,6 +128,8 @@ export class CollisionSystem {
         radius: 0,
         height: 0,
         isStatic: true,
+        min: new THREE.Vector3(),
+        max: new THREE.Vector3(),
       });
     });
   }
@@ -101,7 +146,17 @@ export class CollisionSystem {
 
     const futurePos = position.clone().add(velocity.clone().multiplyScalar(delta));
 
-    for (const collider of this.colliders) {
+    const cellX = Math.floor(position.x / this.gridCellSize);
+    const cellZ = Math.floor(position.z / this.gridCellSize);
+    const candidates: Collider[] = [];
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dz = -1; dz <= 1; dz++) {
+        const cell = this.grid.get(`${cellX+dx},${cellZ+dz}`);
+        if (cell) candidates.push(...cell);
+      }
+    }
+
+    for (const collider of candidates) {
       if (collider.type === 'box') {
         const collision = this.checkBoxCollision(futurePos, collider);
         if (collision.hit) {

@@ -25,13 +25,18 @@ export class ParticleSystem {
   private sizes: Float32Array;
   private opacities: Float32Array;
   private maxParticles: number;
+  private updateAccumulator = 0;
+  private readonly isMobile: boolean;
 
-  constructor(maxParticles = 500) {
-    this.maxParticles = maxParticles;
-    this.positions = new Float32Array(maxParticles * 3);
-    this.colors = new Float32Array(maxParticles * 3);
-    this.sizes = new Float32Array(maxParticles);
-    this.opacities = new Float32Array(maxParticles);
+  constructor(maxParticles?: number) {
+    this.isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const defaultMax = this.isMobile ? 100 : 250;
+    const particleMax = maxParticles ?? defaultMax;
+    this.maxParticles = particleMax;
+    this.positions = new Float32Array(particleMax * 3);
+    this.colors = new Float32Array(particleMax * 3);
+    this.sizes = new Float32Array(particleMax);
+    this.opacities = new Float32Array(particleMax);
 
     this.geometry = new THREE.BufferGeometry();
     this.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
@@ -161,27 +166,31 @@ export class ParticleSystem {
   }
 
   update(delta: number) {
-    // Update existing particles
+    const updateInterval = this.isMobile ? 2 / 60 : 1 / 60;
+    this.updateAccumulator += delta;
+
+    if (this.updateAccumulator < updateInterval) return;
+
+    const steppedDelta = this.updateAccumulator;
+    this.updateAccumulator = 0;
+
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
-      p.life += delta;
+      p.life += steppedDelta;
 
       if (p.life >= p.maxLife) {
         this.particles.splice(i, 1);
         continue;
       }
 
-      // Physics
-      p.velocity.y -= 0.5 * delta; // gravity
-      p.position.add(p.velocity.clone().multiplyScalar(delta));
+      p.velocity.y -= 0.5 * steppedDelta;
+      p.position.add(p.velocity.clone().multiplyScalar(steppedDelta));
 
-      // Fade
       const lifeRatio = p.life / p.maxLife;
       p.opacity = p.opacity * (1 - lifeRatio * 0.8);
       p.size = p.size * (1 + lifeRatio * 0.5);
     }
 
-    // Update buffers
     for (let i = 0; i < this.maxParticles; i++) {
       if (i < this.particles.length) {
         const p = this.particles[i];

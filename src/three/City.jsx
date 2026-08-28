@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Text } from '@react-three/drei'
@@ -83,7 +83,7 @@ function ModernBuilding({ position, width = 2, height = 4, depth = 2, color = '#
 
   return (
     <group position={position}>
-      <mesh position={[0, height / 2, 0]} castShadow receiveShadow>
+      <mesh position={[0, height / 2, 0]} castShadow>
         <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial color={frameColor} metalness={0.6} roughness={0.4} />
       </mesh>
@@ -104,7 +104,7 @@ function Tower({ position, width = 2, height = 12, depth = 2, color = '#0D2E50' 
   return (
     <group position={position}>
       {/* Main shaft */}
-      <mesh position={[0, height / 2, 0]} castShadow receiveShadow>
+      <mesh position={[0, height / 2, 0]} castShadow>
         <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial color={color} metalness={0.7} roughness={0.3} />
       </mesh>
@@ -131,7 +131,7 @@ function KCCDome({ position }) {
   return (
     <group position={position}>
       {/* Dome */}
-      <mesh position={[0, 2.5, 0]} castShadow receiveShadow>
+      <mesh position={[0, 2.5, 0]} castShadow>
         <sphereGeometry args={[4, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#1a3050" metalness={0.6} roughness={0.3} />
       </mesh>
@@ -158,7 +158,7 @@ function Mosque({ position }) {
   return (
     <group position={position}>
       {/* Main building */}
-      <mesh position={[0, 1.5, 0]} castShadow receiveShadow>
+      <mesh position={[0, 1.5, 0]} castShadow>
         <boxGeometry args={[5, 3, 5]} />
         <meshStandardMaterial color="#e8dcc8" roughness={0.7} />
       </mesh>
@@ -302,6 +302,54 @@ function Sidewalk({ position, width = 12, length = 10 }) {
 
 // ─── Main City Component ───────────────────────────────────
 export default function City() {
+  const treePositions = useMemo(() => {
+    const positions = []
+    const xs = [-252, -216, -180, -144, -108, -72, -36, 0, 36, 72, 108, 144, 180, 216, 252]
+    const zs = [-252, -216, -180, -144, -108, -72, -36, 0, 36, 72, 108, 144, 180, 216, 252, 288, 324, 360]
+    let seed = 42
+    const rand = () => {
+      seed = (seed * 9301 + 49297) % 233280
+      return seed / 233280
+    }
+    xs.forEach((x) => {
+      zs.forEach((z) => {
+        if (rand() < 0.12) {
+          const side = rand() > 0.5 ? 1 : -1
+          const offsetX = side * (6 + rand() * 4)
+          const offsetZ = (rand() - 0.5) * 8
+          const scale = 0.7 + rand() * 0.8
+          positions.push({ x: x + offsetX, z: z + offsetZ, scale })
+        }
+      })
+    })
+    while (positions.length < 200) {
+      const rx = -280 + rand() * 560
+      const rz = -280 + rand() * 640
+      const scale = 0.7 + rand() * 0.8
+      positions.push({ x: rx, z: rz, scale })
+    }
+    return positions.slice(0, 220)
+  }, [])
+
+  const trunkRef = useRef()
+  const canopyRef = useRef()
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+
+  useEffect(() => {
+    if (!trunkRef.current || !canopyRef.current) return
+    treePositions.forEach((pos, i) => {
+      dummy.position.set(pos.x, 0.6 * pos.scale, pos.z)
+      dummy.scale.set(pos.scale, pos.scale, pos.scale)
+      dummy.updateMatrix()
+      trunkRef.current.setMatrixAt(i, dummy.matrix)
+      dummy.position.set(pos.x, 1.4 * pos.scale, pos.z)
+      dummy.updateMatrix()
+      canopyRef.current.setMatrixAt(i, dummy.matrix)
+    })
+    trunkRef.current.instanceMatrix.needsUpdate = true
+    canopyRef.current.instanceMatrix.needsUpdate = true
+  }, [treePositions, dummy])
+
   return (
     <group>
       {/* ═══════════════════════════════════════════════════════ */}
@@ -334,6 +382,67 @@ export default function City() {
 
       {/* Extra far parallel road west */}
       <RoadSegment position={[-40, 0, 0]} length={60} width={8} />
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* EXPANDED NS ROADS full grid                         */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      {[-252, -216, -180, -144, -108, -72, -36, 0, 36, 72, 108, 144, 180, 216, 252].map(x => (
+        <RoadSegment key={`ns-x${x}`} position={[x, 0, 54]} length={720} width={x % 72 === 0 ? 12 : 10} />
+      ))}
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* EXPANDED EW ROADS full grid                         */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      {[-252, -216, -180, -144, -108, -72, -36, 0, 36, 72, 108, 144, 180, 216, 252, 288, 324, 360].map(z => (
+        <RoadSegment key={`ew-z${z}`} position={[18, 0, z]} rotation={[0, Math.PI / 2, 0]} length={600} width={z % 72 === 0 ? 12 : 10} />
+      ))}
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* SCENARIO AREA DISTINCTIVE FEATURES                   */}
+      {/* ═══════════════════════════════════════════════════════ */}
+
+      {/* Highway zone (X=-270) — divided highway parallel roads */}
+      <RoadSegment position={[-276, 0, 54]} length={720} width={8} />
+      <RoadSegment position={[-264, 0, 54]} length={720} width={8} />
+
+      {/* Hill start (X=-180, Z=306+) — yellow rumble strips every 18 units */}
+      {Array.from({ length: Math.floor((400 - 306) / 18) }).map((_, i) => (
+        <mesh key={`rumble-${i}`} position={[-180, 0.05, 306 + i * 18]}>
+          <boxGeometry args={[8, 0.06, 0.4]} />
+          <meshStandardMaterial color="#FFD700" emissive="#DAA520" emissiveIntensity={0.3} roughness={0.7} />
+        </mesh>
+      ))}
+
+      {/* Stadium parking area (Z=180+, X=90-144) — extra perpendicular EW parking aisles */}
+      <RoadSegment position={[117, 0, 198]} rotation={[0, Math.PI / 2, 0]} length={80} width={8} />
+      <RoadSegment position={[117, 0, 216]} rotation={[0, Math.PI / 2, 0]} length={80} width={8} />
+
+      {/* School zone (Z=-198 to -162, X=-198) — extra zebra crossings */}
+      {[-198, -180, -162].map((zCross, zi) => (
+        <group key={`school-zebra-${zi}`}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <mesh key={`sz-${zi}-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-202 + i * 1.2, 0.025, zCross]}>
+              <planeGeometry args={[0.5, 2.5]} />
+              <meshStandardMaterial color="#ffffff" />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      {/* East tunnel exit (Z=252 area) — road marker */}
+      <group position={[36, 0, 252]}>
+        <mesh position={[0, 1.0, 0]}>
+          <cylinderGeometry args={[0.04, 0.05, 2, 4]} />
+          <meshStandardMaterial color="#333344" metalness={0.8} roughness={0.3} />
+        </mesh>
+        <mesh position={[0, 2.2, 0]}>
+          <boxGeometry args={[0.8, 0.5, 0.08]} />
+          <meshStandardMaterial color="#1a4a8a" emissive="#0E7C6B" emissiveIntensity={0.5} />
+        </mesh>
+        <Text position={[0, 2.2, 0.06]} fontSize={0.18} color="#ffffff" anchorX="center" anchorY="middle" fontWeight="bold">
+          TUNNEL
+        </Text>
+      </group>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* BLOCK A — North-West (tall residential/commercial)    */}
@@ -492,43 +601,16 @@ export default function City() {
       ))}
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* TREES — Along roads and in parks                      */}
+      {/* TREES — Instanced mesh (~220 trees across grid)      */}
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* Main road trees */}
-      {[-20, -10, 0, 10, 20].map((z) => (
-        <Tree key={`tr1${z}`} position={[-7, 0, z]} scale={0.9} />
-      ))}
-      {[-20, -10, 0, 10, 20].map((z) => (
-        <Tree key={`tr2${z}`} position={[7, 0, z]} scale={1.0} />
-      ))}
-      {/* Cross street trees */}
-      {[-16, -8, 8, 16].map((x) => (
-        <PineTree key={`pt1${x}`} position={[x, 0, -16.5]} scale={0.8} />
-      ))}
-      {[-16, -8, 8, 16].map((x) => (
-        <PineTree key={`pt2${x}`} position={[x, 0, 16.5]} scale={0.9} />
-      ))}
-      {/* Park trees — scattered in blocks */}
-      <Tree position={[-10, 0, -12]} scale={1.1} />
-      <Tree position={[-12, 0, -14]} scale={0.8} />
-      <Tree position={[-9, 0, 8]} scale={1.0} />
-      <Tree position={[-11, 0, 10]} scale={0.9} />
-      <Tree position={[10, 0, 8]} scale={1.1} />
-      <Tree position={[12, 0, 10]} scale={0.85} />
-      <Tree position={[9, 0, -12]} scale={1.0} />
-      <Tree position={[11, 0, -14]} scale={0.95} />
-      {/* Far trees */}
-      <PineTree position={[-32, 0, -12]} scale={1.0} />
-      <PineTree position={[-36, 0, 4]} scale={0.9} />
-      <PineTree position={[32, 0, -10]} scale={1.0} />
-      <PineTree position={[36, 0, 6]} scale={0.9} />
-      <PineTree position={[-26, 0, 20]} scale={1.1} />
-      <PineTree position={[26, 0, 20]} scale={1.1} />
-      {/* Background trees */}
-      <Tree position={[-20, 0, -28]} scale={1.2} />
-      <Tree position={[20, 0, -28]} scale={1.2} />
-      <Tree position={[-35, 0, -26]} scale={1.0} />
-      <Tree position={[35, 0, -24]} scale={1.0} />
+      <instancedMesh ref={trunkRef} args={[undefined, undefined, treePositions.length]} castShadow={false}>
+        <cylinderGeometry args={[0.15, 0.2, 1.5, 6]} />
+        <meshStandardMaterial color="#6b4423" roughness={0.9} />
+      </instancedMesh>
+      <instancedMesh ref={canopyRef} args={[undefined, undefined, treePositions.length]} castShadow={false}>
+        <sphereGeometry args={[0.5, 6, 4]} />
+        <meshStandardMaterial color="#1a4a2a" roughness={0.8} />
+      </instancedMesh>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* ZEBRA CROSSINGS                                      */}
@@ -572,10 +654,10 @@ export default function City() {
       ))}
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* GROUND PLANE                                         */}
+      {/* GROUND PLANE — expanded to full scenario range       */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
-        <planeGeometry args={[200, 200]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 50]} receiveShadow>
+        <planeGeometry args={[700, 800]} />
         <meshStandardMaterial color="#0a0e14" roughness={1} />
       </mesh>
     </group>

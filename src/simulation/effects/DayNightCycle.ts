@@ -225,16 +225,19 @@ export class RainEffect {
   private velocities: Float32Array;
   private count: number;
   private active = false;
+  private updateAccumulator = 0;
+  private readonly isMobile: boolean;
 
-  constructor(count = 2000) {
-    this.count = count;
-    this.positions = new Float32Array(count * 3);
-    this.velocities = new Float32Array(count * 3);
+  constructor(count?: number) {
+    this.isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const defaultCount = this.isMobile ? 300 : 800;
+    const particleCount = count ?? defaultCount;
+    this.count = particleCount;
+    this.positions = new Float32Array(particleCount * 3);
+    this.velocities = new Float32Array(particleCount * 3);
 
-    // Initialize rain drops
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < particleCount; i++) {
       this.resetDrop(i);
-      // Start at random heights
       this.positions[i * 3 + 1] = Math.random() * 30;
     }
 
@@ -270,18 +273,30 @@ export class RainEffect {
   update(delta: number, playerPosition?: THREE.Vector3) {
     if (!this.active) return;
 
-    for (let i = 0; i < this.count; i++) {
-      this.positions[i * 3] += this.velocities[i * 3] * delta;
-      this.positions[i * 3 + 1] += this.velocities[i * 3 + 1] * delta;
-      this.positions[i * 3 + 2] += this.velocities[i * 3 + 2] * delta;
+    const updateInterval = this.isMobile ? 2 / 60 : 1 / 60;
+    this.updateAccumulator += delta;
 
-      // Reset if below ground
+    if (this.updateAccumulator < updateInterval) {
+      if (playerPosition) {
+        this.particles.position.x = playerPosition.x;
+        this.particles.position.z = playerPosition.z;
+      }
+      return;
+    }
+
+    const steppedDelta = this.updateAccumulator;
+    this.updateAccumulator = 0;
+
+    for (let i = 0; i < this.count; i++) {
+      this.positions[i * 3] += this.velocities[i * 3] * steppedDelta;
+      this.positions[i * 3 + 1] += this.velocities[i * 3 + 1] * steppedDelta;
+      this.positions[i * 3 + 2] += this.velocities[i * 3 + 2] * steppedDelta;
+
       if (this.positions[i * 3 + 1] < 0) {
         this.resetDrop(i);
       }
     }
 
-    // Follow player
     if (playerPosition) {
       this.particles.position.x = playerPosition.x;
       this.particles.position.z = playerPosition.z;

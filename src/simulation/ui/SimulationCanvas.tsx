@@ -176,12 +176,12 @@ function CarModel({
   onCollision?: (severity: 'MINOR' | 'WARNING' | 'MAJOR', point: THREE.Vector3) => void;
   startPos?: [number, number, number];
 }) {
-  const { gltf, loading } = useCachedGLB('/models/ISHAMI_CAR1.glb');
+  const { gltf, loading } = useCachedGLB('/models/modern_cartoon_sports_car.glb');
   const groupRef = useRef<THREE.Group>(null);
   const rotationRef = useRef(0);
   const positionRef = useRef(new THREE.Vector3(
     startPos?.[0] ?? 68,
-    (startPos?.[1] ?? 0) + 1.2,
+    (startPos?.[1] ?? 0) + 0.8,
     startPos?.[2] ?? -126
   ));
   const collisionCooldown = useRef(0);
@@ -318,8 +318,8 @@ function CarModel({
   const scene = gltf.scene.clone(true);
 
   return (
-    <group ref={groupRef} position={startPos ? [startPos[0], startPos[1] + 1.2, startPos[2]] : [68, 1.2, -126]}>
-      <primitive object={scene} scale={0.9} />
+    <group ref={groupRef} position={startPos ? [startPos[0], startPos[1] + 0.8, startPos[2]] : [68, 0.8, -126]}>
+      <primitive object={scene} scale={1.4} />
       {/* Ground shadow disc */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <circleGeometry args={[2, 16]} />
@@ -391,7 +391,7 @@ function AerialFlyoverCamera({ onComplete }: { onComplete: () => void }) {
     (camera as any).__aerialElapsed = elapsed + (1 / 60);
 
     if (progress >= 1) {
-      onComplete();
+      (window as any).__ishami_aerialFinished = true;
     }
   });
 
@@ -1049,15 +1049,15 @@ export default function SimulationCanvas({
 }) {
   return (
     <Canvas
-      shadows
+      shadows={typeof window !== 'undefined' && window.innerWidth >= 768 ? 'soft' : false}
       camera={{ position: [0, 12, 20], fov: 60, near: 0.1, far: 500 }}
       gl={{
-        antialias: true,
+        antialias: typeof window !== 'undefined' ? window.innerWidth >= 768 : true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.0,
         powerPreference: 'high-performance',
       }}
-      dpr={typeof window !== 'undefined' && window.innerWidth < 640 ? [0.5, 1] : [1, 1.5]}
+      dpr={[1, 2]}
       style={{ background: '#1a1e2a' }}
       onCreated={onReady}
     >

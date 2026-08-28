@@ -437,19 +437,12 @@ function AerialOverlay() {
         </motion.div>
       </div>
 
-      {/* Skip hint */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
-      >
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black/50 backdrop-blur-sm border border-white/10">
-          <span className="text-xs text-white/60">Press</span>
-          <kbd className="px-2 py-0.5 bg-white/10 rounded text-xs text-white font-bold">ENTER</kbd>
-          <span className="text-xs text-white/60">to skip</span>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto">
+        <div className="flex flex-col items-center gap-3">
+          <kbd className="px-4 py-2 bg-blue-500/20 rounded-lg border-2 border-blue-400 text-white font-bold text-lg animate-pulse">↵ ENTER</kbd>
+          <span className="text-xs text-blue-300 font-medium tracking-[0.2em] uppercase">Press to continue to game</span>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -667,10 +660,18 @@ export default function Simulation() {
       keysRef.current.add(e.code);
       (window as any).__ishami_keys = keysRef.current;
 
-      // ─── ENTER = Skip cinematic / aerial / route_preview / go to briefing ───
-      if ((e.code === 'Enter' || e.code === 'NumpadEnter') && (phase === 'cinematic' || phase === 'aerial' || phase === 'route_preview')) {
-        setPhase('briefing');
-        return;
+      // ─── ENTER = Step through phases sequentially ───
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        if (phase === 'cinematic') {
+          setPhase('aerial');
+          return;
+        } else if (phase === 'aerial') {
+          setPhase('route_preview');
+          return;
+        } else if (phase === 'route_preview') {
+          setPhase('briefing');
+          return;
+        }
       }
 
       // Camera toggle
@@ -963,12 +964,10 @@ export default function Simulation() {
 
   // ─── Aerial Complete → Route Preview ───────────────
   const handleAerialComplete = useCallback(() => {
-    setTimeout(() => setPhase('route_preview'), 1500);
   }, []);
 
   // ─── Route Preview Complete → Briefing ─────────────
   const handleRoutePreviewComplete = useCallback(() => {
-    setTimeout(() => setPhase('briefing'), 2000);
   }, []);
 
   // ─── Canvas Ready ──────────────────────────────────
