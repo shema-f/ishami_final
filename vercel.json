@@ -35,9 +35,7 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/((?!.*\\.).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/assets/:match*", "destination": "/assets/:match*" },
+    { "source": "/:path*", "destination": "/index.html" }
   ]
 }

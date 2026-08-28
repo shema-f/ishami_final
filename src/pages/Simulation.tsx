@@ -845,19 +845,36 @@ export default function Simulation() {
       steerAngle = Math.max(-1, Math.min(1, steerAngle));
 
       // ─── Arcade Auto-Gear: S → Reverse when stopped, W → Drive1 when stopped ───
-      // (Works for keyboard + mobile pedals. Clutch-less / automatic friendly.)
       const currentGear = gearRef.current;
       const nearStop = Math.abs(speed) < 0.25;
       if (phase === 'driving' && engineRunningRef.current && !clutch) {
-        if (brake && !accel && nearStop && currentGear !== 'R' && currentGear !== 'N') {
+        // Hold S (brake) at near stop → auto shift to R
+        if (brake && !accel && nearStop && currentGear !== 'R') {
           gearRef.current = 'R';
           handleGearSelect('R');
-        } else if (accel && !brake && nearStop && currentGear === 'R') {
+        }
+        // Tap W (accel) from stopped R or N → 1st gear forward
+        else if (accel && !brake && nearStop && (currentGear === 'R' || currentGear === 'N')) {
           gearRef.current = '1';
           handleGearSelect('1');
-        } else if (accel && !brake && nearStop && (currentGear === 'N')) {
-          gearRef.current = '1';
-          handleGearSelect('1');
+        }
+      }
+
+      // ─── Reverse-pedal semantics: while in R gear, S = reverse THROTTLE (not brake) ───
+      // Users expect: hold S → car reverses, without also pressing W.
+      let effectiveAccel = accel;
+      let effectiveBrake = brake;
+      if (gearRef.current === 'R') {
+        if (brake && !accel) {
+          // S held in R → apply reverse engine torque via acceleratorPressed
+          // (VehiclePhysics multiplies by negative gearRatio = backward motion)
+          effectiveAccel = true;
+          effectiveBrake = false;
+        } else if (accel && !brake) {
+          // W pressed in R going backward → brake to stop (forward-inhibited by
+          // physics reverse speed cap, but we add explicit brake for quick stop)
+          effectiveAccel = false;
+          effectiveBrake = true;
         }
       }
 
@@ -867,8 +884,8 @@ export default function Simulation() {
       // Update global state for physics
       (window as any).__ishami_state = {
         ...(window as any).__ishami_state,
-        acceleratorPressed: accel,
-        brakePressed: brake && !accel,
+        acceleratorPressed: effectiveAccel,
+        brakePressed: effectiveBrake && !effectiveAccel,
         clutchPressed: clutch,
         handbrakeOn: handbrake,
         steeringAngle: steerAngle,
@@ -880,8 +897,8 @@ export default function Simulation() {
       // Update React state
       setSimState((prev) => ({
         ...prev,
-        acceleratorPressed: accel,
-        brakePressed: brake && !accel,
+        acceleratorPressed: effectiveAccel,
+        brakePressed: effectiveBrake && !effectiveAccel,
         clutchPressed: clutch,
         handbrakeOn: handbrake,
         steeringAngle: steerAngle,
@@ -891,7 +908,7 @@ export default function Simulation() {
       }));
 
       // Tire screech on hard braking at speed
-      if (brake && speed > 20) {
+      if (effectiveBrake && speed > 20) {
         audioRef.current.playTireScreech(Math.min((speed - 20) / 30, 1));
       } else {
         audioRef.current.stopTireScreech();
