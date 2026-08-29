@@ -193,7 +193,7 @@ export default function Developers() {
       'The ISHAMI Public API provides access to Rwanda traffic rules data including',
       'quiz questions, road signs, and bilingual flip cards for driving education.',
       '',
-      'Base URL: https://ishami.rw/api/public',
+      'Base URL: https://ishami-final.onrender.com/api/public',
       'Authentication: API Key via X-API-Key header',
       'Format: JSON responses',
       'Rate Limit: 60 requests/minute (default)',
@@ -218,7 +218,7 @@ export default function Developers() {
     doc.setFontSize(9);
     doc.text('curl -H "X-API-Key: ishami_pub_your_key_here" \\', 25, y);
     y += 6;
-    doc.text('  "https://ishami.rw/api/public/quiz"', 25, y);
+    doc.text('  "https://ishami-final.onrender.com/api/public/quiz"', 25, y);
     doc.setFont('helvetica', 'normal');
 
     // Endpoints
@@ -250,7 +250,7 @@ export default function Developers() {
     doc.setFont('courier', 'normal');
     doc.setFontSize(8);
     const jsCode = [
-      "const response = await fetch('https://ishami.rw/api/public/quiz?limit=5', {",
+      "const response = await fetch('https://ishami-final.onrender.com/api/public/quiz?limit=5', {",
       "  headers: { 'X-API-Key': 'ishami_pub_your_key_here' }",
       "});",
       "const data = await response.json();",
@@ -267,7 +267,7 @@ export default function Developers() {
     const pyCode = [
       "import requests",
       "response = requests.get(",
-      "    'https://ishami.rw/api/public/road-signs',",
+      "    'https://ishami-final.onrender.com/api/public/road-signs',",
       "    headers={'X-API-Key': 'ishami_pub_your_key_here'},",
       "    params={'type': 'warning', 'limit': 10}",
       ")",
@@ -283,7 +283,7 @@ export default function Developers() {
     doc.setFont('courier', 'normal');
     doc.setFontSize(8);
     codeY += 15;
-    doc.text('curl -X GET "https://ishami.rw/api/public/quiz?limit=5" \\', 25, codeY);
+    doc.text('curl -X GET "https://ishami-final.onrender.com/api/public/quiz?limit=5" \\', 25, codeY);
     codeY += 5;
     doc.text('  -H "X-API-Key: ishami_pub_your_key_here" \\', 25, codeY);
     codeY += 5;
@@ -332,7 +332,7 @@ export default function Developers() {
     doc.setTextColor(80, 80, 80);
     doc.text('Email: support@ishami.rw', 20, priceY);
     priceY += 6;
-    doc.text('Website: https://ishami.rw/api-docs', 20, priceY);
+    doc.text('Website: https://ishami-final.vercel.app/api-docs', 20, priceY);
     priceY += 6;
     doc.text(`${POWERED_BY} — https://ferrivox.com`, 20, priceY);
 
@@ -621,7 +621,7 @@ export default function Developers() {
                 <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-sm overflow-x-auto">
                   <span className="text-gray-500"># Include your API key</span><br />
                   <span className="text-emerald-400">curl</span><span className="text-white"> -H </span><span className="text-amber-400">"X-API-Key: ishami_pub_your_key_here"</span><span className="text-white"> \</span><br />
-                  <span className="text-white ml-4">"https://ishami.rw/api/public/quiz"</span>
+                  <span className="text-white ml-4">"https://ishami-final.onrender.com/api/public/quiz"</span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-400">
                   <div className="flex items-center gap-1"><Clock className="w-3 h-3" /> Rate Limit: 60 req/min</div>
@@ -650,7 +650,7 @@ export default function Developers() {
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="border-t border-white/5 p-4 sm:p-5">
                         <p className="text-sm text-gray-300 mb-3">{lang === 'rw' ? ep.title_rw : ep.desc}</p>
                         <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto">
-                          <pre>{`curl -H "X-API-Key: your_key" "https://ishami.rw${ep.path}"`}</pre>
+                          <pre>{`curl -H "X-API-Key: your_key" "https://ishami-final.onrender.com${ep.path}"`}</pre>
                         </div>
                         <div className="mt-3 bg-[#0d1225] rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto max-h-40 overflow-y-auto">
                           <pre>{`{
@@ -676,19 +676,19 @@ export default function Developers() {
                 {[
                   {
                     title: 'JavaScript / Fetch',
-                    code: `const response = await fetch('https://ishami.rw/api/public/quiz?limit=5', {\n  headers: {\n    'X-API-Key': 'ishami_pub_your_key_here'\n  }\n});\nconst data = await response.json();\nconsole.log(data.data);`,
+                    code: `const response = await fetch('https://ishami-final.onrender.com/api/public/quiz?limit=5', {\n  headers: {\n    'X-API-Key': 'ishami_pub_your_key_here'\n  }\n});\nconst data = await response.json();\nconsole.log(data.data);`,
                   },
                   {
                     title: 'Python / requests',
-                    code: `import requests\n\nresponse = requests.get(\n    'https://ishami.rw/api/public/road-signs',\n    headers={'X-API-Key': 'ishami_pub_your_key_here'},\n    params={'type': 'warning', 'limit': 10}\n)\ndata = response.json()\nprint(data['data'])`,
+                    code: `import requests\n\nresponse = requests.get(\n    'https://ishami-final.onrender.com/api/public/road-signs',\n    headers={'X-API-Key': 'ishami_pub_your_key_here'},\n    params={'type': 'warning', 'limit': 10}\n)\ndata = response.json()\nprint(data['data'])`,
                   },
                   {
                     title: 'React / useEffect',
-                    code: `import { useState, useEffect } from 'react';\n\nfunction TrafficQuiz() {\n  const [questions, setQuestions] = useState([]);\n\n  useEffect(() => {\n    fetch('https://ishami.rw/api/public/quiz?random=true&count=5', {\n      headers: { 'X-API-Key': 'ishami_pub_your_key_here' }\n    })\n      .then(res => res.json())\n      .then(data => setQuestions(data.data));\n  }, []);\n\n  return (\n    <div>\n      {questions.map(q => (\n        <div key={q.id}>\n          <h3>{q.question}</h3>\n          {q.options.map((opt, i) => (\n            <button key={i}>{opt}</button>\n          ))}\n        </div>\n      ))}\n      <footer>Powered by Ferrivox Ltd</footer>\n    </div>\n  );\n}`,
+                    code: `import { useState, useEffect } from 'react';\n\nfunction TrafficQuiz() {\n  const [questions, setQuestions] = useState([]);\n\n  useEffect(() => {\n    fetch('https://ishami-final.onrender.com/api/public/quiz?random=true&count=5', {\n      headers: { 'X-API-Key': 'ishami_pub_your_key_here' }\n    })\n      .then(res => res.json())\n      .then(data => setQuestions(data.data));\n  }, []);\n\n  return (\n    <div>\n      {questions.map(q => (\n        <div key={q.id}>\n          <h3>{q.question}</h3>\n          {q.options.map((opt, i) => (\n            <button key={i}>{opt}</button>\n          ))}\n        </div>\n      ))}\n      <footer>Powered by Ferrivox Ltd</footer>\n    </div>\n  );\n}`,
                   },
                   {
                     title: 'cURL',
-                    code: `curl -X GET "https://ishami.rw/api/public/quiz?limit=5&category=road_signs" \\\n  -H "X-API-Key: ishami_pub_your_key_here" \\\n  -H "Content-Type: application/json"`,
+                    code: `curl -X GET "https://ishami-final.onrender.com/api/public/quiz?limit=5&category=road_signs" \\\n  -H "X-API-Key: ishami_pub_your_key_here" \\\n  -H "Content-Type: application/json"`,
                   },
                 ].map((example, i) => (
                   <div key={i} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">

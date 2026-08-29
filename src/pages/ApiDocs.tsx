@@ -25,7 +25,7 @@ const API_ENDPOINTS = [
       { name: 'lang', type: 'string', default: 'en', desc: 'Language: en or rw' },
     ],
     example: `curl -H "X-API-Key: ishami_pub_your_key_here" \\
-  "https://ishami.rw/api/public/quiz?limit=5&category=road_signs"`,
+  "https://ishami-final.onrender.com/api/public/quiz?limit=5&category=road_signs"`,
     exampleResponse: `{
   "success": true,
   "data": [
@@ -70,7 +70,7 @@ const API_ENDPOINTS = [
       { name: 'count', type: 'number', default: '10', desc: 'Number of random results' },
     ],
     example: `curl -H "X-API-Key: ishami_pub_your_key_here" \\
-  "https://ishami.rw/api/public/road-signs?type=warning&limit=10"`,
+  "https://ishami-final.onrender.com/api/public/road-signs?type=warning&limit=10"`,
     exampleResponse: `{
   "success": true,
   "data": [
@@ -101,7 +101,7 @@ const API_ENDPOINTS = [
       { name: 'count', type: 'number', default: '10', desc: 'Number of random cards' },
     ],
     example: `curl -H "X-API-Key: ishami_pub_your_key_here" \\
-  "https://ishami.rw/api/public/flipcards?random=true&count=5"`,
+  "https://ishami-final.onrender.com/api/public/flipcards?random=true&count=5"`,
     exampleResponse: `{
   "success": true,
   "data": [
@@ -125,7 +125,7 @@ const API_ENDPOINTS = [
     description: 'Check API status and available endpoints.',
     params: [],
     example: `curl -H "X-API-Key: ishami_pub_your_key_here" \\
-  "https://ishami.rw/api/public/status"`,
+  "https://ishami-final.onrender.com/api/public/status"`,
     exampleResponse: `{
   "success": true,
   "data": {
@@ -144,7 +144,7 @@ const API_ENDPOINTS = [
 const CODE_EXAMPLES = [
   {
     title: 'JavaScript / Fetch',
-    code: `const response = await fetch('https://ishami.rw/api/public/quiz?limit=5', {
+    code: `const response = await fetch('https://ishami-final.onrender.com/api/public/quiz?limit=5', {
   headers: {
     'X-API-Key': 'ishami_pub_your_key_here'
   }
@@ -157,7 +157,7 @@ console.log(data.data); // Array of quiz questions`,
     code: `import requests
 
 response = requests.get(
-    'https://ishami.rw/api/public/road-signs',
+    'https://ishami-final.onrender.com/api/public/road-signs',
     headers={'X-API-Key': 'ishami_pub_your_key_here'},
     params={'type': 'warning', 'limit': 10}
 )
@@ -166,7 +166,7 @@ print(data['data'])  # List of road signs`,
   },
   {
     title: 'cURL',
-    code: `curl -X GET "https://ishami.rw/api/public/quiz?limit=5&category=road_signs" \\
+    code: `curl -X GET "https://ishami-final.onrender.com/api/public/quiz?limit=5&category=road_signs" \\
   -H "X-API-Key: ishami_pub_your_key_here" \\
   -H "Content-Type: application/json"`,
   },
@@ -178,7 +178,7 @@ function TrafficQuiz() {
   const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
-    fetch('https://ishami.rw/api/public/quiz?random=true&count=5', {
+    fetch('https://ishami-final.onrender.com/api/public/quiz?random=true&count=5', {
       headers: { 'X-API-Key': 'ishami_pub_your_key_here' }
     })
       .then(res => res.json())
@@ -298,7 +298,7 @@ export default function ApiDocs() {
               <span className="text-amber-400">"X-API-Key: ishami_pub_your_key_here"</span>
               <span className="text-white"> \</span>
               <br />
-              <span className="text-white ml-4">"https://ishami.rw/api/public/quiz"</span>
+              <span className="text-white ml-4">"https://ishami-final.onrender.com/api/public/quiz"</span>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-400">

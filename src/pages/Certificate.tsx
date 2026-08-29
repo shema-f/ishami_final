@@ -46,7 +46,7 @@ export default function Certificate() {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   })();
   const displayName = certData?.username || user?.username || 'ISHAMI Learner';
-  const verifyUrl = `https://ishami.rw/verify/${certificateNo}`;
+  const verifyUrl = `https://ishami-final.vercel.app/verify/${certificateNo}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}&bgcolor=FFFFFF&color=000000&margin=8`;
 
   const areasOfUnderstanding = [
@@ -396,7 +396,7 @@ export default function Certificate() {
             {/* Footer */}
             <div className="text-center pt-4 border-t border-white/10">
               <p className="text-[10px] text-slate-500 italic">
-                This certificate can be electronically verified at ishami.rw/verify
+                This certificate can be electronically verified at ishami-final.vercel.app/verify
               </p>
             </div>
           </div>

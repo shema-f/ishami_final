@@ -523,7 +523,7 @@ export function handlePublicApiRequest(
     default:
       return {
         success: false,
-        error: `Unknown endpoint: ${endpoint}. See https://ishami.rw/api-docs for available endpoints.`,
+        error: `Unknown endpoint: ${endpoint}. See https://ishami-final.vercel.app/api-docs for available endpoints.`,
         _poweredBy: POWERED_BY,
       };
   }
