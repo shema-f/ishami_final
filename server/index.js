@@ -8,8 +8,8 @@ import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import * as quizSource from './data.js';
 import { RW_TO_EN_FULL } from './translations.js';
-import nodemailer from 'nodemailer';
-import { welcomeEmail, resetPasswordEmail, newsletterThanksEmail, paymentThankYouEmail, certificateEmail, logoAttachment } from './services/emailTemplates.js';
+import { Resend } from 'resend';
+import { welcomeEmail, resetPasswordEmail, newsletterThanksEmail, paymentThankYouEmail, certificateEmail } from './services/emailTemplates.js';
 import fs from 'fs';
 import path from 'path';
 import { getAccessToken, requestToPay, getRequestToPayStatus, normalizeMsisdn } from './services/momo.js';
@@ -70,34 +70,12 @@ process.on('unhandledRejection', (reason) => {
 await mongoose.connect(MONGODB_URI, { dbName: process.env.MONGODB_DB || undefined });
 const { Schema, model, Types } = mongoose;
 
-let mailer = null;
-try {
-  if (process.env.SMTP_HOST) {
-    console.log('[SMTP] Config:', { host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER ? '***set***' : 'MISSING', pass: process.env.SMTP_PASS ? '***set***' : 'MISSING' });
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: String(process.env.SMTP_SECURE || 'false') === 'true',
-      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-      connectionTimeout: 10000,
-      greetingTimeout: 5000,
-      socketTimeout: 10000,
-      tls: { rejectUnauthorized: false },
-      logger: true,
-      debug: true,
-    });
-    mailer = transporter;
-    try {
-      await transporter.verify();
-      console.log('[SMTP] ✅ Transporter verified successfully');
-    } catch (e) {
-      console.error('[SMTP] ❌ Verify failed:', e?.message || e);
-    }
-  } else {
-    console.warn('[SMTP] Not configured: set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM');
-  }
-} catch (e) {
-  console.error('[SMTP] Init error:', e?.message || e);
+let resend = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+  console.log('[Resend] ✅ API key configured');
+} else {
+  console.warn('[Resend] Not configured: set RESEND_API_KEY');
 }
 
 const UserSchema = new Schema({
@@ -563,7 +541,7 @@ async function seed() {
   );
 }
 
-// Brevo removed: using Nodemailer SMTP only
+// Email service: Resend API (HTTPS, works on Render free tier)
 await Promise.all([
   User.syncIndexes(),
   Question.syncIndexes(),
@@ -680,32 +658,35 @@ async function sendWelcomeEmail(email, username) {
     }
     console.log(`Attempting to send welcome email to ${email}...`);
     const subject = 'Welcome to ISHAMI - Rwanda Traffic Rules';
-    const html = welcomeEmail({ username, appUrl: process.env.FRONTEND_URL || 'https://ishami.rw' });
-    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    if (mailer) {
-      await safeSendMail({ from, to: email, subject, html, attachments: [logoAttachment()] });
-      console.log(`Welcome email (SMTP) sent successfully to ${email}`);
-      return true;
-    }
-    console.log('Welcome email skipped: SMTP not configured');
+    const html = welcomeEmail({ username, appUrl: process.env.FRONTEND_URL || 'https://ishami-final.vercel.app' });
+    await safeSendMail({ from: `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`, to: email, subject, html });
+    console.log(`Welcome email sent successfully to ${email}`);
+    return true;
   } catch (err) {
     console.error('Failed to send welcome email:', err);
   }
   return false;
 }
 
-// Safe email sender — never blocks the response for more than 10 seconds
-async function safeSendMail(opts) {
-  if (!mailer) { console.error('[Email] No mailer configured'); return false; }
+// Safe email sender — uses Resend API (HTTPS, works on Render free tier)
+async function safeSendMail({ from, to, subject, html, attachments }) {
+  if (!resend) { console.error('[Email] No Resend configured'); return false; }
   try {
-    const result = await Promise.race([
-      mailer.sendMail(opts),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout after 15s')), 15000)),
-    ]);
-    console.log(`[Email] ✅ Sent to ${opts.to}`);
+    const fromAddr = from || `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`;
+    const result = await resend.emails.send({
+      from: fromAddr,
+      to: [to],
+      subject,
+      html,
+    });
+    if (result.error) {
+      console.error(`[Email] ❌ Failed to ${to}:`, result.error);
+      return false;
+    }
+    console.log(`[Email] ✅ Sent to ${to} (id: ${result.data?.id || 'unknown'})`);
     return true;
   } catch (e) {
-    console.error(`[Email] ❌ Failed to ${opts.to}:`, e?.message || e, e?.code || '');
+    console.error(`[Email] ❌ Failed to ${to}:`, e?.message || e);
     return false;
   }
 }
@@ -713,16 +694,15 @@ async function safeSendMail(opts) {
 // Send payment thank-you email
 async function sendPaymentEmail(user, txn) {
   try {
-    if (!user?.email || !mailer) return;
+    if (!user?.email) return;
     const subject = '🎉 Payment Confirmed — ISHAMI';
     const html = paymentThankYouEmail({
       username: user.username || 'Mugenzi',
       amount: txn.amount || 0,
       product: txn.product || 'pro',
-      appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
+      appUrl: process.env.FRONTEND_URL || 'https://ishami-final.vercel.app'
     });
-    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
+    await safeSendMail({ from: `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`, to: user.email, subject, html });
     console.log(`Payment email sent to ${user.email}`);
   } catch (e) {
     console.error('Payment email failed:', e?.message || e);
@@ -997,14 +977,9 @@ app.post('/api/auth/forgot', async (req, res) => {
         try {
           const subject = 'Reset your password - ISHAMI';
           const html = resetPasswordEmail({ username: user.username || 'Mugenzi', resetUrl, expiresHours: 1 });
-          const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-          if (mailer) {
-            await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
-            sent = true;
-            console.log(`Reset email (SMTP) sent to ${user.email}`);
-          } else {
-            console.log('Reset email skipped: No mail provider configured', { hasMailer: !!mailer });
-          }
+          await safeSendMail({ from: `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`, to: user.email, subject, html });
+          sent = true;
+          console.log(`Reset email sent to ${user.email}`);
         } catch (e) {
           console.error('Failed to send reset email:', e);
         }
@@ -2174,7 +2149,7 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
     });
     // Send certificate email
     try {
-      if (mailer && user.email) {
+      if (user.email) {
         const subject = '🏆 Your ISHAMI Certificate is Ready!';
         const html = certificateEmail({
           username: user.username || 'Mugenzi',
@@ -2182,10 +2157,9 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
           totalQuestions: totalQuestions || 0,
           certificateNo: certNo,
           issuedAt: issuedDate.toLocaleDateString(),
-          appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
+          appUrl: process.env.FRONTEND_URL || 'https://ishami-final.vercel.app'
         });
-        const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-        await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
+        await safeSendMail({ from: `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`, to: user.email, subject, html });
         console.log(`Certificate email sent to ${user.email}`);
       }
     } catch (e) {
@@ -2323,20 +2297,9 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
     const existing = await NewsletterSubscriber.findOne({ email });
     if (existing) return res.json({ success: true, subscribed: true });
     await NewsletterSubscriber.create({ email });
-    const brandName = process.env.BRAND_NAME || 'ISHAMI';
-    const from = process.env.SMTP_FROM || `${brandName} <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    const site = process.env.BRAND_SITE_URL || 'https://ishami.rw';
     const subject = 'Welcome to ISHAMI newsletter!';
-    const html = newsletterThanksEmail({ email, siteUrl: site });
-    try {
-      if (mailer) {
-        await safeSendMail({ from, to: email, subject, html, attachments: [logoAttachment()] });
-      } else {
-        console.warn('Newsletter subscribe email skipped: SMTP not configured');
-      }
-    } catch (e) {
-      console.error('Newsletter subscribe email failed:', e?.message || e);
-    }
+    const html = newsletterThanksEmail({ email, siteUrl: 'https://ishami-final.vercel.app' });
+    await safeSendMail({ from: `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`, to: email, subject, html });
     res.json({ success: true, subscribed: true });
   } catch (e) {
     res.status(500).json({ message: 'Server error' });
@@ -2412,14 +2375,14 @@ app.post('/api/admin/newsletter/send', authMiddleware, adminOnly, async (req, re
   const subject = String(req.body?.subject || '').trim();
   const body = String(req.body?.body || '').trim();
   if (!subject || !body) return res.status(400).json({ message: 'Missing fields' });
-  if (!mailer) return res.status(500).json({ message: 'SMTP not configured' });
+  if (!resend) return res.status(500).json({ message: 'Email service not configured' });
   const subscribers = await NewsletterSubscriber.find({ status: 'SUBSCRIBED' }).lean();
-  const from = process.env.SMTP_FROM || `ISHAMI <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
+  const from = `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`;
   let delivered = 0;
   let failed = 0;
   for (const s of subscribers) {
     try {
-      await safeSendMail({ from, to: s.email, subject, html: body, attachments: [logoAttachment()] });
+      await safeSendMail({ from, to: s.email, subject, html: body });
       delivered++;
     } catch {
       failed++;
@@ -2434,10 +2397,10 @@ app.post('/api/admin/newsletter/preview', authMiddleware, adminOnly, async (req,
   const subject = String(req.body?.subject || '').trim();
   const body = String(req.body?.body || '').trim();
   if (!email || !subject || !body) return res.status(400).json({ message: 'Missing fields' });
-  if (!mailer) return res.json({ success: true });
+  if (!resend) return res.json({ success: true, warning: 'Email service not configured' });
   try {
-    const from = process.env.SMTP_FROM || `ISHAMI <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    await safeSendMail({ from, to: email, subject, html: body, attachments: [logoAttachment()] });
+    const from = `ISHAMI <${process.env.RESEND_FROM || 'onboarding@resend.dev'}>`;
+    await safeSendMail({ from, to: email, subject, html: body });
     res.json({ success: true });
   } catch {
     res.status(500).json({ message: 'Failed to send' });
