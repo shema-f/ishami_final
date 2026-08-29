@@ -73,6 +73,7 @@ const { Schema, model, Types } = mongoose;
 let mailer = null;
 try {
   if (process.env.SMTP_HOST) {
+    console.log('[SMTP] Config:', { host: process.env.SMTP_HOST, port: process.env.SMTP_PORT, secure: process.env.SMTP_SECURE, user: process.env.SMTP_USER ? '***set***' : 'MISSING', pass: process.env.SMTP_PASS ? '***set***' : 'MISSING' });
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT || 587),
@@ -81,19 +82,22 @@ try {
       connectionTimeout: 10000,
       greetingTimeout: 5000,
       socketTimeout: 10000,
+      tls: { rejectUnauthorized: false },
+      logger: true,
+      debug: true,
     });
     mailer = transporter;
     try {
       await transporter.verify();
-      console.log('SMTP transporter verified');
+      console.log('[SMTP] ✅ Transporter verified successfully');
     } catch (e) {
-      console.warn('SMTP verify failed; will attempt to send anyway', e?.message || e);
+      console.error('[SMTP] ❌ Verify failed:', e?.message || e);
     }
   } else {
-    console.warn('SMTP not configured: set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM');
+    console.warn('[SMTP] Not configured: set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM');
   }
 } catch (e) {
-  console.error('SMTP init error', e?.message || e);
+  console.error('[SMTP] Init error:', e?.message || e);
 }
 
 const UserSchema = new Schema({
@@ -692,15 +696,16 @@ async function sendWelcomeEmail(email, username) {
 
 // Safe email sender — never blocks the response for more than 10 seconds
 async function safeSendMail(opts) {
-  if (!mailer) return false;
+  if (!mailer) { console.error('[Email] No mailer configured'); return false; }
   try {
     const result = await Promise.race([
       mailer.sendMail(opts),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout')), 10000)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout after 15s')), 15000)),
     ]);
+    console.log(`[Email] ✅ Sent to ${opts.to}`);
     return true;
   } catch (e) {
-    console.error('Email send failed:', e?.message || e);
+    console.error(`[Email] ❌ Failed to ${opts.to}:`, e?.message || e, e?.code || '');
     return false;
   }
 }
