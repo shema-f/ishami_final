@@ -1525,11 +1525,9 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     // Use Paypack for payment collection
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
-    // In test mode, send 100 RWF to Paypack regardless of real amount
-    const paypackAmount = testMode ? 100 : expected;
-    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
+    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
-    console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${paypackAmount} (real: ${expected}), phone=${cleanPhone}`);
+    console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${expected}, phone=${cleanPhone}`);
 
     // If irembo product with form data, create the application immediately
     let iremboApplicationId = null;
@@ -1625,9 +1623,7 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     if (!phone) return res.status(400).json({ message: 'Phone required' });
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
-    // In test mode, send 100 RWF to Paypack regardless of real amount
-    const paypackAmount = testMode ? 100 : expected;
-    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
+    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
 
     // If irembo product with form data, create the application immediately
@@ -1775,9 +1771,7 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
 
     const webhookMode = testMode ? 'development' : 'production';
-    // In test mode, send 100 RWF to Paypack regardless of real amount
-    const paypackAmount = testMode ? 100 : expected;
-    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
+    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
 
     // Save payment to DB
     const payment = await Payment.create({
