@@ -110,14 +110,16 @@ export default function CourseDetail() {
             </div>
 
             {/* Start Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="mt-8 px-8 py-4 bg-white text-gray-900 rounded-2xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all duration-300"
-            >
-              <Play className="w-5 h-5" />
-              {lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}
-            </motion.button>
+            <Link to={`/courses/${courseId}/lessons/1`}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="mt-8 px-8 py-4 bg-white text-gray-900 rounded-2xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all duration-300 cursor-pointer inline-flex"
+              >
+                <Play className="w-5 h-5" />
+                {lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}
+              </motion.div>
+            </Link>
           </div>
         </motion.div>
 
@@ -144,7 +146,7 @@ export default function CourseDetail() {
                   transition={{ delay: 0.1 + index * 0.05 }}
                   className="group"
                 >
-                  <div className="flex items-center gap-4 p-4 sm:p-5 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
+                  <Link to={`/courses/${courseId}/lessons/${lesson.id}`} className="flex items-center gap-4 p-4 sm:p-5 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
                     {/* Lesson Number */}
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 font-bold text-sm group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-all">
                       {String(lesson.id).padStart(2, '0')}
@@ -177,7 +179,7 @@ export default function CourseDetail() {
                         <Lock className="w-3 h-3 text-gray-600 group-hover:text-blue-400/50 transition-colors" />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </motion.div>
               );
             })}

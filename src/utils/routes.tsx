@@ -11,6 +11,7 @@ const AIAssistant = lazy(() => import("../pages/AIAssistant"));
 const Quiz = lazy(() => import("../pages/Quiz"));
 const Courses = lazy(() => import("../pages/Courses"));
 const CourseDetail = lazy(() => import("../pages/CourseDetail"));
+const Lesson = lazy(() => import("../pages/Lesson"));
 const Leaderboard = lazy(() => import("../pages/Leaderboard"));
 const Auth = lazy(() => import("../pages/Auth"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
       { path: "quiz", Component: Quiz },
       { path: "courses", Component: Courses },
       { path: "courses/:courseId", Component: CourseDetail },
+      { path: "courses/:courseId/lessons/:lessonId", Component: Lesson },
       { path: "resources", Component: Courses },
       { path: "leaderboard", Component: Leaderboard },
       { path: "auth", Component: Auth },
