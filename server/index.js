@@ -1506,17 +1506,16 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
 
-    // In test mode, accept 100 RWF; otherwise enforce standard amounts
+    // Always compute the real expected amount based on product type
     // For irembo: provisional = 5500, permanent = 10500
     let expected;
-    if (testMode) {
-      expected = 100;
-    } else if (prod === 'irembo') {
+    if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else {
       expected = 1000;
     }
+
     if (Number(amount) !== expected) {
       await FraudLog.create({ userId: req.user._id, type: 'amount_mismatch', message: 'Mismatched amount', meta: { sent: amount, expected, product: prod } });
       return res.status(400).json({ message: `Invalid amount. Expected ${expected} RWF` });
@@ -1526,9 +1525,11 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     // Use Paypack for payment collection
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
-    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
+    // In test mode, send 100 RWF to Paypack regardless of real amount
+    const paypackAmount = testMode ? 100 : expected;
+    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
-    console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${expected}, phone=${cleanPhone}`);
+    console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${paypackAmount} (real: ${expected}), phone=${cleanPhone}`);
 
     // If irembo product with form data, create the application immediately
     let iremboApplicationId = null;
@@ -1611,9 +1612,7 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
     let expected;
-    if (testMode) {
-      expected = 100;
-    } else if (prod === 'irembo') {
+    if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else {
@@ -1626,7 +1625,9 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     if (!phone) return res.status(400).json({ message: 'Phone required' });
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
-    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
+    // In test mode, send 100 RWF to Paypack regardless of real amount
+    const paypackAmount = testMode ? 100 : expected;
+    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
     const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
 
     // If irembo product with form data, create the application immediately
@@ -1754,12 +1755,10 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     const { amount, phone, product, iremboData } = req.body || {};
     const prod = String(product || 'pro');
 
-    // For testing: allow 100 RWF, otherwise enforce standard amounts
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
+    // Always compute the real expected amount based on product type
     let expected;
-    if (testMode) {
-      expected = 100; // Testing: 100 RWF
-    } else if (prod === 'irembo') {
+    if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else {
@@ -1776,7 +1775,9 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
 
     const webhookMode = testMode ? 'development' : 'production';
-    const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
+    // In test mode, send 100 RWF to Paypack regardless of real amount
+    const paypackAmount = testMode ? 100 : expected;
+    const paypackResult = await paypackCashin(cleanPhone, paypackAmount, webhookMode);
 
     // Save payment to DB
     const payment = await Payment.create({

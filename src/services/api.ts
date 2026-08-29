@@ -330,6 +330,7 @@ export const paymentAPI = {
       email: string;
       language: string;
       testMode: string;
+      licenseType: string;
       district: string;
       testDate: string;
     };
