@@ -78,6 +78,9 @@ try {
       port: Number(process.env.SMTP_PORT || 587),
       secure: String(process.env.SMTP_SECURE || 'false') === 'true',
       auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
+      connectionTimeout: 10000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000,
     });
     mailer = transporter;
     try {
@@ -676,7 +679,7 @@ async function sendWelcomeEmail(email, username) {
     const html = welcomeEmail({ username, appUrl: process.env.FRONTEND_URL || 'https://ishami.rw' });
     const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
     if (mailer) {
-      await mailer.sendMail({ from, to: email, subject, html, attachments: [logoAttachment()], });
+      await safeSendMail({ from, to: email, subject, html, attachments: [logoAttachment()] });
       console.log(`Welcome email (SMTP) sent successfully to ${email}`);
       return true;
     }
@@ -685,6 +688,21 @@ async function sendWelcomeEmail(email, username) {
     console.error('Failed to send welcome email:', err);
   }
   return false;
+}
+
+// Safe email sender — never blocks the response for more than 10 seconds
+async function safeSendMail(opts) {
+  if (!mailer) return false;
+  try {
+    const result = await Promise.race([
+      mailer.sendMail(opts),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP timeout')), 10000)),
+    ]);
+    return true;
+  } catch (e) {
+    console.error('Email send failed:', e?.message || e);
+    return false;
+  }
 }
 
 // Send payment thank-you email
@@ -699,7 +717,7 @@ async function sendPaymentEmail(user, txn) {
       appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
     });
     const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
+    await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
     console.log(`Payment email sent to ${user.email}`);
   } catch (e) {
     console.error('Payment email failed:', e?.message || e);
@@ -976,7 +994,7 @@ app.post('/api/auth/forgot', async (req, res) => {
           const html = resetPasswordEmail({ username: user.username || 'Mugenzi', resetUrl, expiresHours: 1 });
           const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
           if (mailer) {
-            await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
+            await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
             sent = true;
             console.log(`Reset email (SMTP) sent to ${user.email}`);
           } else {
@@ -2162,7 +2180,7 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
           appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
         });
         const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-        await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
+        await safeSendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()] });
         console.log(`Certificate email sent to ${user.email}`);
       }
     } catch (e) {
@@ -2307,7 +2325,7 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
     const html = newsletterThanksEmail({ email, siteUrl: site });
     try {
       if (mailer) {
-        await mailer.sendMail({ from, to: email, subject, html, attachments: [logoAttachment()], });
+        await safeSendMail({ from, to: email, subject, html, attachments: [logoAttachment()] });
       } else {
         console.warn('Newsletter subscribe email skipped: SMTP not configured');
       }
@@ -2396,7 +2414,7 @@ app.post('/api/admin/newsletter/send', authMiddleware, adminOnly, async (req, re
   let failed = 0;
   for (const s of subscribers) {
     try {
-      await mailer.sendMail({ from, to: s.email, subject, html: body, attachments: [logoAttachment()], });
+      await safeSendMail({ from, to: s.email, subject, html: body, attachments: [logoAttachment()] });
       delivered++;
     } catch {
       failed++;
@@ -2414,7 +2432,7 @@ app.post('/api/admin/newsletter/preview', authMiddleware, adminOnly, async (req,
   if (!mailer) return res.json({ success: true });
   try {
     const from = process.env.SMTP_FROM || `ISHAMI <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
-    await mailer.sendMail({ from, to: email, subject, html: body, attachments: [logoAttachment()], });
+    await safeSendMail({ from, to: email, subject, html: body, attachments: [logoAttachment()] });
     res.json({ success: true });
   } catch {
     res.status(500).json({ message: 'Failed to send' });
