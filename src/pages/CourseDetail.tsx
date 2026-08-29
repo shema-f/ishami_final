@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { ArrowLeft, Clock, BookOpen, User, CheckCircle2, Play, FileText, Video, Zap, ClipboardCheck, Star, Lock } from 'lucide-react';
 import { getCourseById } from '../data/courses';
 import { useTranslation } from '../contexts/I18nContext';
+import { useAuth } from '../contexts/AuthContext';
+import { getCourseProgress, isLessonCompleted, getNextLesson } from '../lib/courseProgress';
 
 const lessonTypeIcons: Record<string, { icon: typeof FileText; color: string; label: string }> = {
   text: { icon: FileText, color: 'text-blue-400 bg-blue-500/10', label: 'Reading' },
@@ -15,7 +17,11 @@ const lessonTypeIcons: Record<string, { icon: typeof FileText; color: string; la
 export default function CourseDetail() {
   const { courseId } = useParams();
   const { lang } = useTranslation();
+  const { user } = useAuth();
   const course = getCourseById(courseId || '');
+  const userId = user?.id || user?.uid || 'guest';
+  const courseProgress = getCourseProgress(userId, courseId || '');
+  const nextLesson = getNextLesson(userId, courseId || '');
 
   if (!course) {
     return (
@@ -102,22 +108,28 @@ export default function CourseDetail() {
             <div className="mt-6 max-w-md">
               <div className="flex items-center justify-between text-xs mb-2 text-white/60">
                 <span>Progress</span>
-                <span className="font-medium text-white/80">0%</span>
+                <span className="font-medium text-white/80">{courseProgress ? `${courseProgress.percentage}%` : '0%'}</span>
               </div>
               <div className="h-2 bg-black/20 rounded-full overflow-hidden">
-                <div className="h-full w-0 bg-white/80 rounded-full transition-all" />
+                <div className="h-full bg-white/80 rounded-full transition-all" style={{ width: `${courseProgress?.percentage || 0}%` }} />
               </div>
+              {courseProgress && (
+                <p className="text-white/50 text-xs mt-1">{courseProgress.completedLessons.length} of {course.totalLessons} lessons completed</p>
+              )}
             </div>
 
-            {/* Start Button */}
-            <Link to={`/courses/${courseId}/lessons/1`}>
+            {/* Start / Continue Button */}
+            <Link to={`/courses/${courseId}/lessons/${nextLesson}`}>
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="mt-8 px-8 py-4 bg-white text-gray-900 rounded-2xl font-bold text-lg flex items-center gap-3 hover:shadow-xl transition-all duration-300 cursor-pointer inline-flex"
               >
                 <Play className="w-5 h-5" />
-                {lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}
+                {courseProgress && courseProgress.completedLessons.length > 0 && courseProgress.completedLessons.length < course.totalLessons
+                  ? (lang === 'rw' ? 'Komeza Isomoro' : 'Continue Course')
+                  : (lang === 'rw' ? 'Tangira Isomoro' : 'Start Course')
+                }
               </motion.div>
             </Link>
           </div>
@@ -147,9 +159,16 @@ export default function CourseDetail() {
                   className="group"
                 >
                   <Link to={`/courses/${courseId}/lessons/${lesson.id}`} className="flex items-center gap-4 p-4 sm:p-5 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
-                    {/* Lesson Number */}
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 font-bold text-sm group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20 transition-all">
-                      {String(lesson.id).padStart(2, '0')}
+                    {/* Lesson Number / Completion */}
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm transition-all ${
+                      isLessonCompleted(userId, courseId || '', lesson.id)
+                        ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'
+                        : 'bg-white/5 border-white/10 text-gray-500 group-hover:bg-blue-500/10 group-hover:text-blue-400 group-hover:border-blue-500/20'
+                    }`}>
+                      {isLessonCompleted(userId, courseId || '', lesson.id)
+                        ? <CheckCircle2 className="w-5 h-5" />
+                        : String(lesson.id).padStart(2, '0')
+                      }
                     </div>
 
                     {/* Lesson Info */}
@@ -175,9 +194,15 @@ export default function CourseDetail() {
 
                     {/* Status */}
                     <div className="flex-shrink-0">
-                      <div className="w-6 h-6 rounded-full border-2 border-white/10 flex items-center justify-center group-hover:border-blue-500/30 transition-all">
-                        <Lock className="w-3 h-3 text-gray-600 group-hover:text-blue-400/50 transition-colors" />
-                      </div>
+                      {isLessonCompleted(userId, courseId || '', lesson.id) ? (
+                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full border-2 border-white/10 flex items-center justify-center group-hover:border-blue-500/30 transition-all">
+                          <Lock className="w-3 h-3 text-gray-600 group-hover:text-blue-400/50 transition-colors" />
+                        </div>
+                      )}
                     </div>
                   </Link>
                 </motion.div>

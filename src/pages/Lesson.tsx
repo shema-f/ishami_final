@@ -1,10 +1,12 @@
 import { useParams, Link, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, FileText, Video, Zap, ClipboardCheck, Star, AlertTriangle, Lightbulb, Info, Play, RotateCcw } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, FileText, Video, Zap, ClipboardCheck, Star, AlertTriangle, Lightbulb, Info, Play, RotateCcw, Trophy } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
 import { getCourseById, type Course, type CourseLesson } from '../data/courses';
 import { getLessonContent, type LessonContent, type QuizQuestion } from '../data/lessonContent';
 import { useTranslation } from '../contexts/I18nContext';
+import { useAuth } from '../contexts/AuthContext';
+import { completeLesson, isLessonCompleted, getCourseProgress } from '../lib/courseProgress';
 
 const lessonTypeConfig: Record<string, { icon: typeof FileText; color: string; bgGradient: string; label: string }> = {
   text: { icon: FileText, color: 'text-blue-400', bgGradient: 'from-blue-500 to-indigo-600', label: 'Reading' },
@@ -18,17 +20,40 @@ export default function Lesson() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const { lang } = useTranslation();
+  const { user } = useAuth();
 
   const course = getCourseById(courseId || '');
   const lessonNum = parseInt(lessonId || '1', 10);
   const lessonData = getLessonContent(courseId || '', lessonNum);
   const lessonMeta = course?.curriculum.lessons.find((l: CourseLesson) => l.id === lessonNum);
 
+  const userId = user?.id || user?.uid || 'guest';
+  const lessonDone = isLessonCompleted(userId, courseId || '', lessonNum);
+  const courseProgress = getCourseProgress(userId, courseId || '');
+
   const [quizState, setQuizState] = useState<{
     answers: number[];
     submitted: boolean;
     currentQuestion: number;
   }>({ answers: [], submitted: false, currentQuestion: 0 });
+
+  // Auto-mark quiz/assessment lessons as complete when submitted with passing score
+  useEffect(() => {
+    if (quizState.submitted && lessonData?.quiz && (lessonData.type === 'quiz' || lessonData.type === 'assessment')) {
+      const quiz = lessonData.quiz;
+      let correct = 0;
+      quiz.questions.forEach((q: QuizQuestion, i: number) => {
+        if (quizState.answers[i] === q.correctIndex) correct++;
+      });
+      const pct = Math.round((correct / quiz.questions.length) * 100);
+      if (lessonData.type === 'assessment' && pct < 70) return; // Don't mark assessment complete if failed
+      completeLesson(userId, courseId || '', lessonNum, pct);
+    }
+  }, [quizState.submitted]);
+
+  const handleMarkComplete = () => {
+    completeLesson(userId, courseId || '', lessonNum);
+  };
 
   if (!course || !lessonMeta || !lessonData) {
     return (
@@ -84,11 +109,28 @@ export default function Lesson() {
               <span className="text-white/70 text-sm font-medium">{config.label}</span>
               <span className="text-white/40">•</span>
               <span className="text-white/70 text-sm">{lessonMeta.duration}</span>
+              {lessonDone && (
+                <span className="px-2.5 py-1 bg-emerald-500/30 text-emerald-200 text-xs rounded-full font-medium flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Completed
+                </span>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
               {lang === 'rw' ? lessonMeta.titleKiny : lessonMeta.title}
             </h1>
             <p className="text-white/70 text-sm">Lesson {lessonMeta.id} of {course.totalLessons}</p>
+            {/* Progress Bar */}
+            {courseProgress && (
+              <div className="mt-4 max-w-md">
+                <div className="flex items-center justify-between text-xs mb-1 text-white/50">
+                  <span>Course Progress</span>
+                  <span className="font-medium text-white/70">{courseProgress.percentage}%</span>
+                </div>
+                <div className="h-1.5 bg-black/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white/60 rounded-full transition-all" style={{ width: `${courseProgress.percentage}%` }} />
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -145,10 +187,42 @@ export default function Lesson() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-12 p-8 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-center">
             <Zap className="w-12 h-12 mx-auto mb-4 text-amber-400" />
             <h3 className="text-lg font-bold text-white mb-2">Interactive Mode</h3>
-            <p className="text-gray-400 text-sm mb-4">This lesson includes interactive exercises. Practice the concepts above, then proceed to the next lesson.</p>
-            <Link to={`/courses/${courseId}/lessons/${lessonNum + 1}`} className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 transition-colors">
-              Next Lesson <ArrowRight className="w-4 h-4" />
-            </Link>
+            <p className="text-gray-400 text-sm mb-4">This lesson includes interactive exercises. Practice the concepts above, then mark as complete when you're ready.</p>
+            {!lessonDone && (
+              <button onClick={handleMarkComplete} className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 transition-colors">
+                <CheckCircle2 className="w-4 h-4" /> Mark as Complete
+              </button>
+            )}
+            {lessonDone && (
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500/20 text-emerald-300 rounded-xl font-medium">
+                <CheckCircle2 className="w-4 h-4" /> Completed
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* Mark Complete for text/video lessons */}
+        {(lessonData.type === 'text' || lessonData.type === 'video') && !lessonDone && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-8 text-center">
+            <button onClick={handleMarkComplete} className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-bold text-lg hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300">
+              <CheckCircle2 className="w-5 h-5" />
+              Mark as Complete
+            </button>
+          </motion.div>
+        )}
+
+        {/* Completion banner */}
+        {lessonDone && (lessonData.type === 'text' || lessonData.type === 'video') && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+            <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-emerald-300 font-medium text-sm">Lesson completed!</p>
+                <p className="text-emerald-400/60 text-xs">{courseProgress ? `${courseProgress.completedLessons.length} of ${course.totalLessons} lessons done (${courseProgress.percentage}%)` : ''}</p>
+              </div>
+            </div>
           </motion.div>
         )}
 

@@ -5,8 +5,10 @@ import { useState, lazy, Suspense, useMemo } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
+import { useAuth } from '../contexts/AuthContext';
 import { getAllArticles } from '../lib/articleStore';
 import { courses } from '../data/courses';
+import { getProgressSummary } from '../lib/courseProgress';
 
 // Lazy-load heavy components below the fold
 const FlipCard = lazy(() => import('../components/FlipCard'));
@@ -17,6 +19,9 @@ const CinematicHero = lazy(() => import('../components/hero/CinematicHero'));
 
 export default function Home() {
   const { t, lang } = useTranslation();
+  const { user } = useAuth();
+  const userId = user?.id || user?.uid || 'guest';
+  const progressSummary = getProgressSummary(userId);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -251,6 +256,68 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Continue Learning (for logged-in users with progress) */}
+      {progressSummary.inProgressCourses.length > 0 && (
+        <section className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-8"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm text-emerald-400 font-medium">{lang === 'rw' ? 'Komeza Ushingire' : 'Continue Learning'}</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white font-[family-name:var(--font-heading)]">
+                {lang === 'rw' ? 'Amasomero Urayobowe' : 'Pick Up Where You Left Off'}
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {progressSummary.inProgressCourses.map((cp, index) => (
+                <motion.div
+                  key={cp.courseId}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link to={`/courses/${cp.courseId}/lessons/${cp.nextLesson}`} className="block group">
+                    <div className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 hover:bg-white/[0.08] hover:border-emerald-500/20 transition-all duration-300 hover:-translate-y-1">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cp.gradient} flex items-center justify-center text-2xl`}>                          {cp.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-white font-semibold text-sm truncate group-hover:text-emerald-300 transition-colors">
+                            {cp.title}
+                          </h3>
+                          <p className="text-gray-500 text-xs">Next: Lesson {cp.nextLesson}</p>
+                        </div>
+                      </div>
+                      <div className="mb-3">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-gray-500">Progress</span>
+                          <span className="text-emerald-400 font-medium">{cp.percentage}%</span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all" style={{ width: `${cp.percentage}%` }} />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end text-emerald-400 text-sm font-medium">
+                        <span>{lang === 'rw' ? 'Komeza' : 'Continue'}</span>
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* AI Assistant CTA */}
       <section className="py-24 px-4">

@@ -1,14 +1,18 @@
 import { motion } from 'motion/react';
 import { Link } from 'react-router';
-import { Clock, BookOpen, User, ChevronRight, Filter } from 'lucide-react';
+import { Clock, BookOpen, User, ChevronRight, Filter, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import { courses, type Course } from '../data/courses';
 import { useTranslation } from '../contexts/I18nContext';
+import { useAuth } from '../contexts/AuthContext';
+import { getCourseProgress } from '../lib/courseProgress';
 
 const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const;
 
 export default function Courses() {
   const { lang } = useTranslation();
+  const { user } = useAuth();
+  const userId = user?.id || user?.uid || 'guest';
   const [filter, setFilter] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
 
   const filtered = filter === 'All' ? courses : courses.filter(c => c.level === filter);
@@ -63,7 +67,7 @@ export default function Courses() {
         {/* Course Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((course, index) => (
-            <CourseCard key={course.id} course={course} index={index} lang={lang} />
+            <CourseCard key={course.id} course={course} index={index} lang={lang} userId={userId} />
           ))}
         </div>
 
@@ -79,7 +83,11 @@ export default function Courses() {
   );
 }
 
-function CourseCard({ course, index, lang }: { course: Course; index: number; lang: string }) {
+function CourseCard({ course, index, lang, userId }: { course: Course; index: number; lang: string; userId: string }) {
+  const cp = getCourseProgress(userId, course.id);
+  const pct = cp?.percentage || 0;
+  const completed = cp?.completedLessons.length || 0;
+  const isComplete = completed >= course.totalLessons;
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -147,16 +155,24 @@ function CourseCard({ course, index, lang }: { course: Course; index: number; la
             <div className="mb-4">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-gray-500">Progress</span>
-                <span className="text-gray-400 font-medium">0%</span>
+                <span className={`font-medium ${isComplete ? 'text-emerald-400' : pct > 0 ? 'text-blue-400' : 'text-gray-400'}`}>
+                  {isComplete ? '✓ Complete' : `${pct}%`}
+                </span>
               </div>
               <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full w-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all" />
+                <div className={`h-full rounded-full transition-all ${isComplete ? 'bg-emerald-500' : 'bg-gradient-to-r from-blue-500 to-blue-600'}`} style={{ width: `${pct}%` }} />
               </div>
             </div>
 
-            {/* Start Button */}
+            {/* Start / Continue Button */}
             <div className={`w-full py-3 rounded-xl bg-gradient-to-r ${course.gradient} text-white text-center font-semibold flex items-center justify-center gap-2 opacity-90 group-hover:opacity-100 group-hover:shadow-lg transition-all duration-300`}>
-              <span>{lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}</span>
+              {isComplete ? (
+                <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Completed</span>
+              ) : completed > 0 ? (
+                <span>{lang === 'rw' ? 'Komeza' : 'Continue'}</span>
+              ) : (
+                <span>{lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}</span>
+              )}
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
