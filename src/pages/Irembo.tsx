@@ -19,6 +19,7 @@ export default function Irembo() {
     email: '',
     language: 'Kinyarwanda',
     testMode: 'Computer-based',
+    licenseType: 'provisional',
     district: '',
     testDate: '',
     termsAccepted: false
@@ -85,8 +86,10 @@ export default function Irembo() {
     try {
       setProcessing(true);
       setPaymentError(null);
+      const isPermanent = formData.licenseType === 'permanent';
+      const paymentAmount = isPermanent ? 10500 : 5500;
       const init = await paymentAPI.paypackCashin({
-        amount: 5500,
+        amount: paymentAmount,
         phone: paymentPhone,
         product: 'irembo',
         iremboData: {
@@ -95,6 +98,7 @@ export default function Irembo() {
           email: formData.email,
           language: formData.language,
           testMode: formData.testMode,
+          licenseType: formData.licenseType,
           district: formData.district,
           testDate: formData.testDate,
         },
@@ -203,7 +207,7 @@ export default function Irembo() {
                 
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600 dark:text-gray-400">{t('irembo.success.amount', 'Amount:')}</span>
-                  <span className="text-gray-900 dark:text-white">5,500 RWF</span>
+                  <span className="text-gray-900 dark:text-white">{formData.licenseType === 'permanent' ? '10,500' : '5,500'} RWF</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -257,6 +261,7 @@ export default function Irembo() {
                   email: '',
                   language: 'Kinyarwanda',
                   testMode: 'Computer-based',
+                  licenseType: 'provisional',
                   district: '',
                   testDate: '',
                   termsAccepted: false
@@ -456,6 +461,33 @@ export default function Irembo() {
               </select>
             </div>
 
+            {/* License Type */}
+            <div>
+              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                {t('irembo.form.license_type', 'License Type *')}
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  formData.licenseType === 'provisional'
+                    ? 'border-[#00A3AD] bg-[#00A3AD]/10'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}>
+                  <input type="radio" name="licenseType" value="provisional" checked={formData.licenseType === 'provisional'} onChange={handleChange} className="sr-only" />
+                  <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{lang === 'rw' ? "Uruhushya rw'Agateganyo" : 'Provisional License'}</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">5,500 <span className="text-sm font-normal">RWF</span></span>
+                </label>
+                <label className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  formData.licenseType === 'permanent'
+                    ? 'border-[#00A3AD] bg-[#00A3AD]/10'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}>
+                  <input type="radio" name="licenseType" value="permanent" checked={formData.licenseType === 'permanent'} onChange={handleChange} className="sr-only" />
+                  <span className="text-sm text-[#00A3AD] font-semibold mb-1">{lang === 'rw' ? 'Uruhushya rwa Burundu' : 'Permanent License'}</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">10,500 <span className="text-sm font-normal">RWF</span></span>
+                </label>
+              </div>
+            </div>
+
             {/* Test Mode */}
             <div>
               <label className="block text-gray-700 dark:text-gray-300 mb-2">
@@ -541,7 +573,7 @@ export default function Irembo() {
               disabled={processing}
             >
               <FileCheck className="w-5 h-5" />
-              <span>{processing ? t('irembo.form.processing', 'Processing…') : t('irembo.form.submit_button', 'Submit Registration - 5,500 RWF')}</span>
+              <span>{processing ? t('irembo.form.processing', 'Processing…') : (formData.licenseType === 'permanent' ? 'Submit Registration - 10,500 RWF' : 'Submit Registration - 5,500 RWF')}</span>
             </button>
           </form>
         </motion.div>
@@ -571,23 +603,42 @@ export default function Irembo() {
           <DialogHeader>
             <DialogTitle>{t('irembo.payment_dialog.title', 'Confirm Payment')}</DialogTitle>
             <DialogDescription>
-              {t('irembo.payment_dialog.description', 'To complete your Irembo registration, a payment of 5,500 RWF is required.')}
+              To complete your Irembo registration, a payment of {formData.licenseType === 'permanent' ? '10,500' : '5,500'} RWF is required.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>{t('irembo.payment_dialog.registration_fee', 'Registration Test Fee:')}</span>
-                <span className="font-medium">5,000 RWF</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>{t('irembo.payment_dialog.service_fee', 'Service Provider Fee:')}</span>
-                <span className="font-medium">500 RWF</span>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-bold">
-                <span>{t('irembo.payment_dialog.total', 'Total:')}</span>
-                <span>5,500 RWF</span>
-              </div>
+              {formData.licenseType === 'permanent' ? (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span>Permanent License Fee:</span>
+                    <span className="font-medium">10,000 RWF</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Service Provider Fee:</span>
+                    <span className="font-medium">500 RWF</span>
+                  </div>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-bold">
+                    <span>{t('irembo.payment_dialog.total', 'Total:')}</span>
+                    <span>10,500 RWF</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span>{t('irembo.payment_dialog.registration_fee', 'Registration Test Fee:')}</span>
+                    <span className="font-medium">5,000 RWF</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>{t('irembo.payment_dialog.service_fee', 'Service Provider Fee:')}</span>
+                    <span className="font-medium">500 RWF</span>
+                  </div>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-bold">
+                    <span>{t('irembo.payment_dialog.total', 'Total:')}</span>
+                    <span>5,500 RWF</span>
+                  </div>
+                </>
+              )}
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="payment-phone" className="text-right">

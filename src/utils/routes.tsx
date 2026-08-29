@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { lazy } from "react";
 import Root from "../components/Root";
 import AdminLayout from "../components/AdminLayout";
@@ -79,6 +79,7 @@ export const router = createBrowserRouter([
     path: "/admin",
     Component: AdminLayout,
     children: [
+      { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: "dashboard", Component: AdminDashboard },
       { path: "users", Component: AdminUsers },
       { path: "questions", Component: AdminQuestions },

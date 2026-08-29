@@ -586,7 +586,7 @@ export default function Quiz() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setShowPaywall(false)}
+          onClick={() => !paying && setShowPaywall(false)}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -600,7 +600,7 @@ export default function Quiz() {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock Pro Access')}</h2>
               <p className="text-gray-400 mb-6">
-                {t('quiz.paywall.description', "You've completed 6 free questions! Unlock all 20 questions and premium features for only")} <span className="text-blue-400 font-semibold">{lang === 'en' ? '100 RWF' : '100 RWF'}</span>
+                {t('quiz.paywall.description', "You've completed 6 free questions! Unlock all 20 questions and premium features for only")} <span className="text-blue-400 font-semibold">1,000 RWF</span>
               </p>
               
               <div className="space-y-3 mb-6">
@@ -615,17 +615,106 @@ export default function Quiz() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <button className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300">
-                  {t('quiz.paywall.pay_button', 'Pay with Mobile Money - 100 RWF')}
-                </button>
-                <button
-                  onClick={() => setShowPaywall(false)}
-                  className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
-                >
-                  {t('quiz.paywall.maybe_later', 'Maybe Later')}
-                </button>
-              </div>
+              {paymentStatus === 'SUCCESS' ? (
+                <div className="space-y-4">
+                  <div className="inline-flex p-4 bg-green-500/20 rounded-3xl">
+                    <CheckCircle className="w-10 h-10 text-green-400" />
+                  </div>
+                  <p className="text-green-400 font-semibold">Payment Successful! 🎉</p>
+                  <p className="text-gray-400 text-sm">You now have full Pro access.</p>
+                  <button
+                    onClick={() => { setShowPaywall(false); setPaymentStatus(null); }}
+                    className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                  >
+                    Continue Quiz
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {!paying && paymentStatus !== 'PENDING' && (
+                    <>
+                      <div className="relative">
+                        <input
+                          type="tel"
+                          value={payPhone}
+                          onChange={(e) => setPayPhone(e.target.value)}
+                          placeholder={t('quiz.paywall.phone_placeholder', 'Phone number (e.g. 0788xxxxxx)')}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <button
+                        disabled={!payPhone || paymentStatus === 'PENDING'}
+                        onClick={async () => {
+                          if (!payPhone) return;
+                          setPaying(true);
+                          setPaymentError(null);
+                          try {
+                            const res = await paymentAPI.paypackCashin({
+                              amount: 1000,
+                              phone: payPhone,
+                              product: 'pro',
+                            });
+                            setTxnId(res.transactionId);
+                            setPaymentStatus('PENDING');
+                            setPaying(false);
+                            // Poll for status
+                            let tries = 0;
+                            const iv = setInterval(async () => {
+                              tries++;
+                              try {
+                                const st = await paymentAPI.paypackStatus(res.transactionId);
+                                if (st.status === 'SUCCESS' || st.status === 'FAILED') {
+                                  setPaymentStatus(st.status);
+                                  clearInterval(iv);
+                                  if (st.status === 'SUCCESS' && updateUser) {
+                                    updateUser({ isPro: true });
+                                  }
+                                }
+                                if (tries > 40) {
+                                  clearInterval(iv);
+                                  setPaymentStatus('FAILED');
+                                  setPaymentError('Payment timed out');
+                                }
+                              } catch {
+                                clearInterval(iv);
+                                setPaymentStatus('FAILED');
+                                setPaymentError('Could not check payment status');
+                              }
+                            }, 3000);
+                          } catch (e: any) {
+                            setPaying(false);
+                            setPaymentError(e?.message || 'Payment failed');
+                          }
+                        }}
+                        className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button', 'Pay with Mobile Money - 1,000 RWF')}
+                      </button>
+                    </>
+                  )}
+
+                  {paymentStatus === 'PENDING' && (
+                    <div className="py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-3"></div>
+                      <p className="text-gray-300">📱 Check your phone for USSD prompt...</p>
+                      <p className="text-xs text-gray-500 mt-1">Confirm the payment on your phone</p>
+                    </div>
+                  )}
+
+                  {paymentError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                      <p className="text-red-400 text-sm">{paymentError}</p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => { setShowPaywall(false); setPaymentStatus(null); setPaymentError(null); setPaying(false); }}
+                    className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors"
+                  >
+                    {t('quiz.paywall.maybe_later', 'Maybe Later')}
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         </motion.div>

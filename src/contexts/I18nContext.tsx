@@ -390,7 +390,7 @@ const translations: Translations = {
   'quiz.paywall.features.premium_resources': { en: 'Premium resources download', rw: "Gukoporora inyandiko n'amasomo yihariye" },
   'quiz.paywall.phone_placeholder': { en: 'Phone number (e.g. 0788xxxxxx)', rw: 'Nimero ya telefoni (urugero: 0788xxxxxx)' },
   'quiz.paywall.processing':        { en: 'Processing...', rw: 'Biratunganywa...' },
-  'quiz.paywall.pay_button':        { en: 'Pay with Mobile Money - 100 RWF', rw: 'Ishyura ukoresheje Mobile Money - 100 RWF' },
+  'quiz.paywall.pay_button':        { en: 'Pay with Mobile Money - 1,000 RWF', rw: 'Ishyura ukoresheje Mobile Money - 1,000 RWF' },
   'quiz.paywall.phone_not_found':   { en: 'Your phone number is not approved on Paypack. Please add it on the Paypack dashboard → Approved Numbers.', rw: "Nimero yawe ya telefoni ntiyemejwe kuri Paypack. Nyamuneka yishyire kuri paji yawe ya Paypack → Nimero Zemejwe." },
   'quiz.paywall.check_phone':       { en: '📱 Check your phone for USSD prompt...', rw: '📱 Reba kuri telefoni yawe ubutumwa bwa USSD...' },
   'quiz.paywall.maybe_later':       { en: 'Maybe Later', rw: 'Wenda Nyuma' },

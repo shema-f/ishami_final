@@ -182,6 +182,7 @@ const IremboSchema = new Schema({
   email: String,
   language: String,
   testMode: String,
+  licenseType: { type: String, default: 'provisional' },
   district: String,
   testDate: String,
   transactionId: String,
@@ -225,6 +226,7 @@ const NotificationSchema = new Schema({
   title: String,
   body: String,
   segment: String,
+  userId: { type: Types.ObjectId, ref: 'User', default: null },
   scheduledAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
@@ -1505,7 +1507,16 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
 
     // In test mode, accept 100 RWF; otherwise enforce standard amounts
-    const expected = testMode ? 100 : (prod === 'irembo' ? 5500 : 1000);
+    // For irembo: provisional = 5500, permanent = 10500
+    let expected;
+    if (testMode) {
+      expected = 100;
+    } else if (prod === 'irembo') {
+      const licenseType = iremboData?.licenseType || 'provisional';
+      expected = licenseType === 'permanent' ? 10500 : 5500;
+    } else {
+      expected = 1000;
+    }
     if (Number(amount) !== expected) {
       await FraudLog.create({ userId: req.user._id, type: 'amount_mismatch', message: 'Mismatched amount', meta: { sent: amount, expected, product: prod } });
       return res.status(400).json({ message: `Invalid amount. Expected ${expected} RWF` });
@@ -1530,13 +1541,14 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
         email: iremboData.email,
         language: iremboData.language,
         testMode: iremboData.testMode,
+        licenseType: iremboData.licenseType || 'provisional',
         district: iremboData.district,
         testDate: iremboData.testDate,
         transactionId: String(payment._id),
         status: 'PENDING_PAYMENT',
       });
       iremboApplicationId = String(app._id);
-      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (${iremboData.licenseType || 'provisional'} license, awaiting payment)`, segment: 'admins' });
       console.log(`[Irembo] Draft application ${app._id} created for user ${req.user._id}`);
     }
 
@@ -1569,13 +1581,16 @@ app.get('/api/payment/status/:transactionId', authMiddleware, async (req, res) =
           const u = await User.findById(txn.userId);
           if (u) { u.isPro = true; await u.save(); }
         }
-        // Promote IremboApplication from PENDING_PAYMENT to PENDING
+        // Promote IremboApplication: PENDING_PAYMENT → APPROVED (auto-approve on payment success)
         if (txn.product === 'irembo') {
           const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
           if (app) {
-            app.status = 'PENDING';
+            app.status = 'APPROVED';
             app.transactionId = String(txn._id);
             await app.save();
+            console.log(`[Irembo] Application ${app._id} auto-APPROVED after successful payment`);
+            // Notify user
+            await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
           }
         }
       } else if (ppStatus === 'failed') {
@@ -1595,7 +1610,15 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     const { amount, phone, provider, product, iremboData } = req.body || {};
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
-    const expected = testMode ? 100 : (prod === 'irembo' ? 5500 : 1000);
+    let expected;
+    if (testMode) {
+      expected = 100;
+    } else if (prod === 'irembo') {
+      const licenseType = iremboData?.licenseType || 'provisional';
+      expected = licenseType === 'permanent' ? 10500 : 5500;
+    } else {
+      expected = 1000;
+    }
     if (Number(amount) !== expected) {
       await FraudLog.create({ userId: req.user._id, type: 'amount_mismatch', message: 'Mismatched amount', meta: { sent: amount, expected, product: prod } });
       return res.status(400).json({ message: `Invalid amount. Expected ${expected} RWF` });
@@ -1617,13 +1640,14 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
         email: iremboData.email,
         language: iremboData.language,
         testMode: iremboData.testMode,
+        licenseType: iremboData.licenseType || 'provisional',
         district: iremboData.district,
         testDate: iremboData.testDate,
         transactionId: String(payment._id),
         status: 'PENDING_PAYMENT',
       });
       iremboApplicationId = String(app._id);
-      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (${iremboData.licenseType || 'provisional'} license, awaiting payment)`, segment: 'admins' });
     }
 
     res.json({ transactionId: String(payment._id), status: payment.status || 'PENDING', providerRef: paypackResult.ref, iremboApplicationId });
@@ -1651,14 +1675,15 @@ app.get('/api/payments/status/:transactionId', authMiddleware, async (req, res) 
           const u = await User.findById(txn.userId);
           if (u) { u.isPro = true; await u.save(); }
         }
-        // Promote IremboApplication from PENDING_PAYMENT to PENDING
+        // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
         if (txn.product === 'irembo') {
           const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
           if (app) {
-            app.status = 'PENDING';
+            app.status = 'APPROVED';
             app.transactionId = String(txn._id);
             await app.save();
-            console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING via /payments/status`);
+            console.log(`[Irembo] Application ${app._id} auto-APPROVED after successful payment via /payments/status`);
+            await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
           }
         }
       } else if (ppStatus === 'failed') {
@@ -1692,6 +1717,17 @@ app.post('/api/webhook/mtn', async (req, res) => {
         const u = await User.findById(txn.userId);
         if (u) { u.isPro = true; await u.save(); }
       }
+      // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
+      if (txn.product === 'irembo') {
+        const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
+        if (app) {
+          app.status = 'APPROVED';
+          app.transactionId = String(txn._id);
+          await app.save();
+          console.log(`[Irembo] Application ${app._id} auto-APPROVED via MTN webhook`);
+          await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
+        }
+      }
     } else if (status === 'FAILED') {
       txn.status = 'FAILED';
       await txn.save();
@@ -1723,8 +1759,11 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     let expected;
     if (testMode) {
       expected = 100; // Testing: 100 RWF
+    } else if (prod === 'irembo') {
+      const licenseType = iremboData?.licenseType || 'provisional';
+      expected = licenseType === 'permanent' ? 10500 : 5500;
     } else {
-      expected = prod === 'irembo' ? 5500 : 1000;
+      expected = 1000;
     }
 
     if (Number(amount) !== expected) {
@@ -1761,13 +1800,14 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
         email: iremboData.email,
         language: iremboData.language,
         testMode: iremboData.testMode,
+        licenseType: iremboData.licenseType || 'provisional',
         district: iremboData.district,
         testDate: iremboData.testDate,
         transactionId: String(payment._id),
         status: 'PENDING_PAYMENT',
       });
       iremboApplicationId = String(app._id);
-      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (awaiting payment)`, segment: 'admins' });
+      await Notification.create({ title: 'Irembo registration', body: `New application from ${iremboData.fullName} (${iremboData.licenseType || 'provisional'} license, awaiting payment)`, segment: 'admins' });
       console.log(`[Irembo] Draft application ${app._id} created for user ${req.user._id}`);
     }
 
@@ -1817,14 +1857,15 @@ app.get('/api/paypack/status/:transactionId', authMiddleware, async (req, res) =
             const u = await User.findById(txn.userId);
             if (u) { u.isPro = true; await u.save(); }
           }
-          // Promote IremboApplication from PENDING_PAYMENT to PENDING
+          // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
           if (txn.product === 'irembo') {
             const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
             if (app) {
-              app.status = 'PENDING';
+              app.status = 'APPROVED';
               app.transactionId = String(txn._id);
               await app.save();
-              console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING`);
+              console.log(`[Irembo] Application ${app._id} auto-APPROVED via paypack status`);
+              await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
             }
           }
         } else if (ppStatus === 'failed') {
@@ -1886,14 +1927,15 @@ app.post('/api/webhook/paypack', async (req, res) => {
         const u = await User.findById(txn.userId);
         if (u) { u.isPro = true; await u.save(); }
       }
-      // Promote IremboApplication from PENDING_PAYMENT to PENDING
+      // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
       if (txn.product === 'irembo') {
         const app = await IremboApplication.findOne({ userId: txn.userId, status: 'PENDING_PAYMENT' }).sort({ createdAt: -1 });
         if (app) {
-          app.status = 'PENDING';
+          app.status = 'APPROVED';
           app.transactionId = String(txn._id);
           await app.save();
-          console.log(`[Paypack] Irembo application ${app._id} promoted to PENDING`);
+          console.log(`[Irembo] Application ${app._id} auto-APPROVED via webhook`);
+          await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
         }
       }
       console.log(`[Paypack] Webhook: Payment ${ref} SUCCESS`);
@@ -1927,27 +1969,32 @@ app.get('/api/paypack/test', authMiddleware, async (req, res) => {
 
 // RESOURCES
 app.get('/api/resources', optionalAuthMiddleware, async (req, res) => {
-  const items = await Resource.find({}).lean();
-  const user = req.user;
-  const isAuth = !!user;
-  const isPro = isAuth && !!user.isPro;
-  res.json({
-    resources: items.map(r => {
-      const isLocked = !!r.premium && (!isAuth || !isPro);
-      return {
-        id: String(r._id),
-        title_en: r.title,
-        title_kiny: r.titleKiny || '',
-        type: r.type || 'PDF',
-        category: r.category || 'General',
-        isPremium: !!r.premium,
-        fileUrl: isLocked ? null : (r.fileUrl || ''),
-        locked: isLocked,
-        thumbnail: r.thumbnail || '',
-        size: r.size || ''
-      };
-    })
-  });
+  try {
+    const items = await Resource.find({}).lean();
+    const user = req.user;
+    const isAuth = !!user;
+    const isPro = isAuth && !!user.isPro;
+    res.json({
+      resources: items.map(r => {
+        const isLocked = !!r.premium && (!isAuth || !isPro);
+        return {
+          id: String(r._id),
+          title_en: r.title,
+          title_kiny: r.titleKiny || '',
+          type: r.type || 'PDF',
+          category: r.category || 'General',
+          isPremium: !!r.premium,
+          fileUrl: isLocked ? null : (r.fileUrl || ''),
+          locked: isLocked,
+          thumbnail: r.thumbnail || '',
+          size: r.size || ''
+        };
+      })
+    });
+  } catch (err) {
+    console.error('[Resources] Error:', err.message);
+    res.status(500).json({ resources: [], error: 'Failed to load resources' });
+  }
 });
 
 app.get('/api/resources/download/:resourceId', authMiddleware, async (req, res) => {
@@ -2123,13 +2170,13 @@ app.post('/api/irembo/register', authMiddleware, async (req, res) => {
   }
 
   // Check if a draft application was already created at payment initiation time
-  // Also check PENDING status in case webhook/polling already promoted it
+  // Also check PENDING/APPROVED statuses in case webhook/polling already promoted it
   let application = null;
   if (txnId) {
-    application = await IremboApplication.findOne({ userId: req.user._id, transactionId: txnId, status: { $in: ['PENDING_PAYMENT', 'PENDING'] } }).sort({ createdAt: -1 });
+    application = await IremboApplication.findOne({ userId: req.user._id, transactionId: txnId, status: { $in: ['PENDING_PAYMENT', 'PENDING', 'APPROVED'] } }).sort({ createdAt: -1 });
   }
   if (!application) {
-    application = await IremboApplication.findOne({ userId: req.user._id, status: { $in: ['PENDING_PAYMENT', 'PENDING'] } }).sort({ createdAt: -1 });
+    application = await IremboApplication.findOne({ userId: req.user._id, status: { $in: ['PENDING_PAYMENT', 'PENDING', 'APPROVED'] } }).sort({ createdAt: -1 });
   }
 
   if (application) {
@@ -2143,7 +2190,10 @@ app.post('/api/irembo/register', authMiddleware, async (req, res) => {
     application.district = req.body.district || application.district;
     application.testDate = req.body.testDate || application.testDate;
     application.transactionId = txnId || application.transactionId;
-    application.status = appStatus;
+    // Don't downgrade status — if already APPROVED (via webhook/polling), keep it
+    if (application.status !== 'APPROVED') {
+      application.status = appStatus;
+    }
     await application.save();
   } else {
     // No draft found — create new application

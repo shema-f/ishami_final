@@ -15,9 +15,9 @@ services:
       - key: JWT_SECRET
         value: ishami-production-jwt-secret-2024
       - key: FRONTEND_URL
-        value: https://ishami-frontend.onrender.com
+        value: https://ishami-final.vercel.app
       - key: CORS_ORIGINS
-        value: https://ishami-frontend.onrender.com,https://ishami.rw
+        value: https://ishami-final.vercel.app,https://ishami.rw,https://ishami-frontend.onrender.com
       - key: PORT
         value: 10000
       - key: AI_PROVIDER
@@ -30,6 +30,12 @@ services:
         value: serper
       - key: SERPER_API_KEY
         value: 989ea82dc768e6f52a4b4a0e11ad6fc97a832cd41521990d53ed9d8b85ee4bf7
+      - key: PAYPACK_CLIENT_ID
+        value: ""
+      - key: PAYPACK_CLIENT_SECRET
+        value: ""
+      - key: PAYPACK_WEBHOOK_SECRET
+        value: ""
 
   - type: static_site
     name: ishami-frontend

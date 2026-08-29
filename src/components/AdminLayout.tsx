@@ -1,4 +1,4 @@
-import { Link, useLocation, Outlet, useNavigate } from 'react-router';
+import { Link, useLocation, Outlet, Navigate } from 'react-router';
 import { 
   LayoutDashboard, Users, FileQuestion, DollarSign, 
   FileCheck, Bell, Shield, LogOut, Menu, X, BookOpen, Newspaper, BarChart3, Key
@@ -7,14 +7,15 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 export default function AdminLayout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Check if user is admin
-  if (user?.role !== 'admin') {
-    navigate('/');
-    return null;
+  // Role guard — render-time redirect is safe in React Router v7 layout routes
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  if (user.role !== 'admin') {
+    return <Navigate to="/" replace />;
   }
 
   const navItems = [
