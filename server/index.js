@@ -2161,12 +2161,9 @@ app.get('/api/certificates/verify/:certNo', async (req, res) => {
 app.post('/api/irembo/register', authMiddleware, async (req, res) => {
   const txnId = String(req.body?.transactionId || '');
   const txn = txnId ? await Payment.findById(txnId) : null;
-  const testMode = process.env.PAYPACK_TEST_MODE === 'true';
-  const expectedAmount = testMode ? 100 : 5500;
-
   // Determine status: PENDING if payment succeeded, PENDING_PAYMENT otherwise
   let appStatus = 'PENDING_PAYMENT';
-  if (txn && String(txn.userId) === String(req.user._id) && txn.status === 'SUCCESS' && Number(txn.amount) === expectedAmount && txn.product === 'irembo') {
+  if (txn && String(txn.userId) === String(req.user._id) && txn.status === 'SUCCESS' && txn.product === 'irembo') {
     appStatus = 'PENDING';
   }
 
