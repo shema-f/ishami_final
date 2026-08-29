@@ -83,7 +83,15 @@ function layout({ title, preheader, bodyHtml, footerExtra = "" }) {
     <!-- Footer -->
     <tr><td style="background:${BRAND.dark};padding:24px;text-align:center">
       <div style="font-size:14px;color:#cbd5e1;font-weight:600">#GerayoAmahoro 🇷🇼</div>
-      <div style="font-size:12px;color:#64748b;margin-top:8px">© ${year} ISHAMI — Master Rwanda Traffic Rules.<br/>${BRAND.name} · Kigali, Rwanda</div>
+      <div style="margin:12px 0">
+        <a href="https://facebook.com/ishami.rw" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="https://img.icons8.com/fluency/24/facebook-new.png" alt="Facebook" width="24" height="24" style="border-radius:4px"/></a>
+        <a href="https://twitter.com/ishami_rw" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="https://img.icons8.com/fluency/24/twitter.png" alt="Twitter" width="24" height="24" style="border-radius:4px"/></a>
+        <a href="https://instagram.com/ishami.rw" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="https://img.icons8.com/fluency/24/instagram-new.png" alt="Instagram" width="24" height="24" style="border-radius:4px"/></a>
+        <a href="https://linkedin.com/company/ishami" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="https://img.icons8.com/fluency/24/linkedin.png" alt="LinkedIn" width="24" height="24" style="border-radius:4px"/></a>
+        <a href="https://youtube.com/@ishami" style="display:inline-block;margin:0 6px;text-decoration:none"><img src="https://img.icons8.com/fluency/24/youtube-play.png" alt="YouTube" width="24" height="24" style="border-radius:4px"/></a>
+      </div>
+      <div style="font-size:12px;color:#64748b;margin-top:8px">© ${year} ${BRAND.name} — Master Rwanda Traffic Rules.<br/>Kigali, Rwanda</div>
+      <div style="font-size:11px;color:#475569;margin-top:10px;padding-top:10px;border-top:1px solid #334155">Powered by <a href="https://ferrivox.com" style="color:#60a5fa;text-decoration:none;font-weight:600">Ferrivox Ltd</a> · <a href="https://ishami.rw" style="color:#60a5fa;text-decoration:none">ishami.rw</a></div>
       ${footerExtra}
     </td></tr>
   </table>
@@ -141,4 +149,54 @@ export function newsletterThanksEmail({ email = "", siteUrl = "https://ishami.rw
     bodyHtml,
     footerExtra: `<div style="font-size:12px;color:#64748b;margin-top:10px">You received this because ${escapeHtml(email || "you")} subscribed to ISHAMI updates.<br/>To unsubscribe, reply with "STOP".</div>`
   });
+}
+
+export function paymentThankYouEmail({ username = "Mugenzi", amount = 0, product = "pro", appUrl = "https://ishami.rw" } = {}) {
+  const productName = product === 'irembo' ? 'Irembo Driving License Application' : 'ISHAMI Pro Membership';
+  const bodyHtml = `
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="display:inline-block;background:#ecfdf5;color:#047857;font-size:13px;font-weight:700;border-radius:999px;padding:6px 16px">Murakoze · Thank You ✓</div>
+    </div>
+    <h1 style="margin:0 0 6px;color:${BRAND.heading};font-size:22px">Payment Confirmed! 🎉</h1>
+    <p style="margin:0 0 16px">Muraho ${escapeHtml(username)}, thank you for your payment of <strong>${escapeHtml(String(amount))} RWF</strong> for <strong>${escapeHtml(productName)}</strong>.</p>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td style="padding:6px 0;color:#64748b;font-size:13px">Product</td><td style="padding:6px 0;text-align:right;font-weight:600;color:${BRAND.heading}">${escapeHtml(productName)}</td></tr>
+        <tr><td style="padding:6px 0;color:#64748b;font-size:13px">Amount</td><td style="padding:6px 0;text-align:right;font-weight:600;color:${BRAND.heading}">${escapeHtml(String(amount))} RWF</td></tr>
+        <tr><td style="padding:6px 0;color:#64748b;font-size:13px">Status</td><td style="padding:6px 0;text-align:right;font-weight:600;color:${BRAND.green}">✓ Confirmed</td></tr>
+      </table>
+    </div>
+    <p style="margin:0 0 6px">You now have full access to all premium features. If you have any questions, feel free to reach out to us at <a href="mailto:support@ishami.rw" style="color:${BRAND.primary}">support@ishami.rw</a>.</p>
+    <div style="text-align:center;margin:26px 0 8px">${button(appUrl, "Go to ISHAMI", BRAND.green)}</div>
+    <p style="font-size:13px;color:${BRAND.muted};text-align:center;margin:18px 0 0">Murakoze cyane! Drive safely. <strong>#GerayoAmahoro</strong></p>
+  `;
+  return layout({ title: "Payment Confirmed — ISHAMI", preheader: "Your payment has been confirmed. Thank you for supporting ISHAMI!", bodyHtml });
+}
+
+export function certificateEmail({ username = "Mugenzi", score = 0, totalQuestions = 0, certificateNo = "", issuedAt = "", appUrl = "https://ishami.rw" } = {}) {
+  const percentage = Math.round(((score || 0) / Math.max(1, totalQuestions || 1)) * 100);
+  const bodyHtml = `
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="display:inline-block;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:700;border-radius:999px;padding:6px 16px">🏆 Certificate Earned</div>
+    </div>
+    <h1 style="margin:0 0 6px;color:${BRAND.heading};font-size:22px">Congratulations, ${escapeHtml(username)}! 🎓</h1>
+    <p style="margin:0 0 16px">You've earned your <strong>ISHAMI Traffic Rules Certificate</strong>! Your knowledge of Rwanda's traffic regulations has been officially recognized.</p>
+    <div style="background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);border-radius:12px;padding:24px;margin:20px 0;text-align:center;border:2px solid #334155">
+      <div style="font-size:11px;color:#94a3b8;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">ISHAMI Certificate</div>
+      <div style="font-size:20px;font-weight:800;color:#ffffff;margin-bottom:4px">Traffic Rules & Road Safety</div>
+      <div style="font-size:13px;color:#94a3b8;margin-bottom:16px">Awarded to <strong style="color:#60a5fa">${escapeHtml(username)}</strong></div>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="text-align:center;padding:8px;border-right:1px solid #334155"><div style="font-size:24px;font-weight:800;color:${BRAND.green}">${percentage}%</div><div style="font-size:11px;color:#94a3b8">Score</div></td>
+          <td style="text-align:center;padding:8px;border-right:1px solid #334155"><div style="font-size:14px;font-weight:700;color:#60a5fa">${escapeHtml(String(score))}/${escapeHtml(String(totalQuestions))}</div><div style="font-size:11px;color:#94a3b8">Questions</div></td>
+          <td style="text-align:center;padding:8px"><div style="font-size:12px;font-weight:600;color:#cbd5e1">${escapeHtml(certificateNo)}</div><div style="font-size:11px;color:#94a3b8">Certificate No.</div></td>
+        </tr>
+      </table>
+      <div style="font-size:11px;color:#64748b;margin-top:12px">Issued: ${escapeHtml(issuedAt || new Date().toLocaleDateString())}</div>
+    </div>
+    <p style="margin:0 0 6px">You can view and download your certificate from your ISHAMI profile. Share your achievement and inspire others!</p>
+    <div style="text-align:center;margin:26px 0 8px">${button(appUrl + "/certificate", "View Certificate", BRAND.primary)}</div>
+    <p style="font-size:13px;color:${BRAND.muted};text-align:center;margin:18px 0 0">Keep learning, keep driving safely. <strong>#GerayoAmahoro</strong> 🇷🇼</p>
+  `;
+  return layout({ title: "Certificate Earned — ISHAMI", preheader: "Congratulations! You earned your ISHAMI Traffic Rules Certificate.", bodyHtml });
 }

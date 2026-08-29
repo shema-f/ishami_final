@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as quizSource from './data.js';
 import { RW_TO_EN_FULL } from './translations.js';
 import nodemailer from 'nodemailer';
-import { welcomeEmail, resetPasswordEmail, newsletterThanksEmail, logoAttachment } from './services/emailTemplates.js';
+import { welcomeEmail, resetPasswordEmail, newsletterThanksEmail, paymentThankYouEmail, certificateEmail, logoAttachment } from './services/emailTemplates.js';
 import fs from 'fs';
 import path from 'path';
 import { getAccessToken, requestToPay, getRequestToPayStatus, normalizeMsisdn } from './services/momo.js';
@@ -685,6 +685,25 @@ async function sendWelcomeEmail(email, username) {
     console.error('Failed to send welcome email:', err);
   }
   return false;
+}
+
+// Send payment thank-you email
+async function sendPaymentEmail(user, txn) {
+  try {
+    if (!user?.email || !mailer) return;
+    const subject = '🎉 Payment Confirmed — ISHAMI';
+    const html = paymentThankYouEmail({
+      username: user.username || 'Mugenzi',
+      amount: txn.amount || 0,
+      product: txn.product || 'pro',
+      appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
+    });
+    const from = process.env.SMTP_FROM || '"ISHAMI" <no-reply@ishami.rw>';
+    await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], sender: process.env.SMTP_USER, envelope: { from: process.env.SMTP_USER, to: user.email } });
+    console.log(`Payment email sent to ${user.email}`);
+  } catch (e) {
+    console.error('Payment email failed:', e?.message || e);
+  }
 }
 
 async function authMiddleware(req, res, next) {
@@ -1606,7 +1625,7 @@ app.get('/api/payment/status/:transactionId', authMiddleware, async (req, res) =
         await txn.save();
         if (txn.product === 'pro') {
           const u = await User.findById(txn.userId);
-          if (u) { u.isPro = true; await u.save(); }
+          if (u) { u.isPro = true; await u.save(); sendPaymentEmail(u, txn); }
         }
         // Promote IremboApplication: PENDING_PAYMENT → APPROVED (auto-approve on payment success)
         if (txn.product === 'irembo') {
@@ -1618,6 +1637,8 @@ app.get('/api/payment/status/:transactionId', authMiddleware, async (req, res) =
             console.log(`[Irembo] Application ${app._id} auto-APPROVED after successful payment`);
             // Notify user
             await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
+            const u = await User.findById(txn.userId);
+            if (u) sendPaymentEmail(u, txn);
           }
         }
       } else if (ppStatus === 'failed') {
@@ -1698,7 +1719,7 @@ app.get('/api/payments/status/:transactionId', authMiddleware, async (req, res) 
         await txn.save();
         if (txn.product === 'pro') {
           const u = await User.findById(txn.userId);
-          if (u) { u.isPro = true; await u.save(); }
+          if (u) { u.isPro = true; await u.save(); sendPaymentEmail(u, txn); }
         }
         // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
         if (txn.product === 'irembo') {
@@ -1709,6 +1730,8 @@ app.get('/api/payments/status/:transactionId', authMiddleware, async (req, res) 
             await app.save();
             console.log(`[Irembo] Application ${app._id} auto-APPROVED after successful payment via /payments/status`);
             await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
+            const u = await User.findById(txn.userId);
+            if (u) sendPaymentEmail(u, txn);
           }
         }
       } else if (ppStatus === 'failed') {
@@ -1740,7 +1763,7 @@ app.post('/api/webhook/mtn', async (req, res) => {
       await txn.save();
       if (txn.product === 'pro') {
         const u = await User.findById(txn.userId);
-        if (u) { u.isPro = true; await u.save(); }
+        if (u) { u.isPro = true; await u.save(); sendPaymentEmail(u, txn); }
       }
       // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
       if (txn.product === 'irembo') {
@@ -1751,6 +1774,8 @@ app.post('/api/webhook/mtn', async (req, res) => {
           await app.save();
           console.log(`[Irembo] Application ${app._id} auto-APPROVED via MTN webhook`);
           await Notification.create({ title: 'Irembo Registration Approved', body: `Your ${app.licenseType || 'provisional'} driving test registration has been approved!`, segment: 'users', userId: txn.userId });
+          const u = await User.findById(txn.userId);
+          if (u) sendPaymentEmail(u, txn);
         }
       }
     } else if (status === 'FAILED') {
@@ -2118,6 +2143,26 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
       issuedAt: issuedDate,
       expiresAt: expiryDate
     });
+    // Send certificate email
+    try {
+      if (mailer && user.email) {
+        const subject = '🏆 Your ISHAMI Certificate is Ready!';
+        const html = certificateEmail({
+          username: user.username || 'Mugenzi',
+          score: score || 0,
+          totalQuestions: totalQuestions || 0,
+          certificateNo: certNo,
+          issuedAt: issuedDate.toLocaleDateString(),
+          appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
+        });
+        const from = process.env.SMTP_FROM || '"ISHAMI" <no-reply@ishami.rw>';
+        await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], sender: process.env.SMTP_USER, envelope: { from: process.env.SMTP_USER, to: user.email } });
+        console.log(`Certificate email sent to ${user.email}`);
+      }
+    } catch (e) {
+      console.error('Certificate email failed:', e?.message || e);
+    }
+
     res.json({
       success: true,
       certificate: {
