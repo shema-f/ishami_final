@@ -763,7 +763,7 @@ const generalLimiter = rateLimit({
 
 const authStrictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many requests, please try again later' },
@@ -809,7 +809,13 @@ const aiRateLimiter = rateLimit({
 app.use('/api/', generalLimiter);
 app.post('/api/auth/signup', authStrictLimiter);
 app.post('/api/auth/signin', authStrictLimiter);
-app.post('/api/auth/forgot', authStrictLimiter);
+app.post('/api/auth/forgot', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many reset attempts. Please try again in 15 minutes.' },
+}));
 app.post('/api/payment/initiate', paymentStrictLimiter);
 app.post('/api/paypack/cashin', paymentStrictLimiter);
 app.post('/api/ai/ask', aiRateLimiter);
