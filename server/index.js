@@ -3540,7 +3540,7 @@ app.get('/api/public/status', publicApiAuth, (req, res) => {
       status: 'operational',
       apiVersion: PUBLIC_API_VERSION,
       endpoints: ['/api/public/quiz', '/api/public/quiz/categories', '/api/public/road-signs', '/api/public/road-signs/types', '/api/public/flipcards', '/api/public/flipcards/random', '/api/public/status'],
-      totalQuizQuestions: evaluationQuestionsData?.default ? Object.values(evaluationQuestionsData.default).reduce((acc, cat) => acc + Object.values(cat).reduce((a, q) => a + q.length, 0), 0) : 0,
+      totalQuizQuestions: (ROAD_SIGNS?.length || 0) + (() => { let c = 0; const eq = evaluationQuestionsData?.default || evaluationQuestionsData; if (eq && typeof eq === 'object') { for (const v of Object.values(eq)) { if (typeof v === 'object') for (const v2 of Object.values(v)) if (Array.isArray(v2)) c += v2.length; } } return c; })(),
       totalRoadSigns: ROAD_SIGNS?.length || 0,
       totalFlipCards: 25,
     },
@@ -3556,32 +3556,56 @@ app.get('/api/public/quiz', publicApiAuth, (req, res) => {
     const search = req.query.q?.toLowerCase() || null;
     const random = req.query.random === 'true';
     const count = Math.min(parseInt(req.query.count || '10'), 50);
-    const lang = req.query.lang || 'en';
 
-    // Build quiz questions from evaluation data and road signs
+    // Build quiz questions from road signs (reliable bilingual data)
     let questions = [];
-    if (evaluationQuestionsData?.default) {
-      const cats = evaluationQuestionsData.default;
-      let idx = 0;
-      for (const [catKey, catData] of Object.entries(cats)) {
+    (ROAD_SIGNS || []).forEach((sign, idx) => {
+      const catName = (sign.category || 'General').toLowerCase();
+      const distractors = [
+        'Drive at maximum speed without stopping',
+        'Ignore the sign and proceed as normal',
+        'Sound your horn continuously',
+        'Turn on hazard lights immediately',
+        'Park on the nearest available spot',
+        'Increase speed to pass quickly',
+      ].sort(() => Math.random() - 0.5).slice(0, 3);
+      const options = [sign.descriptionEn, ...distractors].sort(() => Math.random() - 0.5);
+      questions.push({
+        id: `quiz_${sign.id}`,
+        question: `What does the road sign "${sign.nameEn}" mean?`,
+        options,
+        correctIndex: options.indexOf(sign.descriptionEn),
+        explanation: sign.descriptionEn,
+        explanation_rw: sign.descriptionRw,
+        category: catName,
+        difficulty: idx < 50 ? 'easy' : idx < 100 ? 'medium' : 'hard',
+        _poweredBy: POWERED_BY,
+      });
+    });
+
+    // Also add speed limit questions from evaluation data
+    const eqData = evaluationQuestionsData?.default || evaluationQuestionsData;
+    if (eqData && typeof eqData === 'object') {
+      for (const [catKey, catData] of Object.entries(eqData)) {
+        if (typeof catData !== 'object') continue;
         for (const [subKey, items] of Object.entries(catData)) {
           if (!Array.isArray(items)) continue;
-          items.forEach((item, i) => {
+          items.forEach((item) => {
             const catName = catKey.replace(/_/g, ' ');
-            const q = item[`umuvuduko_en`] || item[`descriptionEn`] || item[`ubwoko_bwikinyabiziga_en`] || '';
-            if (!q) return;
-            const correct = item[`umuvuduko_en`] || item[`descriptionEn`] || 'N/A';
-            const distractors = ['40 km/h', '60 km/h', '80 km/h', 'No limit'].filter(d => d !== correct);
-            const options = [correct, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+            const correct = item.umuvuduko_en || 'N/A';
+            if (correct === 'N/A') return;
+            const distractors = ['40 km/h', '50 km/h', '60 km/h', '70 km/h', '80 km/h', 'No limit'].filter(d => d !== correct);
+            const shuffled = distractors.sort(() => Math.random() - 0.5).slice(0, 3);
+            const options = [correct, ...shuffled].sort(() => Math.random() - 0.5);
             questions.push({
-              id: `quiz_${idx++}`,
-              question: `${item[`ubwoko_bwikinyabiziga_en`] || catName} — ${subKey.replace(/_/g, ' ')}`,
+              id: `quiz_eq_${questions.length}`,
+              question: `What is the speed limit for ${item.ubwoko_bwikinyabiziga_en || subKey.replace(/_/g, ' ')}?`,
               options,
               correctIndex: options.indexOf(correct),
-              explanation: correct,
-              explanation_rw: item[`umuvuduko`] || correct,
-              category: category || catName,
-              difficulty: idx < 8 ? 'easy' : idx < 16 ? 'medium' : 'hard',
+              explanation: `${correct} — ${item.ingingo_en || ''}`,
+              explanation_rw: `${item.umuvuduko || correct} — ${item.ingingo || ''}`,
+              category: catName,
+              difficulty: 'medium',
               _poweredBy: POWERED_BY,
             });
           });
