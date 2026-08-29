@@ -19,6 +19,7 @@ import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import slowDown from 'express-slow-down';
 import PDFDocument from 'pdfkit';
 import { GLOSSARY, getRandomTerms } from './ai/glossaryService.js';
+import evaluationQuestionsData from './evaluation_questions.js';
 
 try {
   const here = path.resolve(process.cwd(), '.env');
@@ -3511,6 +3512,204 @@ app.get('/api/shared/:token', optionalAuthMiddleware, async (req, res) => {
   } catch (e) {
     console.error('[Route GET /api/shared/:token] error:', e?.stack || e);
     res.status(500).json({ message: 'Failed to load shared conversation' });
+  }
+});
+
+// ============================================
+// PUBLIC API — /api/public/*
+// ============================================
+const POWERED_BY = 'Powered by Ferrivox Ltd — https://ferrivox.com';
+const PUBLIC_API_VERSION = '1.0.0';
+
+// Simple in-memory API key store for public API (production would use DB)
+const publicApiKeys = new Map();
+
+function publicApiAuth(req, res, next) {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey) return res.status(401).json({ success: false, error: 'Missing X-API-Key header', _poweredBy: POWERED_BY });
+  // For now, accept any key starting with ishami_pub_ (localStorage-based on frontend)
+  // In production, validate against a database
+  if (!apiKey.startsWith('ishami_pub_')) return res.status(401).json({ success: false, error: 'Invalid API key', _poweredBy: POWERED_BY });
+  next();
+}
+
+app.get('/api/public/status', publicApiAuth, (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      status: 'operational',
+      apiVersion: PUBLIC_API_VERSION,
+      endpoints: ['/api/public/quiz', '/api/public/quiz/categories', '/api/public/road-signs', '/api/public/road-signs/types', '/api/public/flipcards', '/api/public/flipcards/random', '/api/public/status'],
+      totalQuizQuestions: evaluationQuestionsData?.default ? Object.values(evaluationQuestionsData.default).reduce((acc, cat) => acc + Object.values(cat).reduce((a, q) => a + q.length, 0), 0) : 0,
+      totalRoadSigns: ROAD_SIGNS?.length || 0,
+      totalFlipCards: 25,
+    },
+    _poweredBy: POWERED_BY,
+  });
+});
+
+app.get('/api/public/quiz', publicApiAuth, (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '50'), 100);
+    const page = Math.max(parseInt(req.query.page || '1'), 1);
+    const category = req.query.category || null;
+    const search = req.query.q?.toLowerCase() || null;
+    const random = req.query.random === 'true';
+    const count = Math.min(parseInt(req.query.count || '10'), 50);
+    const lang = req.query.lang || 'en';
+
+    // Build quiz questions from evaluation data and road signs
+    let questions = [];
+    if (evaluationQuestionsData?.default) {
+      const cats = evaluationQuestionsData.default;
+      let idx = 0;
+      for (const [catKey, catData] of Object.entries(cats)) {
+        for (const [subKey, items] of Object.entries(catData)) {
+          if (!Array.isArray(items)) continue;
+          items.forEach((item, i) => {
+            const catName = catKey.replace(/_/g, ' ');
+            const q = item[`umuvuduko_en`] || item[`descriptionEn`] || item[`ubwoko_bwikinyabiziga_en`] || '';
+            if (!q) return;
+            const correct = item[`umuvuduko_en`] || item[`descriptionEn`] || 'N/A';
+            const distractors = ['40 km/h', '60 km/h', '80 km/h', 'No limit'].filter(d => d !== correct);
+            const options = [correct, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+            questions.push({
+              id: `quiz_${idx++}`,
+              question: `${item[`ubwoko_bwikinyabiziga_en`] || catName} — ${subKey.replace(/_/g, ' ')}`,
+              options,
+              correctIndex: options.indexOf(correct),
+              explanation: correct,
+              explanation_rw: item[`umuvuduko`] || correct,
+              category: category || catName,
+              difficulty: idx < 8 ? 'easy' : idx < 16 ? 'medium' : 'hard',
+              _poweredBy: POWERED_BY,
+            });
+          });
+        }
+      }
+    }
+
+    if (category) questions = questions.filter(q => q.category.toLowerCase().includes(category.toLowerCase()));
+    if (search) questions = questions.filter(q => q.question.toLowerCase().includes(search));
+
+    if (random) {
+      questions = questions.sort(() => Math.random() - 0.5).slice(0, count);
+    } else {
+      const start = (page - 1) * limit;
+      questions = questions.slice(start, start + limit);
+    }
+
+    res.json({ success: true, data: questions, meta: { total: questions.length, page, limit, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch quiz questions', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/quiz/categories', publicApiAuth, (req, res) => {
+  try {
+    const cats = [];
+    if (evaluationQuestionsData?.default) {
+      for (const catKey of Object.keys(evaluationQuestionsData.default)) {
+        cats.push({ id: catKey, name: catKey.replace(/_/g, ' '), _poweredBy: POWERED_BY });
+      }
+    }
+    res.json({ success: true, data: cats, meta: { total: cats.length, page: 1, limit: cats.length, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch categories', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/road-signs', publicApiAuth, (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '50'), 100);
+    const page = Math.max(parseInt(req.query.page || '1'), 1);
+    const type = req.query.type || null;
+    const search = req.query.q?.toLowerCase() || null;
+    const random = req.query.random === 'true';
+    const count = Math.min(parseInt(req.query.count || '10'), 50);
+
+    let signs = (ROAD_SIGNS || []).map(s => ({
+      id: s.id,
+      name: s.nameEn,
+      name_rw: s.nameRw,
+      type: (s.category || '').toLowerCase(),
+      meaning: s.descriptionEn,
+      meaning_rw: s.descriptionRw,
+      shape: (s.shape || '').toLowerCase(),
+      color: (s.color || '').toLowerCase(),
+      image_url: s.imageUrl || '',
+      _poweredBy: POWERED_BY,
+    }));
+
+    if (type) signs = signs.filter(s => s.type.includes(type.toLowerCase()));
+    if (search) signs = signs.filter(s => s.name.toLowerCase().includes(search) || s.meaning.toLowerCase().includes(search));
+
+    if (random) {
+      signs = signs.sort(() => Math.random() - 0.5).slice(0, count);
+    } else {
+      const start = (page - 1) * limit;
+      signs = signs.slice(start, start + limit);
+    }
+
+    res.json({ success: true, data: signs, meta: { total: signs.length, page, limit, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch road signs', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/road-signs/types', publicApiAuth, (req, res) => {
+  try {
+    const types = [...new Set((ROAD_SIGNS || []).map(s => (s.category || '').toLowerCase()))].filter(Boolean);
+    res.json({ success: true, data: types.map(t => ({ id: t, name: t, _poweredBy: POWERED_BY })), meta: { total: types.length, page: 1, limit: types.length, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch sign types', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/flipcards', publicApiAuth, (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '50'), 100);
+    const page = Math.max(parseInt(req.query.page || '1'), 1);
+    const random = req.query.random === 'true';
+    const count = Math.min(parseInt(req.query.count || '10'), 50);
+
+    let terms = getRandomTerms(Math.max(limit, 50));
+    let cards = terms.map((t, i) => ({
+      id: i + 1,
+      question: t.en,
+      question_rw: t.rw,
+      answer: t.en,
+      answer_rw: t.rw,
+      _poweredBy: POWERED_BY,
+    }));
+
+    if (random) cards = cards.sort(() => Math.random() - 0.5).slice(0, count);
+    else {
+      const start = (page - 1) * limit;
+      cards = cards.slice(start, start + limit);
+    }
+
+    res.json({ success: true, data: cards, meta: { total: cards.length, page, limit, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch flipcards', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/flipcards/random', publicApiAuth, (req, res) => {
+  try {
+    const count = Math.min(parseInt(req.query.count || '10'), 50);
+    const terms = getRandomTerms(count);
+    const cards = terms.map((t, i) => ({
+      id: i + 1,
+      question: t.en,
+      question_rw: t.rw,
+      answer: t.en,
+      answer_rw: t.rw,
+      _poweredBy: POWERED_BY,
+    }));
+    res.json({ success: true, data: cards, meta: { total: cards.length, page: 1, limit: count, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch random flipcards', _poweredBy: POWERED_BY });
   }
 });
 
