@@ -267,6 +267,33 @@ const ConversationMessageSchema = new Schema({
   structured: { type: Schema.Types.Mixed, default: null }
 }, { _id: false });
 
+const PublicApiKeySchema = new Schema({
+  key: { type: String, required: true, unique: true, index: true },
+  name: { type: String, required: true },
+  website: { type: String, default: '' },
+  isActive: { type: Boolean, default: true },
+  rateLimit: { type: Number, default: 60 },
+  totalRequests: { type: Number, default: 0 },
+  lastUsedAt: { type: Date, default: null },
+  createdAt: { type: Date, default: Date.now },
+});
+PublicApiKeySchema.index({ key: 1 });
+const PublicApiKey = model('PublicApiKey', PublicApiKeySchema);
+
+const PublicApiUsageSchema = new Schema({
+  apiKeyId: { type: Types.ObjectId, ref: 'PublicApiKey' },
+  endpoint: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+  origin: { type: String, default: '' },
+  ip: { type: String, default: '' },
+  responseTime: { type: Number, default: 0 },
+  success: { type: Boolean, default: true },
+  httpStatus: { type: Number, default: 200 },
+});
+PublicApiUsageSchema.index({ apiKeyId: 1, timestamp: -1 });
+PublicApiUsageSchema.index({ timestamp: -1 });
+const PublicApiUsage = model('PublicApiUsage', PublicApiUsageSchema);
+
 const ConversationSchema = new Schema({
   userId: { type: Types.ObjectId, ref: 'User', required: true },
   title: { type: String, default: 'New Chat' },
@@ -3521,19 +3548,123 @@ app.get('/api/shared/:token', optionalAuthMiddleware, async (req, res) => {
 const POWERED_BY = 'Powered by Ferrivox Ltd — https://ferrivox.com';
 const PUBLIC_API_VERSION = '1.0.0';
 
-// Simple in-memory API key store for public API (production would use DB)
-const publicApiKeys = new Map();
+// Per-key rate limiting store (in-memory, resets on restart)
+const publicRateLimitStore = new Map();
+
+function publicApiRateLimit(req, res, next) {
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey) return next();
+  const now = Date.now();
+  const windowMs = 60_000; // 1 minute
+  const record = publicRateLimitStore.get(apiKey);
+  if (!record || now - record.windowStart > windowMs) {
+    publicRateLimitStore.set(apiKey, { windowStart: now, count: 1 });
+    return next();
+  }
+  record.count++;
+  const maxRequests = record.max || 60;
+  if (record.count > maxRequests) {
+    return res.status(429).json({
+      success: false,
+      error: `Rate limit exceeded. Max ${maxRequests} requests per minute.`,
+      retryAfter: Math.ceil((windowMs - (now - record.windowStart)) / 1000),
+      _poweredBy: POWERED_BY,
+    });
+  }
+  next();
+}
 
 function publicApiAuth(req, res, next) {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey) return res.status(401).json({ success: false, error: 'Missing X-API-Key header', _poweredBy: POWERED_BY });
-  // For now, accept any key starting with ishami_pub_ (localStorage-based on frontend)
-  // In production, validate against a database
-  if (!apiKey.startsWith('ishami_pub_')) return res.status(401).json({ success: false, error: 'Invalid API key', _poweredBy: POWERED_BY });
+  if (!apiKey.startsWith('ishami_pub_')) return res.status(401).json({ success: false, error: 'Invalid API key format', _poweredBy: POWERED_BY });
+  // Validate against MongoDB
+  PublicApiKey.findOne({ key: apiKey, isActive: true }).then(doc => {
+    if (!doc) return res.status(401).json({ success: false, error: 'Invalid or revoked API key', _poweredBy: POWERED_BY });
+    // Set rate limit from key config
+    const record = publicRateLimitStore.get(apiKey);
+    if (record) record.max = doc.rateLimit;
+    req.publicApiKey = doc;
+    next();
+  }).catch(() => {
+    res.status(500).json({ success: false, error: 'Auth service unavailable', _poweredBy: POWERED_BY });
+  });
+}
+
+// Usage logging middleware
+function publicApiLogUsage(req, res, next) {
+  const start = Date.now();
+  const originalJson = res.json.bind(res);
+  res.json = (body) => {
+    const responseTime = Date.now() - start;
+    const success = body?.success !== false;
+    PublicApiUsage.create({
+      apiKeyId: req.publicApiKey?._id,
+      endpoint: req.originalUrl,
+      origin: req.headers.origin || '',
+      ip: req.ip || '',
+      responseTime,
+      success,
+      httpStatus: success ? 200 : 400,
+    }).catch(() => {}); // fire and forget
+    // Update key usage
+    if (req.publicApiKey) {
+      PublicApiKey.updateOne({ _id: req.publicApiKey._id }, { $inc: { totalRequests: 1 }, lastUsedAt: new Date() }).catch(() => {});
+    }
+    return originalJson(body);
+  };
   next();
 }
 
-app.get('/api/public/status', publicApiAuth, (req, res) => {
+// CORS for public API — allow all external origins
+app.options('/api/public/*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'X-API-Key, Content-Type');
+  res.sendStatus(204);
+});
+
+// POST /api/public/keys/generate — generate a new API key
+app.post('/api/public/keys/generate', express.json(), async (req, res) => {
+  try {
+    const { name, website } = req.body || {};
+    if (!name || typeof name !== 'string' || name.trim().length < 2) {
+      return res.status(400).json({ success: false, error: 'Name is required (min 2 chars)', _poweredBy: POWERED_BY });
+    }
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let key = 'ishami_pub_';
+    for (let i = 0; i < 32; i++) key += chars[Math.floor(Math.random() * chars.length)];
+    const doc = await PublicApiKey.create({ key, name: name.trim(), website: website || '' });
+    res.json({
+      success: true,
+      data: { id: String(doc._id), key: doc.key, name: doc.name, website: doc.website, rateLimit: doc.rateLimit, createdAt: doc.createdAt },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to generate key', _poweredBy: POWERED_BY });
+  }
+});
+
+// GET /api/public/keys/:key/usage — check usage for a key
+app.get('/api/public/keys/:key/usage', async (req, res) => {
+  try {
+    const doc = await PublicApiKey.findOne({ key: req.params.key });
+    if (!doc) return res.status(404).json({ success: false, error: 'Key not found', _poweredBy: POWERED_BY });
+    const totalRequests = await PublicApiUsage.countDocuments({ apiKeyId: doc._id });
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const todayRequests = await PublicApiUsage.countDocuments({ apiKeyId: doc._id, timestamp: { $gte: todayStart } });
+    res.json({
+      success: true,
+      data: { key: doc.key, name: doc.name, totalRequests, todayRequests, rateLimit: doc.rateLimit, isActive: doc.isActive },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Failed to fetch usage', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/status', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({
     success: true,
     data: {
@@ -3548,7 +3679,8 @@ app.get('/api/public/status', publicApiAuth, (req, res) => {
   });
 });
 
-app.get('/api/public/quiz', publicApiAuth, (req, res) => {
+app.get('/api/public/quiz', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const limit = Math.min(parseInt(req.query.limit || '50'), 100);
     const page = Math.max(parseInt(req.query.page || '1'), 1);
@@ -3629,7 +3761,8 @@ app.get('/api/public/quiz', publicApiAuth, (req, res) => {
   }
 });
 
-app.get('/api/public/quiz/categories', publicApiAuth, (req, res) => {
+app.get('/api/public/quiz/categories', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const cats = [];
     if (evaluationQuestionsData?.default) {
@@ -3643,7 +3776,8 @@ app.get('/api/public/quiz/categories', publicApiAuth, (req, res) => {
   }
 });
 
-app.get('/api/public/road-signs', publicApiAuth, (req, res) => {
+app.get('/api/public/road-signs', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const limit = Math.min(parseInt(req.query.limit || '50'), 100);
     const page = Math.max(parseInt(req.query.page || '1'), 1);
@@ -3681,7 +3815,8 @@ app.get('/api/public/road-signs', publicApiAuth, (req, res) => {
   }
 });
 
-app.get('/api/public/road-signs/types', publicApiAuth, (req, res) => {
+app.get('/api/public/road-signs/types', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const types = [...new Set((ROAD_SIGNS || []).map(s => (s.category || '').toLowerCase()))].filter(Boolean);
     res.json({ success: true, data: types.map(t => ({ id: t, name: t, _poweredBy: POWERED_BY })), meta: { total: types.length, page: 1, limit: types.length, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
@@ -3690,7 +3825,8 @@ app.get('/api/public/road-signs/types', publicApiAuth, (req, res) => {
   }
 });
 
-app.get('/api/public/flipcards', publicApiAuth, (req, res) => {
+app.get('/api/public/flipcards', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const limit = Math.min(parseInt(req.query.limit || '50'), 100);
     const page = Math.max(parseInt(req.query.page || '1'), 1);
@@ -3719,7 +3855,8 @@ app.get('/api/public/flipcards', publicApiAuth, (req, res) => {
   }
 });
 
-app.get('/api/public/flipcards/random', publicApiAuth, (req, res) => {
+app.get('/api/public/flipcards/random', publicApiAuth, publicApiRateLimit, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const count = Math.min(parseInt(req.query.count || '10'), 50);
     const terms = getRandomTerms(count);
