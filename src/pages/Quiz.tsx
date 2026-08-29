@@ -51,6 +51,7 @@ export default function Quiz() {
   const [txnId, setTxnId] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED' | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [payPhoneError, setPayPhoneError] = useState<string | null>(null);
   const [countedQuestions, setCountedQuestions] = useState<Set<string>>(new Set());
   const [quizLang, setQuizLang] = useState<'rw' | 'en'>(lang === 'en' ? 'en' : 'rw');
 
@@ -637,15 +638,31 @@ export default function Quiz() {
                         <input
                           type="tel"
                           value={payPhone}
-                          onChange={(e) => setPayPhone(e.target.value)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setPayPhone(val);
+                            if (val && !/^(\+250|0)(78|79|72|73)\d{7}$/.test(val)) {
+                              setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number (078X/079X/072X/073X)'));
+                            } else {
+                              setPayPhoneError(null);
+                            }
+                          }}
                           placeholder={t('quiz.paywall.phone_placeholder', 'Phone number (e.g. 0788xxxxxx)')}
-                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                            payPhoneError ? 'border-red-500/50 focus:ring-red-500' : 'border-white/10 focus:ring-blue-500'
+                          }`}
                         />
                       </div>
+                      {payPhoneError && (
+                        <p className="text-red-400 text-sm mt-1">{payPhoneError}</p>
+                      )}
                       <button
-                        disabled={!payPhone || paymentStatus === 'PENDING'}
+                        disabled={!payPhone || !!payPhoneError || paymentStatus === 'PENDING'}
                         onClick={async () => {
-                          if (!payPhone) return;
+                          if (!payPhone || !/^(\+250|0)(78|79|72|73)\d{7}$/.test(payPhone)) {
+                            setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number (078X/079X/072X/073X)'));
+                            return;
+                          }
                           setPaying(true);
                           setPaymentError(null);
                           try {
