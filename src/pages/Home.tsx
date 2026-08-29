@@ -1,10 +1,11 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
 import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket } from 'lucide-react';
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useMemo } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
+import { getAllArticles } from '../lib/articleStore';
 
 // Lazy-load heavy components below the fold
 const FlipCard = lazy(() => import('../components/FlipCard'));
@@ -312,42 +313,41 @@ export default function Home() {
             </Link>
           </motion.div>
 
-          {/* Quick Blog Cards with animations */}
+          {/* Quick Blog Cards — from actual articles */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-            {[
-              { slug: 'speed-limits-rwanda', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=250&fit=crop', tag_en: 'Speed Rules', tag_rw: 'Amategeko y\'Umuvuduko', title_en: 'Understanding Speed Limits', title_rw: 'Kumenya Umuvuduko Ntarengwa' },
-              { slug: 'roundabout-guide', img: 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=400&h=250&fit=crop', tag_en: 'Roundabouts', tag_rw: 'Rond-point', title_en: 'Mastering Roundabouts', title_rw: 'Kwiyegereza ku Rond-point' },
-              { slug: 'parking-rules', img: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=400&h=250&fit=crop', tag_en: 'Parking', tag_rw: 'Gupaka', title_en: 'Parking Rules in Kigali', title_rw: 'Amategeko yo Gupaka mu Kigali' },
-            ].map((card, i) => (
-              <motion.div
-                key={card.slug}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ delay: 0.1 + i * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <Link to={`/blog/${card.slug}`} className="block group">
-                  <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] overflow-hidden hover:bg-white/[0.08] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500">
-                    <div className="relative h-40 overflow-hidden">
-                      <img src={card.img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                      <span className="absolute top-3 left-3 px-3 py-1.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] rounded-full font-bold shadow-lg shadow-blue-500/20">
-                        {lang === 'rw' ? card.tag_rw : card.tag_en}
-                      </span>
-                    </div>
-                    <div className="p-5">
-                      <h4 className="text-white text-sm font-bold font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
-                        {lang === 'rw' ? card.title_rw : card.title_en}
-                      </h4>
-                      <div className="mt-3 flex items-center text-blue-400 text-xs font-semibold">
-                        <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
-                        <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-2 transition-transform duration-300" />
+            {(() => {
+              const articles = getAllArticles().filter(a => a.slug !== 'complete-guide-driving-rwanda' && a.status === 'published');
+              return articles.slice(0, 3).map((article, i) => (
+                <motion.div
+                  key={article.slug}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ delay: 0.1 + i * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <Link to={`/blog/${article.slug}`} className="block group">
+                    <div className="bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] overflow-hidden hover:bg-white/[0.08] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500">
+                      <div className="relative h-40 overflow-hidden">
+                        <img src={article.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                        <span className="absolute top-3 left-3 px-3 py-1.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] rounded-full font-bold shadow-lg shadow-blue-500/20">
+                          {lang === 'rw' ? article.category_rw : article.category}
+                        </span>
+                      </div>
+                      <div className="p-5">
+                        <h4 className="text-white text-sm font-bold font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
+                          {lang === 'rw' ? article.title_rw : article.title_en}
+                        </h4>
+                        <div className="mt-3 flex items-center text-blue-400 text-xs font-semibold">
+                          <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
+                          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-2 transition-transform duration-300" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              ));
+            })()}
           </div>
 
           <div className="text-center">

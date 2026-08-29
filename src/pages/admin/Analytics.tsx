@@ -5,6 +5,7 @@ import { getAllArticles } from '../../lib/articleStore';
 
 export default function AdminAnalytics() {
   const { getAllStats, getMostViewed, getRecentViews } = useArticleAnalytics();
+  const articles = getAllArticles();
   
   const allStats = getAllStats();
   const mostViewed = getMostViewed(5);
