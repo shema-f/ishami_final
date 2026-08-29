@@ -126,9 +126,9 @@ export default function Developers() {
     setApiKeys(getAllKeys());
   }, []);
 
-  const handleCreateKey = () => {
+  const handleCreateKey = async () => {
     if (!newKeyName.trim()) return;
-    const key = createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined);
+    const key = await createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined);
     setApiKeys(getAllKeys());
     setNewKeyName('');
     setNewKeyWebsite('');

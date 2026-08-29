@@ -35,9 +35,9 @@ export default function AdminApiKeys() {
     setSummary(getUsageSummary());
   };
 
-  const handleCreateKey = () => {
+  const handleCreateKey = async () => {
     if (!newKeyName.trim()) return;
-    createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined, newKeyRateLimit);
+    await createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined, newKeyRateLimit);
     setNewKeyName('');
     setNewKeyWebsite('');
     setNewKeyRateLimit(60);

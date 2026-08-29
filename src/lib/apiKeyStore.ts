@@ -76,7 +76,37 @@ export function saveKeys(keys: ApiKey[]): void {
   localStorage.setItem(KEYS_STORAGE_KEY, JSON.stringify(keys));
 }
 
-export function createApiKey(name: string, website?: string, rateLimit: number = 60): ApiKey {
+const API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://ishami-final.onrender.com';
+
+export async function createApiKey(name: string, website?: string, rateLimit: number = 60): Promise<ApiKey> {
+  // Try to create on backend first
+  try {
+    const res = await fetch(`${API_BASE}/api/public/keys/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, website }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.data) {
+        const newKey: ApiKey = {
+          id: data.data.id,
+          key: data.data.key,
+          name: data.data.name,
+          website: data.data.website,
+          createdAt: data.data.createdAt,
+          isActive: true,
+          rateLimit: data.data.rateLimit || rateLimit,
+          totalRequests: 0,
+        };
+        const keys = getAllKeys();
+        keys.push(newKey);
+        saveKeys(keys);
+        return newKey;
+      }
+    }
+  } catch {}
+  // Fallback to localStorage-only
   const keys = getAllKeys();
   const newKey: ApiKey = {
     id: generateKeyId(),
