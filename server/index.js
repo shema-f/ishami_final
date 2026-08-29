@@ -674,7 +674,7 @@ async function sendWelcomeEmail(email, username) {
     console.log(`Attempting to send welcome email to ${email}...`);
     const subject = 'Welcome to ISHAMI - Rwanda Traffic Rules';
     const html = welcomeEmail({ username, appUrl: process.env.FRONTEND_URL || 'https://ishami.rw' });
-    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'no-reply@ishami.rw'}>`;
+    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
     if (mailer) {
       await mailer.sendMail({ from, to: email, subject, html, attachments: [logoAttachment()], });
       console.log(`Welcome email (SMTP) sent successfully to ${email}`);
@@ -698,7 +698,7 @@ async function sendPaymentEmail(user, txn) {
       product: txn.product || 'pro',
       appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
     });
-    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'no-reply@ishami.rw'}>`;
+    const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
     await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
     console.log(`Payment email sent to ${user.email}`);
   } catch (e) {
@@ -810,8 +810,8 @@ app.use('/api/', generalLimiter);
 app.post('/api/auth/signup', authStrictLimiter);
 app.post('/api/auth/signin', authStrictLimiter);
 app.post('/api/auth/forgot', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
+  windowMs: 5 * 60 * 1000,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many reset attempts. Please try again in 15 minutes.' },
@@ -974,7 +974,7 @@ app.post('/api/auth/forgot', async (req, res) => {
         try {
           const subject = 'Reset your password - ISHAMI';
           const html = resetPasswordEmail({ username: user.username || 'Mugenzi', resetUrl, expiresHours: 1 });
-          const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'no-reply@ishami.rw'}>`;
+          const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
           if (mailer) {
             await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
             sent = true;
@@ -2161,7 +2161,7 @@ app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
           issuedAt: issuedDate.toLocaleDateString(),
           appUrl: process.env.FRONTEND_URL || 'https://ishami.rw'
         });
-        const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'no-reply@ishami.rw'}>`;
+        const from = process.env.SMTP_FROM || `"ISHAMI" <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
         await mailer.sendMail({ from, to: user.email, subject, html, attachments: [logoAttachment()], });
         console.log(`Certificate email sent to ${user.email}`);
       }
@@ -2301,7 +2301,7 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
     if (existing) return res.json({ success: true, subscribed: true });
     await NewsletterSubscriber.create({ email });
     const brandName = process.env.BRAND_NAME || 'ISHAMI';
-    const from = process.env.SMTP_FROM || `${brandName} <no-reply@ishami.local>`;
+    const from = process.env.SMTP_FROM || `${brandName} <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
     const site = process.env.BRAND_SITE_URL || 'https://ishami.rw';
     const subject = 'Welcome to ISHAMI newsletter!';
     const html = newsletterThanksEmail({ email, siteUrl: site });
@@ -2391,7 +2391,7 @@ app.post('/api/admin/newsletter/send', authMiddleware, adminOnly, async (req, re
   if (!subject || !body) return res.status(400).json({ message: 'Missing fields' });
   if (!mailer) return res.status(500).json({ message: 'SMTP not configured' });
   const subscribers = await NewsletterSubscriber.find({ status: 'SUBSCRIBED' }).lean();
-  const from = process.env.SMTP_FROM || 'ISHAMI <no-reply@ishami.local>';
+  const from = process.env.SMTP_FROM || `ISHAMI <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
   let delivered = 0;
   let failed = 0;
   for (const s of subscribers) {
@@ -2413,7 +2413,7 @@ app.post('/api/admin/newsletter/preview', authMiddleware, adminOnly, async (req,
   if (!email || !subject || !body) return res.status(400).json({ message: 'Missing fields' });
   if (!mailer) return res.json({ success: true });
   try {
-    const from = process.env.SMTP_FROM || 'ISHAMI <no-reply@ishami.local>';
+    const from = process.env.SMTP_FROM || `ISHAMI <${process.env.SMTP_USER || 'ishami.final@gmail.com'}>`;
     await mailer.sendMail({ from, to: email, subject, html: body, attachments: [logoAttachment()], });
     res.json({ success: true });
   } catch {
