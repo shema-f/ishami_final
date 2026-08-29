@@ -14,6 +14,7 @@ export interface ApiKey {
   key: string;           // The public API key (ishami_pub_xxxx)
   name: string;          // Friendly name e.g. "My Website"
   website?: string;      // Originating website URL
+  userId?: string;       // Owner user ID — keys are scoped to the creator
   createdAt: string;
   lastUsedAt?: string;
   isActive: boolean;
@@ -72,19 +73,24 @@ export function getAllKeys(): ApiKey[] {
   }
 }
 
+/** Return only the keys owned by a specific user. */
+export function getKeysForUser(userId: string): ApiKey[] {
+  return getAllKeys().filter(k => k.userId === userId);
+}
+
 export function saveKeys(keys: ApiKey[]): void {
   localStorage.setItem(KEYS_STORAGE_KEY, JSON.stringify(keys));
 }
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://ishami-final.onrender.com';
 
-export async function createApiKey(name: string, website?: string, rateLimit: number = 60): Promise<ApiKey> {
+export async function createApiKey(name: string, website?: string, rateLimit: number = 60, userId?: string): Promise<ApiKey> {
   // Try to create on backend first
   try {
     const res = await fetch(`${API_BASE}/api/public/keys/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, website }),
+      body: JSON.stringify({ name, website, userId }),
     });
     if (res.ok) {
       const data = await res.json();
@@ -94,6 +100,7 @@ export async function createApiKey(name: string, website?: string, rateLimit: nu
           key: data.data.key,
           name: data.data.name,
           website: data.data.website,
+          userId: data.data.userId || userId,
           createdAt: data.data.createdAt,
           isActive: true,
           rateLimit: data.data.rateLimit || rateLimit,
@@ -113,6 +120,7 @@ export async function createApiKey(name: string, website?: string, rateLimit: nu
     key: generateApiKey(),
     name,
     website,
+    userId,
     createdAt: new Date().toISOString(),
     isActive: true,
     rateLimit,

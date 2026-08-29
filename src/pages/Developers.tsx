@@ -7,7 +7,8 @@ import {
   Rocket, Star, Users, BarChart3, Plus, Trash2, Eye, EyeOff,
   Wifi, Database, HelpCircle, Sparkles, FileText, ArrowUpRight
 } from 'lucide-react';
-import { createApiKey, getAllKeys, revokeApiKey, reactivateApiKey, deleteApiKey, type ApiKey } from '../lib/apiKeyStore';
+import { createApiKey, getKeysForUser, revokeApiKey, reactivateApiKey, deleteApiKey, type ApiKey } from '../lib/apiKeyStore';
+import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 
 const POWERED_BY = 'Powered by Ferrivox Ltd';
@@ -122,14 +123,18 @@ export default function Developers() {
   const [expandedEndpoint, setExpandedEndpoint] = useState<number | null>(null);
   const [pdfGenerating, setPdfGenerating] = useState(false);
 
+  const { user } = useAuth();
+
   useEffect(() => {
-    setApiKeys(getAllKeys());
-  }, []);
+    if (user?.id) {
+      setApiKeys(getKeysForUser(user.id));
+    }
+  }, [user]);
 
   const handleCreateKey = async () => {
-    if (!newKeyName.trim()) return;
-    const key = await createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined);
-    setApiKeys(getAllKeys());
+    if (!newKeyName.trim() || !user?.id) return;
+    const key = await createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined, 60, user.id);
+    setApiKeys(getKeysForUser(user.id));
     setNewKeyName('');
     setNewKeyWebsite('');
     setShowKeyForm(false);
@@ -149,18 +154,18 @@ export default function Developers() {
 
   const handleRevoke = (id: string) => {
     revokeApiKey(id);
-    setApiKeys(getAllKeys());
+    if (user?.id) setApiKeys(getKeysForUser(user.id));
   };
 
   const handleActivate = (id: string) => {
     reactivateApiKey(id);
-    setApiKeys(getAllKeys());
+    if (user?.id) setApiKeys(getKeysForUser(user.id));
   };
 
   const handleDelete = (id: string) => {
     if (confirm('Delete this API key permanently?')) {
       deleteApiKey(id);
-      setApiKeys(getAllKeys());
+      if (user?.id) setApiKeys(getKeysForUser(user.id));
     }
   };
 
@@ -467,6 +472,18 @@ export default function Developers() {
                 {lang === 'rw' ? 'Shakisha Inshya ye API' : 'Generate Your API Key'}
               </h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
+                {!user ? (
+                  <div className="text-center py-6">
+                    <Key className="w-10 h-10 text-gray-500 mx-auto mb-3" />
+                    <p className="text-sm text-gray-400 mb-4">
+                      {lang === 'rw' ? 'Injira kugira ukore API key yawe.' : 'Sign in to create and manage your API keys.'}
+                    </p>
+                    <a href="/auth" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all">
+                      {lang === 'rw' ? 'Injira' : 'Sign In'}
+                    </a>
+                  </div>
+                ) : (
+                <>
                 {apiKeys.length > 0 && (
                   <div className="mb-6 space-y-3">
                     <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
@@ -559,6 +576,8 @@ export default function Developers() {
                     </button>
                   )}
                 </AnimatePresence>
+                </>
+                )}
               </div>
             </section>
 
@@ -818,6 +837,13 @@ export default function Developers() {
             {lang === 'rw' ? 'For API key requests, contact' : 'For API key requests, contact'}{' '}
             <a href="mailto:support@ishami.rw" className="text-violet-400 hover:text-violet-300">support@ishami.rw</a>
           </p>
+          {user?.role === 'admin' && (
+            <p className="text-xs text-gray-600 mt-2">
+              <a href="/admin/api-keys" className="text-violet-400 hover:text-violet-300">
+                {lang === 'rw' ? 'Gushyiraho API (Admin)' : 'API Key Management (Admin)'}
+              </a>
+            </p>
+          )}
         </div>
       </div>
     </div>

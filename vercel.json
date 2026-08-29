@@ -2,7 +2,7 @@
   "buildCommand": "npm run build && node scripts/copy-icons.mjs",
   "outputDirectory": "build",
   "framework": null,
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false,
   "headers": [
     {
