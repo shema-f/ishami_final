@@ -9,7 +9,8 @@ import Home from "../pages/Home";
 // Lazy-load everything else — code-split into separate chunks
 const AIAssistant = lazy(() => import("../pages/AIAssistant"));
 const Quiz = lazy(() => import("../pages/Quiz"));
-const Resources = lazy(() => import("../pages/Resources"));
+const Courses = lazy(() => import("../pages/Courses"));
+const CourseDetail = lazy(() => import("../pages/CourseDetail"));
 const Leaderboard = lazy(() => import("../pages/Leaderboard"));
 const Auth = lazy(() => import("../pages/Auth"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
@@ -51,7 +52,9 @@ export const router = createBrowserRouter([
       { index: true, Component: Home },
       { path: "ai-assistant", Component: AIAssistant },
       { path: "quiz", Component: Quiz },
-      { path: "resources", Component: Resources },
+      { path: "courses", Component: Courses },
+      { path: "courses/:courseId", Component: CourseDetail },
+      { path: "resources", Component: Courses },
       { path: "leaderboard", Component: Leaderboard },
       { path: "auth", Component: Auth },
       { path: "reset", Component: ResetPassword },

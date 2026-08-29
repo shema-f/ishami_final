@@ -39,7 +39,7 @@ export default function Navigation() {
     { path: '/ai-assistant', label: lang === 'rw' ? 'AI' : 'AI' },
     { path: '/quiz', label: lang === 'rw' ? 'Ibizamini' : 'Quiz' },
     { path: '/simulation', label: lang === 'rw' ? '3D Simulation' : 'Simulation' },
-    { path: '/resources', label: lang === 'rw' ? 'Imfashanyigisho' : 'Resources' },
+    { path: '/courses', label: lang === 'rw' ? 'Amasomero' : 'Courses' },
   ];
 
   const blogSubItems = [

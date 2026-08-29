@@ -1,11 +1,12 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
-import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket } from 'lucide-react';
+import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket, Clock } from 'lucide-react';
 import { useState, lazy, Suspense, useMemo } from 'react';
 import { newsletterAPI } from '../services/api';
 import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
 import { getAllArticles } from '../lib/articleStore';
+import { courses } from '../data/courses';
 
 // Lazy-load heavy components below the fold
 const FlipCard = lazy(() => import('../components/FlipCard'));
@@ -161,6 +162,93 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Courses Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+              <BookOpen className="w-4 h-4 text-blue-400" />
+              <span className="text-sm text-blue-400 font-medium">{lang === 'rw' ? 'Amasomero' : 'Structured Learning'}</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
+              {lang === 'rw' ? 'Amasomero yacu' : 'Our Courses'}
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              {lang === 'rw'
+                ? 'Menya ubushobozi bwo kubaga mu Rwanda mu buryo bwasozwe. Amasomero yakozwe n\'Moto Sensei.'
+                : 'Structured courses designed by Moto Sensei. From traffic fundamentals to advanced driving skills.'}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.slice(0, 3).map((course, index) => (
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link
+                  to={`/courses/${course.id}`}
+                  className="block group"
+                >
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10">
+                    <div className={`h-32 bg-gradient-to-br ${course.gradient} flex items-center justify-center relative`}>                        <div className="absolute inset-0 opacity-10">
+                          <div className="absolute top-3 right-3 text-6xl">{course.icon}</div>
+                        </div>
+                        <div className="text-5xl group-hover:scale-110 transition-transform duration-500">{course.icon}</div>
+                        <div className="absolute top-3 left-3">
+                          <span className="px-2.5 py-1 bg-black/30 backdrop-blur-md text-white text-xs rounded-full font-semibold">
+                            {lang === 'rw' ? course.levelKiny : course.level}
+                          </span>
+                        </div>
+                      </div>
+                    <div className="p-5">
+                      <h3 className="text-white font-bold mb-2 group-hover:text-blue-300 transition-colors font-[family-name:var(--font-heading)]">
+                        {lang === 'rw' ? course.titleKiny : course.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                        {lang === 'rw' ? course.descriptionKiny : course.description}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{course.duration}</span>
+                          <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" />{course.totalLessons}</span>
+                        </div>
+                        <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                          {lang === 'rw' ? 'Raba' : 'View'} <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-10"
+          >
+            <Link
+              to="/courses"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+            >
+              {lang === 'rw' ? 'Raba Amasomero Yose' : 'View All Courses'}
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
