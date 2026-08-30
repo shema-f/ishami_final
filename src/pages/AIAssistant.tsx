@@ -284,7 +284,10 @@ export default function AIAssistant() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    if (!(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
+    // Guests: prompt sign-in after 5 free questions
+    if (!user && questionCount >= 5) { setShowPaywall(true); return; }
+    // Logged-in free users: prompt payment after 5 free questions
+    if (user && !(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
     if (!activeConversation) { createNewConversation(); return; }
 
     abortControllerRef.current?.abort();
@@ -989,11 +992,21 @@ export default function AIAssistant() {
                 <Zap className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Choose Your Plan'}</h2>
-              <p className="text-gray-400 mb-6 text-sm">
+              <p className="text-gray-400 mb-4 text-sm">
                 {lang === 'rw'
                   ? "Ukoresheje ibibazo 5 bisanzwe! Hitamwo igereko ugire umwanya wose wa Moto-Sensei."
                   : "You've used your 5 free questions! Choose a plan to unlock Moto-Sensei AI."}
               </p>
+
+              {/* Sign In prompt for guests */}
+              {!user && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
+                  <p className="text-blue-300 text-sm mb-3">{lang === 'rw' ? 'Fite konti? Injira kugira ngo ubike iterambere yawe.' : 'Have an account? Sign in to save your progress and access paid features.'}</p>
+                  <a href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm">
+                    {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
+                  </a>
+                </div>
+              )}
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">

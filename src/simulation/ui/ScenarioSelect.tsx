@@ -27,7 +27,7 @@ export default function ScenarioSelect() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const hasFullAccess = user?.isPro || user?.accessTier === 'full';
-  const [showPaywall, setShowPaywall] = useState(!hasFullAccess);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [profile, setProfile] = useState<UserProfile>(loadProfile());
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('ALL');
   const [showAchievements, setShowAchievements] = useState(false);
@@ -175,7 +175,14 @@ export default function ScenarioSelect() {
               scenario={scenario}
               index={i}
               profile={profile}
-              onPlay={() => navigate(`/simulation/${scenario.id}`)}
+              onPlay={() => {
+                // Guests and free users see paywall; quiz/full users can play
+                if (!user || (!user.isPro && user.accessTier !== 'full')) {
+                  setShowPaywall(true);
+                  return;
+                }
+                navigate(`/simulation/${scenario.id}`);
+              }}
               lang={lang}
             />
           ))}
@@ -201,7 +208,17 @@ export default function ScenarioSelect() {
                 <Lock className="w-10 h-10 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Full Access Required</h2>
-              <p className="text-gray-400 mb-6">3D Driving Simulation requires Full Access — <span className="text-yellow-400 font-semibold">3,000 RWF</span></p>
+              <p className="text-gray-400 mb-4">3D Driving Simulation requires Full Access — <span className="text-yellow-400 font-semibold">3,000 RWF</span></p>
+
+              {/* Sign In prompt for guests */}
+              {!user && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
+                  <p className="text-blue-300 text-sm mb-3">Have an account? Sign in to save your progress and access paid features.</p>
+                  <a href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm">
+                    Sign In / Sign Up
+                  </a>
+                </div>
+              )}
 
               <PaypackPayment
                 amount={3000}

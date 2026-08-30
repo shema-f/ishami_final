@@ -109,7 +109,7 @@ export default function Quiz() {
 
   const startQuiz = async (quiz: QuizCard) => {
     try {
-      if (!user) { navigate('/auth'); return; }
+      // Allow guests to start quizzes — paywall will show after 6 free questions
       // Check if this is a PDF quiz bundle
       const isPdfQuiz = quiz.id && quiz.id.startsWith('pdf_quiz_');
       let res: any;
@@ -627,6 +627,16 @@ export default function Quiz() {
               <p className="text-gray-400 mb-6">
                 {t('quiz.paywall.description', "You've completed 6 free questions! Choose a plan to continue:")}
               </p>
+
+              {/* Sign In prompt for guests */}
+              {!user && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
+                  <p className="text-blue-300 text-sm mb-3">Have an account? Sign in to save your progress and access paid features.</p>
+                  <a href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm">
+                    Sign In / Sign Up
+                  </a>
+                </div>
+              )}
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">
