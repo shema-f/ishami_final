@@ -85,7 +85,7 @@ export default function Resources() {
     if (!resource.fileUrl) {
       return;
     }
-    if (resource.isPremium && !user?.isPro) {
+    if (resource.isPremium && user?.accessTier !== 'full') {
       setShowPaywall(true);
       return;
     }
@@ -229,11 +229,11 @@ export default function Resources() {
 
                 <button
                   onClick={() => handleDownload(resource)}
-                  disabled={!resource.fileUrl || (resource.isPremium && !user?.isPro)}
+                  disabled={!resource.fileUrl || (resource.isPremium && user?.accessTier !== 'full')}
                   className={`w-full px-6 py-3 rounded-xl flex items-center justify-center space-x-2 transition-all duration-300 font-semibold ${
                     !resource.fileUrl
                       ? 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
-                      : resource.isPremium && !user?.isPro
+                      : resource.isPremium && user?.accessTier !== 'full'
                         ? 'bg-white/5 text-gray-500 border border-white/10 cursor-not-allowed'
                         : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5'
                   }`}
@@ -243,7 +243,7 @@ export default function Resources() {
                       <Lock className="w-4 h-4" />
                       <span>{t('res.resource.coming_soon', 'Coming Soon')}</span>
                     </>
-                  ) : resource.isPremium && !user?.isPro ? (
+                  ) : resource.isPremium && user?.accessTier !== 'full' ? (
                     <>
                       <Lock className="w-4 h-4" />
                       <span>{t('res.resource.pro_only', 'Pro Only')}</span>

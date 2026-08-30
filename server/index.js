@@ -603,6 +603,60 @@ await seed();
   }
 })();
 
+// ─── Migration: backfill accessTierGranted for existing payments ────
+(async () => {
+  try {
+    // Payments without accessTierGranted that are SUCCESS and product is not irembo
+    await Payment.updateMany(
+      { status: 'SUCCESS', product: { $ne: 'irembo' }, $or: [{ accessTierGranted: { $exists: false } }, { accessTierGranted: null }] },
+      [
+        {
+          $set: {
+            accessTierGranted: {
+              $switch: {
+                branches: [
+                  { case: { $in: ['$product', ['full', 'full_access', 'pro']] }, then: 'full' },
+                  { case: { $in: ['$product', ['quiz', 'quiz_access']] }, then: 'quiz' },
+                ],
+                default: 'quiz'
+              }
+            }
+          }
+        }
+      ]
+    );
+    console.log('[Migration] accessTierGranted backfilled for existing payments');
+  } catch (e) {
+    console.error('[Migration] accessTierGranted backfill error:', e?.message);
+  }
+})();
+
+// ─── Migration: upgrade users based on their successful payments ────
+(async () => {
+  try {
+    const tierOrder = { free: 0, quiz: 1, full: 2 };
+    // Find all successful payments with accessTierGranted
+    const successfulPayments = await Payment.find({ status: 'SUCCESS', accessTierGranted: { $in: ['quiz', 'full'] } }).lean();
+    const userTierMap = new Map();
+    for (const p of successfulPayments) {
+      const uid = String(p.userId);
+      const granted = p.accessTierGranted;
+      const current = userTierMap.get(uid) || 'free';
+      if ((tierOrder[granted] || 0) > (tierOrder[current] || 0)) {
+        userTierMap.set(uid, granted);
+      }
+    }
+    for (const [userId, tier] of userTierMap) {
+      const update = { accessTier: tier };
+      if (tier === 'full') update.isPro = true;
+      await User.updateOne({ _id: userId, $or: [{ accessTier: { $exists: false } }, { $in: [{ accessTier: 'free' }] }] }, { $set: update });
+    }
+    console.log(`[Migration] Upgraded ${userTierMap.size} users based on payment history`);
+  } catch (e) {
+    console.error('[Migration] Payment-based upgrade error:', e?.message);
+  }
+})();
+
 // ─── Auto-translate existing questions to English ─────────
 // Runs once on startup to ensure all questions have English translations
 (async () => {
@@ -2164,9 +2218,20 @@ app.post('/api/webhook/paypack', async (req, res) => {
     if (status === 'successful') {
       txn.status = 'SUCCESS';
       await txn.save();
-      if (txn.product === 'pro') {
+      // Upgrade user access tier based on payment (same logic as status poll endpoint)
+      if (txn.product !== 'irembo') {
         const u = await User.findById(txn.userId);
-        if (u) { u.isPro = true; await u.save(); }
+        if (u) {
+          const granted = txn.accessTierGranted || 'quiz';
+          const tierOrder = { free: 0, quiz: 1, full: 2 };
+          const currentTier = tierOrder[u.accessTier || 'free'] || 0;
+          const newTier = tierOrder[granted] || 0;
+          if (newTier > currentTier) {
+            u.accessTier = granted;
+          }
+          if (u.accessTier === 'full') u.isPro = true;
+          await u.save();
+        }
       }
       // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
       if (txn.product === 'irembo') {

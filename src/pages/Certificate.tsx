@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
+import AccessGate from '../components/AccessGate';
 import { Shield, Trophy, Download, ArrowLeft, CheckCircle2, Calendar, Hash, BarChart3, Award, FileText, ExternalLink } from 'lucide-react';
 import { useTranslation } from '../contexts/I18nContext';
 
@@ -247,6 +248,11 @@ export default function Certificate() {
   };
 
   return (
+    <AccessGate
+      requiredTier="full"
+      title="Certificate Requires Full Access"
+      description="Upgrade to Full Access (3,000 RWF) to earn your Certificate of Completion."
+    >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-5xl mx-auto pt-16">
         {/* Back Button */}
@@ -422,5 +428,6 @@ export default function Certificate() {
         </motion.div>
       </div>
     </div>
+    </AccessGate>
   );
 }

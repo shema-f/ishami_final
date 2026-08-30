@@ -5,6 +5,7 @@ import { getCourseById } from '../data/courses';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getCourseProgress, isLessonCompleted, getNextLesson } from '../lib/courseProgress';
+import AccessGate from '../components/AccessGate';
 
 const lessonTypeIcons: Record<string, { icon: typeof FileText; color: string; label: string }> = {
   text: { icon: FileText, color: 'text-blue-400 bg-blue-500/10', label: 'Reading' },
@@ -39,6 +40,11 @@ export default function CourseDetail() {
   }
 
   return (
+    <AccessGate
+      requiredTier="quiz"
+      title="Courses Require Quiz Access"
+      description="Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons."
+    >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Back Link */}
@@ -233,5 +239,6 @@ export default function CourseDetail() {
         </motion.div>
       </div>
     </div>
+    </AccessGate>
   );
 }

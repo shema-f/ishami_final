@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import {
   User, Mail, Lock, Save, Eye, EyeOff, Trophy, Target, BookOpen, Clock,
-  ArrowRight, Shield, CheckCircle2, Edit3, X, Award, TrendingUp, Flame
+  ArrowRight, Shield, CheckCircle2, Edit3, X, Award, TrendingUp, Flame, Zap
 } from 'lucide-react';
 import { authAPI } from '../services/api';
 import { toast } from 'sonner';
@@ -65,6 +65,14 @@ export default function Profile() {
     ? Math.max(...quizHistory.map(q => q.percentage))
     : 0;
   const passedQuizzes = quizHistory.filter(q => q.passed).length;
+
+  const accessTier = user.accessTier || 'free';
+  const tierConfig = {
+    free: { label: 'Free', icon: '🆓', color: 'from-gray-500 to-slate-600', textColor: 'text-gray-400', bgColor: 'bg-gray-500/10 border-gray-500/20', desc: '6 free quiz questions' },
+    quiz: { label: 'Quiz Access', icon: '📝', color: 'from-blue-500 to-cyan-500', textColor: 'text-blue-400', bgColor: 'bg-blue-500/10 border-blue-500/20', desc: 'All quizzes + free courses' },
+    full: { label: 'Full Access', icon: '⭐', color: 'from-yellow-500 to-orange-500', textColor: 'text-yellow-400', bgColor: 'bg-yellow-500/10 border-yellow-500/20', desc: 'AI, 3D sim, certificates, all courses' },
+  };
+  const currentTier = tierConfig[accessTier as keyof typeof tierConfig] || tierConfig.free;
 
   const stats = [
     { icon: <Trophy className="w-5 h-5" />, label: t('profile.stats.quizzes_taken', 'Quizzes Taken'), value: totalQuizzes, color: 'from-yellow-500 to-orange-500' },
@@ -136,9 +144,9 @@ export default function Profile() {
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-blue-500/30">
               {user.username?.charAt(0).toUpperCase() || 'U'}
             </div>
-            {user.isPro && (
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg">
-                <Shield className="w-4 h-4 text-white" />
+            {accessTier !== 'free' && (
+              <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br ${currentTier.color} flex items-center justify-center shadow-lg`}>
+              <span className="text-sm">{currentTier.icon}</span>
               </div>
             )}
           </div>
@@ -146,11 +154,20 @@ export default function Profile() {
             {user.username}
           </h1>
           <p className="text-gray-400">{user.email}</p>
-          {user.isPro && (
-            <span className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full text-yellow-400 text-xs font-semibold">
-              <Shield className="w-3 h-3" /> {t('profile.pro_badge', 'Pro Member')}
+          <div className="flex flex-col items-center gap-2 mt-3">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-xs font-semibold ${currentTier.bgColor} ${currentTier.textColor}`}>
+              <span>{currentTier.icon}</span> {currentTier.label}
             </span>
-          )}
+            <span className="text-gray-500 text-[11px]">{currentTier.desc}</span>
+            {accessTier !== 'full' && (
+              <button
+                onClick={() => navigate('/quiz')}
+                className="mt-1 inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-full text-xs font-semibold hover:shadow-lg hover:shadow-yellow-500/25 transition-all"
+              >
+                <Zap className="w-3 h-3" /> Upgrade Plan
+              </button>
+            )}
+          </div>
         </motion.div>
 
         {/* Stats Grid */}
@@ -388,7 +405,7 @@ export default function Profile() {
               { icon: '💯', title: t('profile.achievements.badges.perfect_score.title', 'Perfect Score'), desc: t('profile.achievements.badges.perfect_score.desc', 'Score 100% on a quiz'), unlocked: bestScore === 100 },
               { icon: '🏆', title: t('profile.achievements.badges.champion.title', 'Champion'), desc: t('profile.achievements.badges.champion.desc', 'Score above 90%'), unlocked: bestScore >= 90 },
               { icon: '📚', title: t('profile.achievements.badges.scholar.title', 'Scholar'), desc: t('profile.achievements.badges.scholar.desc', 'Take 10 quizzes'), unlocked: totalQuizzes >= 10 },
-              { icon: '🛡️', title: t('profile.achievements.badges.pro_member.title', 'Pro Member'), desc: t('profile.achievements.badges.pro_member.desc', 'Upgrade to Pro'), unlocked: !!user.isPro },
+              { icon: currentTier.icon, title: `${currentTier.label}`, desc: currentTier.desc, unlocked: accessTier !== 'free' },
             ].map((badge, idx) => (
               <div
                 key={idx}

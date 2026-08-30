@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 interface PaypackPaymentProps {
   amount?: number;
-  product?: 'pro' | 'irembo';
+  product?: 'quiz' | 'full' | 'pro' | 'irembo';
   onSuccess?: () => void;
   onCancel?: () => void;
 }

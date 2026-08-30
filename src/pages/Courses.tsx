@@ -6,6 +6,7 @@ import { courses, type Course } from '../data/courses';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getCourseProgress } from '../lib/courseProgress';
+import AccessGate from '../components/AccessGate';
 
 const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const;
 
@@ -18,6 +19,11 @@ export default function Courses() {
   const filtered = filter === 'All' ? courses : courses.filter(c => c.level === filter);
 
   return (
+    <AccessGate
+      requiredTier="quiz"
+      title="Courses Require Quiz Access"
+      description="Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons."
+    >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -80,6 +86,7 @@ export default function Courses() {
         )}
       </div>
     </div>
+    </AccessGate>
   );
 }
 
