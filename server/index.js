@@ -20,6 +20,8 @@ import slowDown from 'express-slow-down';
 import PDFDocument from 'pdfkit';
 import { GLOSSARY, getRandomTerms } from './ai/glossaryService.js';
 import evaluationQuestionsData from './evaluation_questions.js';
+import { pdfQuizBundles } from './pdfQuestions.js';
+import { pdfFlipCards } from './pdfFlipCards.js';
 
 try {
   const here = path.resolve(process.cwd(), '.env');
@@ -359,6 +361,29 @@ async function seed() {
             image: q.imagePlaceholder || q.imageUrl || null
           };
         });
+    if (docs.length) await Question.insertMany(docs);
+  }
+
+  // ─── Seed PDF quiz bundles into the database ───
+  for (const b of pdfQuizBundles) {
+    const existing = await Quiz.findOne({ title: b.title });
+    if (existing) continue;
+    const quiz = await Quiz.create({
+      title: b.title,
+      category: b.category,
+      image: null,
+      questionCount: b.questions.length
+    });
+    const docs = b.questions.map(q => ({
+      quizId: quiz._id,
+      category: b.category,
+      question: q.question,
+      questionEn: q.questionEn || '',
+      options: q.options,
+      optionsEn: q.optionsEn || [],
+      licenseClass: b.licenseClasses || ['A','B','C','D'],
+      image: null
+    }));
     if (docs.length) await Question.insertMany(docs);
   }
 
@@ -1423,7 +1448,114 @@ app.post('/api/quiz/submit', authMiddleware, async (req, res) => {
       $max: { 'stats.bestScore': score }
     }
   );
-  res.json({ message: 'Submitted', submission: { id: String(submission._id), userId: String(req.user._id), answers, score, totalQuestions, timeTakenSeconds, createdAt: submission.createdAt } });
+  res.json({ message: 'Submitted', submission: { id: String(submission._id), userId: req.user._id, answers, score, totalQuestions, timeTakenSeconds, createdAt: submission.createdAt } });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// PDF QUIZ BUNDLES — Public API (20-question quizzes from PDF)
+// ═══════════════════════════════════════════════════════════════
+
+// List all PDF quiz bundles (public, no auth required)
+app.get('/api/pdf-quizzes', async (req, res) => {
+  try {
+    const lang = String(req.query.lang || 'rw').toLowerCase();
+    const bundles = pdfQuizBundles.map(b => ({
+      id: b.id,
+      title: b.title,
+      category: b.category,
+      licenseClasses: b.licenseClasses,
+      questionCount: b.questions.length
+    }));
+    res.json({ bundles, total: bundles.length });
+  } catch (e) {
+    console.error('PDF quizzes list error:', e?.message);
+    res.status(500).json({ message: 'Failed to load quiz bundles' });
+  }
+});
+
+// Get a specific PDF quiz bundle's questions (public)
+app.get('/api/pdf-quizzes/:bundleId', async (req, res) => {
+  try {
+    const bundleId = req.params.bundleId;
+    const lang = String(req.query.lang || 'rw').toLowerCase();
+    const bundle = pdfQuizBundles.find(b => b.id === bundleId);
+    if (!bundle) return res.status(404).json({ message: 'Quiz bundle not found' });
+
+    const questions = bundle.questions.map((q, i) => ({
+      id: `${bundleId}_q${i + 1}`,
+      question: lang === 'en' ? q.questionEn : q.question,
+      options: lang === 'en' ? q.optionsEn : q.options,
+      explanation: q.explanation || null
+    }));
+
+    res.json({
+      bundle: {
+        id: bundle.id,
+        title: bundle.title,
+        category: bundle.category,
+        licenseClasses: bundle.licenseClasses,
+        questionCount: questions.length
+      },
+      lang,
+      questions
+    });
+  } catch (e) {
+    console.error('PDF quiz detail error:', e?.message);
+    res.status(500).json({ message: 'Failed to load quiz bundle' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// PDF FLIP CARDS — Public API (bilingual flash cards from PDF)
+// ═══════════════════════════════════════════════════════════════
+
+// Get all PDF flip cards (public)
+app.get('/api/pdf-flipcards', async (req, res) => {
+  try {
+    const cards = pdfFlipCards.map(c => ({
+      id: c.id,
+      question_en: c.question_en,
+      question_kiny: c.question_kiny,
+      answer_en: c.answer_en,
+      answer_kiny: c.answer_kiny
+    }));
+    res.json({ cards, total: cards.length });
+  } catch (e) {
+    console.error('PDF flipcards error:', e?.message);
+    res.status(500).json({ message: 'Failed to load flip cards' });
+  }
+});
+
+// Get a random set of PDF flip cards (public, for daily use)
+app.get('/api/pdf-flipcards/random', async (req, res) => {
+  try {
+    const count = Math.min(parseInt(req.query.count) || 6, 30);
+    const shuffled = [...pdfFlipCards].sort(() => Math.random() - 0.5);
+    const cards = shuffled.slice(0, count).map(c => ({
+      id: c.id,
+      question_en: c.question_en,
+      question_kiny: c.question_kiny,
+      answer_en: c.answer_en,
+      answer_kiny: c.answer_kiny
+    }));
+    res.json({ cards, total: cards.length });
+  } catch (e) {
+    console.error('PDF flipcards random error:', e?.message);
+    res.status(500).json({ message: 'Failed to load flip cards' });
+  }
+});
+
+// Get a single PDF flip card by ID (public)
+app.get('/api/pdf-flipcards/:id', async (req, res) => {
+  try {
+    const cardId = parseInt(req.params.id);
+    const card = pdfFlipCards.find(c => c.id === cardId);
+    if (!card) return res.status(404).json({ message: 'Flip card not found' });
+    res.json({ card });
+  } catch (e) {
+    console.error('PDF flipcard detail error:', e?.message);
+    res.status(500).json({ message: 'Failed to load flip card' });
+  }
 });
 
 // AI ASSISTANT (deprecated)

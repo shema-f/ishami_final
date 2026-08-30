@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { quizAPI, paymentAPI } from '../services/api';
+import { quizAPI, paymentAPI, pdfQuizAPI } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
@@ -67,8 +67,24 @@ export default function Quiz() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await quizAPI.listQuizzes();
-        setQuizzes(res.quizzes);
+        const [quizRes, pdfRes] = await Promise.allSettled([
+          quizAPI.listQuizzes(),
+          pdfQuizAPI.listBundles(quizLang)
+        ]);
+        let allQuizzes: QuizCard[] = [];
+        if (quizRes.status === 'fulfilled') allQuizzes = quizRes.value.quizzes || [];
+        // Add PDF quiz bundles as selectable quiz cards
+        if (pdfRes.status === 'fulfilled') {
+          const pdfBundles = (pdfRes.value.bundles || []).map((b: any) => ({
+            id: b.id,
+            title: b.title,
+            category: b.category,
+            image: null,
+            questionCount: b.questionCount
+          }));
+          allQuizzes = [...pdfBundles, ...allQuizzes];
+        }
+        setQuizzes(allQuizzes);
       } catch (error) {
         console.error('Failed to load quizzes:', error);
       }
@@ -94,10 +110,17 @@ export default function Quiz() {
   const startQuiz = async (quiz: QuizCard) => {
     try {
       if (!user) { navigate('/auth'); return; }
-      const res = await quizAPI.getQuiz(quiz.id, quizLang);
+      // Check if this is a PDF quiz bundle
+      const isPdfQuiz = quiz.id && quiz.id.startsWith('pdf_quiz_');
+      let res: any;
+      if (isPdfQuiz) {
+        res = await pdfQuizAPI.getBundle(quiz.id, quizLang);
+      } else {
+        res = await quizAPI.getQuiz(quiz.id, quizLang);
+      }
       setSelectedQuiz(quiz);
       setQuestions(res.questions);
-      setPaywallAfter(res.paywallAfter || 6);
+      setPaywallAfter(isPdfQuiz ? 999 : (res.paywallAfter || 6)); // PDF quizzes are free (no paywall)
       setCurrentQuestion(0);
       setSelectedAnswer(null);
       setAnswered(false);

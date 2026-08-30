@@ -396,6 +396,58 @@ export const flipcardsAPI = {
 };
 
 // ============================================
+// PDF QUIZ APIs (from extracted PDF document)
+// ============================================
+
+export const pdfQuizAPI = {
+  /**
+   * List all PDF quiz bundles
+   * Backend endpoint: GET /api/pdf-quizzes?lang=rw|en
+   */
+  listBundles: async (lang: string = 'rw') => {
+    return apiCall(`/api/pdf-quizzes?lang=${lang}`);
+  },
+
+  /**
+   * Get a specific PDF quiz bundle's questions (20 questions)
+   * Backend endpoint: GET /api/pdf-quizzes/:bundleId?lang=rw|en
+   */
+  getBundle: async (bundleId: string, lang: string = 'rw') => {
+    return apiCall(`/api/pdf-quizzes/${encodeURIComponent(bundleId)}?lang=${lang}`);
+  },
+};
+
+// ============================================
+// PDF FLIP CARD APIs (from extracted PDF document)
+// ============================================
+
+export const pdfFlipcardAPI = {
+  /**
+   * Get all PDF flip cards
+   * Backend endpoint: GET /api/pdf-flipcards
+   */
+  getAll: async () => {
+    return apiCall('/api/pdf-flipcards');
+  },
+
+  /**
+   * Get random PDF flip cards
+   * Backend endpoint: GET /api/pdf-flipcards/random?count=6
+   */
+  getRandom: async (count: number = 6) => {
+    return apiCall(`/api/pdf-flipcards/random?count=${count}`);
+  },
+
+  /**
+   * Get a single PDF flip card by ID
+   * Backend endpoint: GET /api/pdf-flipcards/:id
+   */
+  getById: async (id: number) => {
+    return apiCall(`/api/pdf-flipcards/${id}`);
+  },
+};
+
+// ============================================
 // LEADERBOARD APIs
 // ============================================
 
