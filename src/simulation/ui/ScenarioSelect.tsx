@@ -11,6 +11,8 @@ import {
   ChevronRight, Award, Target, Shield,
 } from 'lucide-react';
 import { useTranslation } from '../../contexts/I18nContext';
+import { useAuth } from '../../contexts/AuthContext';
+import PaypackPayment from '../../components/PaypackPayment';
 import {
   ALL_SCENARIOS,
   ALL_ACHIEVEMENTS,
@@ -23,6 +25,9 @@ import {
 export default function ScenarioSelect() {
   const { t, lang } = useTranslation();
   const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
+  const hasFullAccess = user?.isPro || user?.accessTier === 'full';
+  const [showPaywall, setShowPaywall] = useState(!hasFullAccess);
   const [profile, setProfile] = useState<UserProfile>(loadProfile());
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('ALL');
   const [showAchievements, setShowAchievements] = useState(false);
@@ -176,6 +181,41 @@ export default function ScenarioSelect() {
           ))}
         </div>
       </div>
+
+      {/* Paywall Overlay */}
+      {showPaywall && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowPaywall(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#111827] rounded-3xl p-8 max-w-md w-full border border-white/10 shadow-2xl"
+          >
+            <div className="text-center">
+              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+                <Lock className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">Full Access Required</h2>
+              <p className="text-gray-400 mb-6">3D Driving Simulation requires Full Access — <span className="text-yellow-400 font-semibold">3,000 RWF</span></p>
+
+              <PaypackPayment
+                amount={3000}
+                product="full"
+                onSuccess={() => {
+                  if (updateUser) updateUser({ isPro: true, accessTier: 'full' });
+                  setShowPaywall(false);
+                }}
+                onCancel={() => setShowPaywall(false)}
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }

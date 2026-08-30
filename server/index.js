@@ -87,6 +87,7 @@ const UserSchema = new Schema({
   firebaseUid: { type: String, unique: true, sparse: true },
   passwordHash: { type: String, required: true },
   isPro: { type: Boolean, default: false },
+  accessTier: { type: String, enum: ['free', 'quiz', 'full'], default: 'free' },
   role: { type: String, default: 'user' },
   loginStreak: { type: Number, default: 0 },
   badges: { type: [String], default: [] },
@@ -141,6 +142,7 @@ const PaymentSchema = new Schema({
   phone: String,
   provider: String,
   product: { type: String, default: 'pro' },
+  accessTierGranted: { type: String, enum: ['free', 'quiz', 'full'], default: 'quiz' },
   currency: { type: String, default: 'RWF' },
   providerRef: { type: String, default: null },
   status: { type: String, default: 'PENDING' },
@@ -582,6 +584,25 @@ await Promise.all([
 ]);
 await seed();
 
+// ─── Migration: set accessTier for existing isPro users ────
+(async () => {
+  try {
+    // Users with isPro=true but no accessTier should get 'full'
+    await User.updateMany(
+      { isPro: true, $or: [{ accessTier: { $exists: false } }, { accessTier: 'free' }] },
+      { $set: { accessTier: 'full' } }
+    );
+    // Users with accessTier='full' should also have isPro=true
+    await User.updateMany(
+      { accessTier: 'full', isPro: { $ne: true } },
+      { $set: { isPro: true } }
+    );
+    console.log('[Migration] accessTier backfilled for existing users');
+  } catch (e) {
+    console.error('[Migration] accessTier backfill error:', e?.message);
+  }
+})();
+
 // ─── Auto-translate existing questions to English ─────────
 // Runs once on startup to ensure all questions have English translations
 (async () => {
@@ -879,7 +900,7 @@ app.post('/api/auth/signup', async (req, res) => {
     const welcomeSent = await sendWelcomeEmail(email, username);
 
     const token = generateToken(user);
-    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges }, emailSent: welcomeSent });
+    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges }, emailSent: welcomeSent });
   } catch (e) {
     if (e && typeof e === 'object' && (e).code === 11000) {
       const identifier = String(req.body?.email || req.body?.phone || '').trim();
@@ -890,7 +911,7 @@ app.post('/api/auth/signup', async (req, res) => {
         const ok = await bcrypt.compare(String(req.body?.password || ''), user.passwordHash);
         if (ok) {
           const token = generateToken(user);
-          return res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+          return res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
         }
       }
       return res.status(409).json({ message: 'Account already exists. Please sign in.' });
@@ -917,7 +938,7 @@ app.post('/api/auth/signin', async (req, res) => {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
     const token = generateToken(user);
-    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
   } catch {
     res.status(500).json({ message: 'Signin failed' });
   }
@@ -957,7 +978,7 @@ app.put('/api/auth/update-profile', authMiddleware, async (req, res) => {
       await User.updateOne({ _id: user._id }, { $set: { passwordHash } });
     }
 
-    res.json({ success: true, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+    res.json({ success: true, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
   } catch (e) {
     console.error('Update profile error:', e?.stack || e);
     res.status(500).json({ message: 'Failed to update profile' });
@@ -980,7 +1001,7 @@ app.post('/api/auth/check', async (req, res) => {
 });
 app.get('/api/auth/verify', authMiddleware, (req, res) => {
   const u = req.user;
-  res.json({ user: { id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, role: u.role, loginStreak: u.loginStreak, badges: u.badges } });
+  res.json({ user: { id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, accessTier: u.accessTier || 'free', role: u.role, loginStreak: u.loginStreak, badges: u.badges } });
 });
 
 app.post('/api/auth/forgot', async (req, res) => {
@@ -1197,7 +1218,7 @@ app.post('/api/auth/social', async (req, res) => {
     await sendWelcomeEmail(email, user.username); // skipped for placeholder emails
   }
   const token = generateToken(user);
-  res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+  res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
 });
 
 app.get('/api/auth/google/start', (req, res) => {
@@ -1243,7 +1264,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
     }
     const token = generateToken(user);
     const origin = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const payload = { type: 'oauth_success', token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } };
+    const payload = { type: 'oauth_success', token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } };
     const json = JSON.stringify(payload).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
     res.send(`<!doctype html><html><head><meta charset="utf-8"/></head><body><script>(function(){var data=JSON.parse('${json}');var origin='${origin}';if(window.opener){window.opener.postMessage(data, origin);}window.close();})();</script></body></html>`);
   } catch {
@@ -1286,7 +1307,7 @@ app.get('/api/auth/facebook/callback', async (req, res) => {
     }
     const token = generateToken(user);
     const origin = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const payload = { type: 'oauth_success', token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } };
+    const payload = { type: 'oauth_success', token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } };
     const json = JSON.stringify(payload).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
     res.send(`<!doctype html><html><head><meta charset="utf-8"/></head><body><script>(function(){var data=JSON.parse('${json}');var origin='${origin}';if(window.opener){window.opener.postMessage(data, origin);}window.close();})();</script></body></html>`);
   } catch {
@@ -1311,7 +1332,7 @@ app.post('/api/auth/google/verify-id-token', async (req, res) => {
       await sendWelcomeEmail(email, user.username);
     }
     const token = generateToken(user);
-    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
   } catch {
     res.status(500).json({ message: 'Verification error' });
   }
@@ -1374,7 +1395,7 @@ app.post('/api/auth/firebase', async (req, res) => {
       }
     }
     const token = generateToken(user);
-    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
+    res.json({ token, user: { id: String(user._id), username: user.username, email: user.email, isPro: user.isPro, accessTier: user.accessTier || 'free', role: user.role, loginStreak: user.loginStreak, badges: user.badges } });
   } catch (e) {
     console.error('Firebase exchange error:', e);
     res.status(500).json({ message: 'Firebase exchange failed: ' + (e.message || String(e)) });
@@ -1690,11 +1711,18 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
 
     // Always compute the real expected amount based on product type
-    // For irembo: provisional = 5500, permanent = 10500
+    // Tiers: 'quiz' = 1000 RWF, 'full' = 3000 RWF
     let expected;
+    let accessTierGranted = 'quiz';
     if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
+    } else if (prod === 'quiz' || prod === 'quiz_access') {
+      expected = 1000;
+      accessTierGranted = 'quiz';
+    } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
+      expected = 3000;
+      accessTierGranted = 'full';
     } else {
       expected = 1000;
     }
@@ -1709,7 +1737,7 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
     const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
-    const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
+    const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, accessTierGranted, providerRef: paypackResult.ref, status: 'PENDING' });
     console.log(`[Paypack] Cashin via /initiate: ref=${paypackResult.ref}, amount=${expected}, phone=${cleanPhone}`);
 
     // If irembo product with form data, create the application immediately
@@ -1795,9 +1823,16 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     const prod = String(product || 'pro');
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
     let expected;
+    let accessTierGranted = 'quiz';
     if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
+    } else if (prod === 'quiz' || prod === 'quiz_access') {
+      expected = 1000;
+      accessTierGranted = 'quiz';
+    } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
+      expected = 3000;
+      accessTierGranted = 'full';
     } else {
       expected = 1000;
     }
@@ -1809,7 +1844,7 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
     const webhookMode = testMode ? 'development' : 'production';
     const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
-    const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, providerRef: paypackResult.ref, status: 'PENDING' });
+    const payment = await Payment.create({ userId: req.user._id, amount: expected, phone: cleanPhone, provider: 'paypack', product: prod, accessTierGranted, providerRef: paypackResult.ref, status: 'PENDING' });
 
     // If irembo product with form data, create the application immediately
     let iremboApplicationId = null;
@@ -1942,10 +1977,19 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
 
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
     // Always compute the real expected amount based on product type
+    // Tiers: 'quiz' = 1000 RWF (quiz access), 'full' = 3000 RWF (full app access)
+    // Legacy 'pro' = 3000 RWF (alias for full)
     let expected;
+    let accessTierGranted = 'quiz'; // default tier for payment
     if (prod === 'irembo') {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
+    } else if (prod === 'quiz' || prod === 'quiz_access') {
+      expected = 1000;
+      accessTierGranted = 'quiz';
+    } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
+      expected = 3000;
+      accessTierGranted = 'full';
     } else {
       expected = 1000;
     }
@@ -1962,13 +2006,14 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     const webhookMode = testMode ? 'development' : 'production';
     const paypackResult = await paypackCashin(cleanPhone, expected, webhookMode);
 
-    // Save payment to DB
+    // Save payment to DB — store the granted tier
     const payment = await Payment.create({
       userId: req.user._id,
       amount: expected,
       phone: cleanPhone,
       provider: 'paypack',
       product: prod,
+      accessTierGranted,
       providerRef: paypackResult.ref,
       status: 'PENDING',
     });
@@ -2036,10 +2081,22 @@ app.get('/api/paypack/status/:transactionId', authMiddleware, async (req, res) =
         if (ppStatus === 'successful') {
           txn.status = 'SUCCESS';
           await txn.save();
-          // Upgrade user to Pro if applicable
-          if (txn.product === 'pro') {
+          // Upgrade user access tier based on payment
+          if (txn.product !== 'irembo') {
             const u = await User.findById(txn.userId);
-            if (u) { u.isPro = true; await u.save(); }
+            if (u) {
+              const granted = txn.accessTierGranted || 'quiz';
+              // 'full' supersedes 'quiz'; never downgrade
+              const tierOrder = { free: 0, quiz: 1, full: 2 };
+              const currentTier = tierOrder[u.accessTier || 'free'] || 0;
+              const newTier = tierOrder[granted] || 0;
+              if (newTier > currentTier) {
+                u.accessTier = granted;
+              }
+              // Keep isPro in sync for backward compat
+              if (u.accessTier === 'full') u.isPro = true;
+              await u.save();
+            }
           }
           // Auto-approve IremboApplication: PENDING_PAYMENT → APPROVED
           if (txn.product === 'irembo') {
@@ -2450,8 +2507,13 @@ function adminOnly(req, res, next) {
 app.get('/api/admin/analytics', authMiddleware, adminMiddleware, async (req, res) => {
   const totalUsers = await User.countDocuments();
   const proUsers = await User.countDocuments({ isPro: true });
+  const quizTierUsers = await User.countDocuments({ accessTier: 'quiz' });
+  const fullTierUsers = await User.countDocuments({ accessTier: 'full' });
+  const freeUsers = totalUsers - quizTierUsers - fullTierUsers;
   const paymentsAll = await Payment.find({}).lean();
   const totalRevenue = paymentsAll.filter(p => p.status === 'SUCCESS').reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const quizRevenue = paymentsAll.filter(p => p.status === 'SUCCESS' && (p.accessTierGranted === 'quiz')).reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  const fullRevenue = paymentsAll.filter(p => p.status === 'SUCCESS' && (p.accessTierGranted === 'full')).reduce((sum, p) => sum + Number(p.amount || 0), 0);
   const today = new Date(); today.setHours(0,0,0,0);
   const todaySignups = await User.countDocuments({ createdAt: { $gte: today } });
   const todayQuizAttempts = await Submission.countDocuments({ createdAt: { $gte: today } });
@@ -2477,14 +2539,14 @@ app.get('/api/admin/analytics', authMiddleware, adminMiddleware, async (req, res
   const rpUserMap = new Map(rpUsers.map(u => [String(u._id), u]));
   const recentPaymentsData = recentPayments.map(p => {
     const u = rpUserMap.get(String(p.userId));
-    return { id: String(p._id), username: u?.username || 'Unknown', amount: Number(p.amount || 0), status: p.status || 'PENDING', date: p.createdAt };
+    return { id: String(p._id), username: u?.username || 'Unknown', amount: Number(p.amount || 0), status: p.status || 'PENDING', date: p.createdAt, accessTierGranted: p.accessTierGranted || 'quiz' };
   });
   const iremboPending = await IremboApplication.countDocuments({ status: 'PENDING' });
   const iremboProcessing = await IremboApplication.countDocuments({ status: 'PROCESSING' });
   const iremboSubmitted = await IremboApplication.countDocuments({ status: 'SUBMITTED_TO_IREMBO' });
   const iremboCompleted = await IremboApplication.countDocuments({ status: 'COMPLETED' });
   const iremboTotal = await IremboApplication.countDocuments();
-  res.json({ totalUsers, proUsers, totalRevenue, todaySignups, todayQuizAttempts, conversionRate, paymentSuccessRate, paymentFailureRate, topQuestions, recentPayments: recentPaymentsData, irembo: { total: iremboTotal, pending: iremboPending, processing: iremboProcessing, submitted: iremboSubmitted, completed: iremboCompleted } });
+  res.json({ totalUsers, proUsers, quizTierUsers, fullTierUsers, freeUsers, totalRevenue, quizRevenue, fullRevenue, todaySignups, todayQuizAttempts, conversionRate, paymentSuccessRate, paymentFailureRate, topQuestions, recentPayments: recentPaymentsData, irembo: { total: iremboTotal, pending: iremboPending, processing: iremboProcessing, submitted: iremboSubmitted, completed: iremboCompleted } });
 });
 
 app.get('/api/admin/newsletter/subscribers', authMiddleware, adminOnly, async (req, res) => {
@@ -2544,14 +2606,14 @@ app.get('/api/admin/users', authMiddleware, adminOnly, async (req, res) => {
   const limit = Number(req.query.limit || 50);
   const total = await User.countDocuments();
   const users = await User.find({}).skip((page - 1) * limit).limit(limit).lean();
-  const items = users.map(u => ({ id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, role: u.role, loginStreak: u.loginStreak, badges: u.badges }));
+  const items = users.map(u => ({ id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, accessTier: u.accessTier || 'free', role: u.role, loginStreak: u.loginStreak, badges: u.badges }));
   res.json({ page, limit, total, users: items });
 });
 
 app.put('/api/admin/users/:userId', authMiddleware, adminOnly, async (req, res) => {
   const u = await User.findByIdAndUpdate(req.params.userId, req.body, { new: true });
   if (!u) return res.status(404).json({ message: 'Not found' });
-  res.json({ user: { id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, role: u.role, loginStreak: u.loginStreak, badges: u.badges } });
+  res.json({ user: { id: String(u._id), username: u.username, email: u.email, isPro: u.isPro, accessTier: u.accessTier || 'free', role: u.role, loginStreak: u.loginStreak, badges: u.badges } });
 });
 
 app.delete('/api/admin/users/:userId', authMiddleware, adminOnly, async (req, res) => {
@@ -2661,6 +2723,9 @@ app.get('/api/admin/payments', authMiddleware, adminMiddleware, async (req, res)
       amount: Number(p.amount || 0),
       phone: p.phone || null,
       provider: String(p.provider || ''),
+      product: p.product || 'pro',
+      accessTierGranted: p.accessTierGranted || 'quiz',
+      userAccessTier: u?.accessTier || 'free',
       status: p.status || 'PENDING',
       createdAt: p.createdAt,
     };

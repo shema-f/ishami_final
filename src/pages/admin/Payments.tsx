@@ -9,6 +9,9 @@ interface Payment {
   amount: number;
   status: 'PENDING' | 'SUCCESS' | 'FAILED';
   provider: 'MTN' | 'airtel' | string;
+  product?: string;
+  accessTierGranted?: string;
+  userAccessTier?: string;
   createdAt?: string;
   transactionId?: string;
   username?: string;
@@ -35,6 +38,9 @@ export default function AdminPayments() {
         amount: Number(p.amount || 0),
         status: p.status,
         provider: String(p.provider || '').toLowerCase(),
+        product: p.product || 'pro',
+        accessTierGranted: p.accessTierGranted || 'quiz',
+        userAccessTier: p.userAccessTier || 'free',
         createdAt: p.createdAt,
         transactionId: p.id,
         username: p.username || 'Unknown',
@@ -65,7 +71,9 @@ export default function AdminPayments() {
     success: payments.filter(p => p.status === 'SUCCESS').length,
     pending: payments.filter(p => p.status === 'PENDING').length,
     failed: payments.filter(p => p.status === 'FAILED').length,
-    revenue: payments.filter(p => p.status === 'SUCCESS').reduce((sum, p) => sum + p.amount, 0)
+    revenue: payments.filter(p => p.status === 'SUCCESS').reduce((sum, p) => sum + p.amount, 0),
+    quizTier: payments.filter(p => p.status === 'SUCCESS' && p.accessTierGranted === 'quiz').length,
+    fullTier: payments.filter(p => p.status === 'SUCCESS' && p.accessTierGranted === 'full').length,
   };
 
   const getStatusIcon = (status: string) => {
@@ -223,9 +231,9 @@ export default function AdminPayments() {
                 <tr>
                   <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Transaction ID</th>
                   <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">User</th>
-                  <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Email</th>
                   <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Amount</th>
-                  <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Source</th>
+                  <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Tier</th>
+                  <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">User Access</th>
                   <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Status</th>
                   <th className="text-left py-4 px-6 text-gray-600 dark:text-gray-400">Date</th>
                 </tr>
@@ -245,18 +253,26 @@ export default function AdminPayments() {
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-gray-600 dark:text-gray-400 text-sm">{payment.email || '—'}</span>
-                    </td>
-                    <td className="py-4 px-6">
                       <span className="text-gray-900 dark:text-white">{payment.amount} RWF</span>
                     </td>
                     <td className="py-4 px-6">
-                      <span className={`px-3 py-1 rounded-full text-sm ${
-                        payment.provider === 'mtn'
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        payment.accessTierGranted === 'full'
                           ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
-                          : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                       }`}>
-                        {payment.provider?.toUpperCase()}
+                        {payment.accessTierGranted === 'full' ? 'Full (3K)' : 'Quiz (1K)'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        payment.userAccessTier === 'full'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                          : payment.userAccessTier === 'quiz'
+                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                            : 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {payment.userAccessTier === 'full' ? 'Full' : payment.userAccessTier === 'quiz' ? 'Quiz' : 'Free'}
                       </span>
                     </td>
                     <td className="py-4 px-6">

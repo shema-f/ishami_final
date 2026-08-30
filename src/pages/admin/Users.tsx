@@ -8,6 +8,7 @@ interface User {
   username: string;
   email: string;
   isPro: boolean;
+  accessTier: 'free' | 'quiz' | 'full';
   role: string;
   loginStreak: number;
   badges: string[];
@@ -40,6 +41,7 @@ export default function AdminUsers() {
         username: u.username,
         email: u.email,
         isPro: !!u.isPro,
+        accessTier: u.accessTier || 'free',
         role: u.role || 'user',
         loginStreak: Number(u.loginStreak || 0),
         badges: Array.isArray(u.badges) ? u.badges : [],
@@ -204,10 +206,15 @@ export default function AdminUsers() {
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      {user.isPro ? (
+                      {user.accessTier === 'full' ? (
                         <span className="inline-flex items-center space-x-1 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full text-sm">
                           <Crown className="w-4 h-4" />
-                          <span>Pro</span>
+                          <span>Full</span>
+                        </span>
+                      ) : user.accessTier === 'quiz' ? (
+                        <span className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-full text-sm">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Quiz</span>
                         </span>
                       ) : (
                         <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-sm">

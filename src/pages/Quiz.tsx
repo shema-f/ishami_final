@@ -137,7 +137,8 @@ export default function Quiz() {
   const handleAnswerSelect = (optionIndex: number) => {
     if (answered) return;
 
-    if (!user?.isPro && currentQuestion >= paywallAfter) {
+    const canContinue = user?.isPro || (user?.accessTier === 'quiz' || user?.accessTier === 'full');
+    if (!canContinue && currentQuestion >= paywallAfter) {
       setShowPaywall(true);
       return;
     }
@@ -616,28 +617,16 @@ export default function Quiz() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#111827] rounded-3xl p-8 max-w-md w-full border border-white/10 shadow-2xl"
+            className="bg-[#111827] rounded-3xl p-8 max-w-lg w-full border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto"
           >
             <div className="text-center">
               <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
                 <Zap className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock Pro Access')}</h2>
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock More Questions')}</h2>
               <p className="text-gray-400 mb-6">
-                {t('quiz.paywall.description', "You've completed 6 free questions! Unlock all 20 questions and premium features for only")} <span className="text-blue-400 font-semibold">1,000 RWF</span>
+                {t('quiz.paywall.description', "You've completed 6 free questions! Choose a plan to continue:")}
               </p>
-              
-              <div className="space-y-3 mb-6">
-                <p className="text-sm font-semibold text-white text-left">{t('quiz.paywall.pro_features_title', 'Pro Features:')}</p>
-                <div className="space-y-2">
-                  {['unlimited_quizzes', 'full_simulation', 'unlimited_ai', 'premium_resources'].map((key) => (
-                    <div key={key} className="flex items-center gap-3 text-left">
-                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-                      <span className="text-sm text-gray-300">{t(`quiz.paywall.features.${key}`)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">
@@ -645,7 +634,7 @@ export default function Quiz() {
                     <CheckCircle className="w-10 h-10 text-green-400" />
                   </div>
                   <p className="text-green-400 font-semibold">Payment Successful! 🎉</p>
-                  <p className="text-gray-400 text-sm">You now have full Pro access.</p>
+                  <p className="text-gray-400 text-sm">Your access has been upgraded.</p>
                   <button
                     onClick={() => { setShowPaywall(false); setPaymentStatus(null); }}
                     className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
@@ -654,7 +643,43 @@ export default function Quiz() {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
+                  {/* ── Quiz Access Tier ── */}
+                  <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-left">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-bold text-blue-400">Quiz Access</h3>
+                      <span className="text-2xl font-bold text-blue-400">1,000 RWF</span>
+                    </div>
+                    <p className="text-sm text-gray-400 mb-3">Unlock all quiz questions (beyond the 6 free ones)</p>
+                    <div className="space-y-2">
+                      {[t('quiz.paywall.features.unlimited_quizzes', 'Unlimited quiz questions'), t('quiz.paywall.features.quiz_certificates', 'Earn certificates')].map((label, i) => (
+                        <div key={i} className="flex items-center gap-2 text-left">
+                          <CheckCircle className="w-4 h-4 text-blue-400 shrink-0" />
+                          <span className="text-sm text-gray-300">{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Full Access Tier ── */}
+                  <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-2xl p-5 border border-yellow-500/30 text-left relative">
+                    <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg">BEST VALUE</div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-bold text-yellow-400">Full Access</h3>
+                      <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
+                    </div>
+                    <p className="text-sm text-gray-400 mb-3">Unlock everything: quizzes, courses, AI assistant, and 3D simulation</p>
+                    <div className="space-y-2">
+                      {[t('quiz.paywall.features.unlimited_quizzes', 'Unlimited quiz questions'), t('quiz.paywall.features.quiz_certificates', 'Earn certificates'), t('quiz.paywall.features.full_simulation', '3D driving simulation'), t('quiz.paywall.features.unlimited_ai', 'AI assistant access'), t('quiz.paywall.features.premium_resources', 'All courses & resources')].map((label, i) => (
+                        <div key={i} className="flex items-center gap-2 text-left">
+                          <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                          <span className="text-sm text-gray-300">{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Phone Input ── */}
                   {!paying && paymentStatus !== 'PENDING' && (
                     <>
                       <div className="relative">
@@ -679,11 +704,13 @@ export default function Quiz() {
                       {payPhoneError && (
                         <p className="text-red-400 text-sm mt-1">{payPhoneError}</p>
                       )}
+
+                      {/* Quiz Access Button */}
                       <button
                         disabled={!payPhone || !!payPhoneError || paymentStatus === 'PENDING'}
                         onClick={async () => {
                           if (!payPhone || !/^(\+250|0)(78|79|72|73)\d{7}$/.test(payPhone)) {
-                            setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number (078X/079X/072X/073X)'));
+                            setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number'));
                             return;
                           }
                           setPaying(true);
@@ -692,12 +719,11 @@ export default function Quiz() {
                             const res = await paymentAPI.paypackCashin({
                               amount: 1000,
                               phone: payPhone,
-                              product: 'pro',
+                              product: 'quiz',
                             });
                             setTxnId(res.transactionId);
                             setPaymentStatus('PENDING');
                             setPaying(false);
-                            // Poll for status
                             let tries = 0;
                             const iv = setInterval(async () => {
                               tries++;
@@ -707,7 +733,7 @@ export default function Quiz() {
                                   setPaymentStatus(st.status);
                                   clearInterval(iv);
                                   if (st.status === 'SUCCESS' && updateUser) {
-                                    updateUser({ isPro: true });
+                                    updateUser({ isPro: true, accessTier: 'quiz' });
                                   }
                                 }
                                 if (tries > 40) {
@@ -726,9 +752,61 @@ export default function Quiz() {
                             setPaymentError(e?.message || 'Payment failed');
                           }
                         }}
-                        className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button', 'Pay with Mobile Money - 1,000 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button_quiz', 'Quiz Access - 1,000 RWF')}
+                      </button>
+
+                      {/* Full Access Button */}
+                      <button
+                        disabled={!payPhone || !!payPhoneError || paymentStatus === 'PENDING'}
+                        onClick={async () => {
+                          if (!payPhone || !/^(\+250|0)(78|79|72|73)\d{7}$/.test(payPhone)) {
+                            setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number'));
+                            return;
+                          }
+                          setPaying(true);
+                          setPaymentError(null);
+                          try {
+                            const res = await paymentAPI.paypackCashin({
+                              amount: 3000,
+                              phone: payPhone,
+                              product: 'full',
+                            });
+                            setTxnId(res.transactionId);
+                            setPaymentStatus('PENDING');
+                            setPaying(false);
+                            let tries = 0;
+                            const iv = setInterval(async () => {
+                              tries++;
+                              try {
+                                const st = await paymentAPI.paypackStatus(res.transactionId);
+                                if (st.status === 'SUCCESS' || st.status === 'FAILED') {
+                                  setPaymentStatus(st.status);
+                                  clearInterval(iv);
+                                  if (st.status === 'SUCCESS' && updateUser) {
+                                    updateUser({ isPro: true, accessTier: 'full' });
+                                  }
+                                }
+                                if (tries > 40) {
+                                  clearInterval(iv);
+                                  setPaymentStatus('FAILED');
+                                  setPaymentError('Payment timed out');
+                                }
+                              } catch {
+                                clearInterval(iv);
+                                setPaymentStatus('FAILED');
+                                setPaymentError('Could not check payment status');
+                              }
+                            }, 3000);
+                          } catch (e: any) {
+                            setPaying(false);
+                            setPaymentError(e?.message || 'Payment failed');
+                          }
+                        }}
+                        className="w-full px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                      >
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button_full', 'Full Access - 3,000 RWF')}
                       </button>
                     </>
                   )}

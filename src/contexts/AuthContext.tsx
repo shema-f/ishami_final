@@ -6,6 +6,7 @@ interface User {
   username: string;
   email: string;
   isPro: boolean;
+  accessTier: 'free' | 'quiz' | 'full';
   role: string;
   loginStreak: number;
   badges: string[];

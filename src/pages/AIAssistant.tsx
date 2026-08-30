@@ -146,6 +146,8 @@ export default function AIAssistant() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
+  // Sync question count from localStorage once user is available
+  const questionCountSynced = useRef(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [uiLang, setUiLang] = useState<'en' | 'rw' | 'mixed'>('mixed');
   const [aiStatus, setAiStatus] = useState<any>(null);
@@ -170,6 +172,28 @@ export default function AIAssistant() {
   const stickToBottomRef = useRef(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const nextMsgIdRef = useRef(2);
+
+  // Load question count from localStorage when user becomes available
+  useEffect(() => {
+    if (questionCountSynced.current) return;
+    try {
+      const key = user?.id ? `ishami_ai_question_count_${user.id}` : 'ishami_ai_question_count_guest';
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const n = parseInt(saved, 10) || 0;
+        setQuestionCount(n);
+      }
+      questionCountSynced.current = true;
+    } catch {}
+  }, [user?.id]);
+
+  // Persist question count to localStorage
+  useEffect(() => {
+    try {
+      const key = user?.id ? `ishami_ai_question_count_${user.id}` : 'ishami_ai_question_count_guest';
+      localStorage.setItem(key, String(questionCount));
+    } catch {}
+  }, [questionCount, user?.id]);
 
   // Auto-create first conversation
   useEffect(() => {
@@ -254,7 +278,7 @@ export default function AIAssistant() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    if (!user?.isPro && questionCount >= 5) { setShowPaywall(true); return; }
+    if (!(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
     if (!activeConversation) { createNewConversation(); return; }
 
     abortControllerRef.current?.abort();
@@ -371,7 +395,7 @@ export default function AIAssistant() {
       const msgsToRemove = activeConversation.messages.slice(msgIndex + 1);
       for (const m of msgsToRemove) removeMessage(convId, m.id);
     }
-    if (!user?.isPro && questionCount >= 5) { setShowPaywall(true); return; }
+    if (!(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
     const sentiment = detectSentiment(editingText.trim());
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -758,7 +782,7 @@ export default function AIAssistant() {
                     {isLoading ? <Sparkles className="w-4 h-4 animate-pulse" /> : <ArrowUp className="w-4 h-4" />}
                   </button>
                 </div>
-                {!user?.isPro && (
+                {!(user?.isPro || user?.accessTier === 'full') && (
                   <p className="text-center text-[11px] text-gray-500 mt-2">
                     {5 - questionCount} {lang === 'rw' ? 'ibibazo by\'ubuntu byasigaye' : 'free questions remaining'}
                   </p>
