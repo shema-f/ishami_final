@@ -455,6 +455,15 @@ export default function Simulation() {
   const { scenarioId } = useParams();
   const { is3DCapable, isMobile, isLoading: deviceLoading } = useDeviceCapability();
 
+  // ─── FPS Counter Display ─────────────────────────────
+  const [fps, setFps] = useState(0);
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setFps((window as any).__ishami_fps ?? 0);
+    }, 500);
+    return () => clearInterval(iv);
+  }, []);
+
   // ─── Resolve which scenario to play ─────────────────
   const activeScenario: ScenarioConfig | null = scenarioId
     ? (getScenarioConfig(scenarioId) || null)
@@ -1242,6 +1251,17 @@ export default function Simulation() {
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">{t('sim.back_button', 'Back')}</span>
         </button>
+      </div>
+
+      {/* FPS Counter */}
+      <div className="absolute top-4 right-4 z-50">
+        <div className={`px-2 py-1 rounded-lg text-[10px] font-mono backdrop-blur-lg border ${
+          fps >= 50 ? 'bg-green-500/15 border-green-500/25 text-green-400' :
+          fps >= 30 ? 'bg-amber-500/15 border-amber-500/25 text-amber-400' :
+          'bg-red-500/15 border-red-500/25 text-red-400'
+        }`}>
+          {fps} FPS {isMobile ? '📱' : '🖥️'}
+        </div>
       </div>
 
       {/* 3D Canvas — visible from aerial phase onward */}

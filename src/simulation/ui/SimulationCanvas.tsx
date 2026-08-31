@@ -939,6 +939,29 @@ function Ground() {
   );
 }
 
+// ─── FPS Counter ────────────────────────────────────────
+// Measures frame rate and stores it on window for the HUD to read
+
+function FPSCounter() {
+  const frames = useRef(0);
+  const lastTime = useRef(performance.now());
+  const fpsRef = useRef(0);
+
+  useFrame(() => {
+    frames.current++;
+    const now = performance.now();
+    const elapsed = now - lastTime.current;
+    if (elapsed >= 1000) {
+      fpsRef.current = Math.round((frames.current * 1000) / elapsed);
+      frames.current = 0;
+      lastTime.current = now;
+      (window as any).__ishami_fps = fpsRef.current;
+    }
+  });
+
+  return null;
+}
+
 // ─── Scene Contents ────────────────────────────────────────
 
 function DynamicFog({ phase }: { phase: string }) {
@@ -1032,6 +1055,7 @@ function SceneContents({
 
   return (
     <>
+      <FPSCounter />
       <SceneLighting />
       <DynamicFog phase={phase} />
 
