@@ -518,6 +518,12 @@ export default function Simulation() {
   );
   const currentWpRef = useRef(0);
 
+  // ─── Lock body scroll only while simulation is mounted ──────
+  useEffect(() => {
+    document.body.classList.add('sim-active');
+    return () => { document.body.classList.remove('sim-active'); };
+  }, []);
+
   // ─── Sync state to ref and global ───────────────────
   useEffect(() => {
     stateRef.current = simState;
