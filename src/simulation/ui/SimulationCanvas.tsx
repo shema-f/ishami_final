@@ -1036,7 +1036,7 @@ function SceneContents({
   const handleCityScene = useCallback((scene: THREE.Object3D) => {
     collisionSystem.clear();
     collisionSystem.generateFromScene(scene, 'building');
-    console.log(`[ISHAMI] Generated ${collisionSystem['colliders'].length} building colliders`);
+
   }, [collisionSystem]);
 
   // Callback to receive actual car position from CarModel

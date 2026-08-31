@@ -211,23 +211,59 @@ export default function Leaderboard() {
           </div>
         </motion.div>
 
-        {/* Full Leaderboard Table */}
+        {/* Full Leaderboard — Cards on mobile, Table on desktop */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden"
         >
-          <div className="overflow-x-auto">
+          {/* ── Mobile: Card layout ── */}
+          <div className="sm:hidden divide-y divide-white/5">
+            {entries.map((entry, index) => (
+              <motion.div
+                key={entry.userId}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + index * 0.02 }}
+                className={`px-4 py-3 flex items-center gap-3 ${index < 3 ? 'bg-white/5' : ''}`}
+              >
+                <div className="shrink-0 w-8 text-center">
+                  {index === 0 && <Crown className="w-5 h-5 text-yellow-400 mx-auto" />}
+                  {index === 1 && <Medal className="w-5 h-5 text-gray-400 mx-auto" />}
+                  {index === 2 && <Medal className="w-5 h-5 text-orange-400 mx-auto" />}
+                  {index > 2 && <span className="text-gray-500 text-sm font-medium">#{index + 1}</span>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className={`font-medium text-sm ${index < 3 ? 'text-white' : 'text-gray-300'} truncate block`}>
+                    {formatName(entry.username)}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {entry.quizCount} {t('lb.table.quizzes', 'quizzes')} · {entry.totalMarks} {t('lb.table.total_marks', 'marks')}
+                  </span>
+                </div>
+                <span className={`text-lg font-bold font-[family-name:var(--font-mono)] shrink-0 ${
+                  index === 0 ? 'text-yellow-400' :
+                  index === 1 ? 'text-gray-300' :
+                  index === 2 ? 'text-orange-400' : 'text-blue-400'
+                }`}>
+                  {entry.bestScore}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* ── Desktop: Table layout ── */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.rank', 'Rank')}</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.user', 'User')}</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400">{t('lb.table.best_score', 'Best Score')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden sm:table-cell">{t('lb.table.quizzes', 'Quizzes')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">{t('lb.table.total_marks', 'Total Marks')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">{t('lb.table.average', 'Average')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">{t('lb.table.quizzes', 'Quizzes')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">{t('lb.table.total_marks', 'Total Marks')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden xl:table-cell">{t('lb.table.average', 'Average')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -256,20 +292,20 @@ export default function Leaderboard() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`text-lg font-bold font-[family-name:var(--font-mono)] ${
-                        index === 0 ? 'text-yellow-400' : 
-                        index === 1 ? 'text-gray-300' : 
+                        index === 0 ? 'text-yellow-400' :
+                        index === 1 ? 'text-gray-300' :
                         index === 2 ? 'text-orange-400' : 'text-blue-400'
                       }`}>
                         {entry.bestScore}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center hidden sm:table-cell">
+                    <td className="px-6 py-4 text-center hidden md:table-cell">
                       <span className="text-gray-400">{entry.quizCount}</span>
                     </td>
-                    <td className="px-6 py-4 text-center hidden md:table-cell">
+                    <td className="px-6 py-4 text-center hidden lg:table-cell">
                       <span className="text-gray-400">{entry.totalMarks}</span>
                     </td>
-                    <td className="px-6 py-4 text-center hidden lg:table-cell">
+                    <td className="px-6 py-4 text-center hidden xl:table-cell">
                       <span className="text-gray-400">
                         {Math.round((entry.totalMarks / Math.max(1, entry.totalQuestions)) * 100)}%
                       </span>

@@ -70,8 +70,6 @@ export default function AdminUsers() {
     try {
       await adminAPI.updateUser(selectedUser.id, selectedUser);
       
-      console.log('Updating user:', selectedUser);
-      
       // Update local state
       setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
       setShowEditModal(false);
@@ -87,8 +85,6 @@ export default function AdminUsers() {
     
     try {
       await adminAPI.deleteUser(userId);
-      
-      console.log('Deleting user:', userId);
       setUsers(users.filter(u => u.id !== userId));
     } catch (error) {
       console.error('Failed to delete user:', error);
