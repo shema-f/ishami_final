@@ -489,10 +489,12 @@ export default function TrafficSystem({
   trafficLights,
   aiVehicles,
   visible = true,
+  cityModel = 'default',
 }: {
   trafficLights?: { position: [number, number, number]; rotation: number }[];
   aiVehicles?: { position: [number, number, number]; color: number; speed: number; path: [number, number, number][] }[];
   visible?: boolean;
+  cityModel?: 'default' | 'low_poly';
 }) {
   const { camera } = useThree();
   const playerPos = useRef(new THREE.Vector3());
@@ -541,7 +543,16 @@ export default function TrafficSystem({
         />
       ))}
 
-      {/* ═══ TRAFFIC SIGNS — Multiple locations ═══ */}
+      {/* ═══ TRAFFIC SIGNS — Only for default city ═══ */}
+      {/* Low Poly City signs */}
+      {cityModel === 'low_poly' && (<>
+      <TrafficSign position={[22, 0, 2]} type="stop" />
+      <TrafficSign position={[22, 0, -38]} type="stop" />
+      <TrafficSign position={[20, 0, -10]} type="pedestrian" />
+      <TrafficSign position={[60, 0, -50]} type="pedestrian" />
+      <TrafficSign position={[40, 0, -20]} type="speed_limit" speed={25} />
+      </>)}
+      {cityModel !== 'low_poly' && (<>
       {/* Stop signs at key intersections */}
       <TrafficSign position={[68, 0, -126]} type="stop" rotation={[0, 0, 0]} />
       <TrafficSign position={[72, 0, -126]} type="stop" rotation={[0, Math.PI, 0]} />
@@ -604,6 +615,6 @@ export default function TrafficSystem({
       {/* Crossing signs at zebra crossings */}
       <TrafficSign position={[66, 0, -135]} type="crossing" />
       <TrafficSign position={[74, 0, -165]} type="crossing" rotation={[0, Math.PI, 0]} />
-    </group>
+      </>)}</group>
   );
 }

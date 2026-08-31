@@ -982,6 +982,7 @@ function SceneContents({
         visible={phase === 'driving' || phase === 'preparation' || phase === 'route_preview'}
         trafficLights={trafficLights}
         aiVehicles={aiVehicles}
+        cityModel={cityModel}
       />
       <RoadMarkings waypoints={waypoints} />
 

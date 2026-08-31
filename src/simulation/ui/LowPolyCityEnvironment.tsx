@@ -90,23 +90,40 @@ interface PedestrianPath {
 function AnimatedPedestrian({
   model,
   path,
-  time,
+  personIndex,
 }: {
   model: any;
   path: PedestrianPath;
-  time: number;
+  personIndex: number;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const adjustedTime = Math.max(0, time - path.delay);
-  const totalDist = new THREE.Vector3(...path.start).distanceTo(new THREE.Vector3(...path.end));
-  const cycleTime = totalDist / path.speed;
-  const progress = cycleTime > 0 ? (adjustedTime % (cycleTime * 2)) / cycleTime : 0;
-  const pingPong = progress <= 1 ? progress : 2 - progress;
+  const timeRef = useRef(0);
 
-  useFrame(() => {
+  // Get a single person from the GLTF model (cycle through available meshes)
+  const personMesh = useMemo(() => {
+    if (!model?.scene) return null;
+    const children: THREE.Object3D[] = [];
+    model.scene.traverse((child: any) => {
+      if (child.isMesh || child.isGroup) children.push(child);
+    });
+    // Pick one person per pedestrian (round-robin through available meshes)
+    if (children.length === 0) return null;
+    const idx = personIndex % children.length;
+    return children[idx].clone(true);
+  }, [model, personIndex]);
+
+  useFrame((_, delta) => {
     if (!groupRef.current) return;
+    timeRef.current += delta;
+    const t = Math.max(0, timeRef.current - path.delay);
+
     const from = new THREE.Vector3(...path.start);
     const to = new THREE.Vector3(...path.end);
+    const totalDist = from.distanceTo(to);
+    const cycleTime = totalDist / path.speed;
+    const progress = cycleTime > 0 ? (t % (cycleTime * 2)) / cycleTime : 0;
+    const pingPong = progress <= 1 ? progress : 2 - progress;
+
     const pos = from.lerp(to, pingPong);
     groupRef.current.position.copy(pos);
 
@@ -117,15 +134,14 @@ function AnimatedPedestrian({
     }
 
     // Simple walk cycle bob
-    groupRef.current.position.y = path.start[1] + Math.abs(Math.sin(adjustedTime * 6)) * 0.05;
+    groupRef.current.position.y = path.start[1] + Math.abs(Math.sin(t * 6)) * 0.05;
   });
 
-  if (!model?.scene) return null;
+  if (!personMesh) return null;
 
-  const cloned = model.scene.clone(true);
   return (
     <group ref={groupRef}>
-      <primitive object={cloned} scale={[0.06, 0.06, 0.06]} />
+      <primitive object={personMesh} scale={[1, 1, 1]} />
     </group>
   );
 }
@@ -342,22 +358,17 @@ export function WaypointMarker({
 
 export function PeopleSpawner({ paths }: { paths: PedestrianPath[] }) {
   const { gltf: peopleModel } = useCachedGLB('/models/low_poly_city/wip_-_lowpoly_people_-_2.glb');
-  const [time, setTime] = useState(0);
-
-  useFrame((_, delta) => {
-    setTime((t) => t + delta);
-  });
 
   if (!peopleModel) return null;
 
   return (
     <group>
-      {paths.map((path) => (
+      {paths.map((path, i) => (
         <AnimatedPedestrian
           key={path.id}
           model={peopleModel}
           path={path}
-          time={time}
+          personIndex={i}
         />
       ))}
     </group>
