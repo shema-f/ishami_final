@@ -332,21 +332,36 @@ function CarModel({
 
 // ─── Aerial Flyover Camera ────────────────────────────────
 
-function AerialFlyoverCamera({ onComplete }: { onComplete: () => void }) {
+function AerialFlyoverCamera({ onComplete, cityModel }: { onComplete: () => void; cityModel?: string }) {
   const { camera } = useThree();
   const startTime = useRef<number | null>(null);
   const baseFov = useRef(55);
   const DURATION = 10;
 
-  const keyframes = useMemo(() => [
-    { t: 0, pos: [68, 55, -80], lookAt: [68, 0, -140] },
-    { t: 0.15, pos: [100, 40, -120], lookAt: [68, 0, -140] },
-    { t: 0.3, pos: [140, 35, -160], lookAt: [68, 0, -140] },
-    { t: 0.5, pos: [120, 30, -100], lookAt: [68, 0, -140] },
-    { t: 0.65, pos: [30, 25, -120], lookAt: [68, 0, -140] },
-    { t: 0.8, pos: [50, 15, -110], lookAt: [68, 0, -130] },
-    { t: 1.0, pos: [68, 10, -116], lookAt: [68, 1, -130] },
-  ], []);
+  const keyframes = useMemo(() => {
+    if (cityModel === 'low_poly') {
+      // Low poly city is centered at origin
+      return [
+        { t: 0, pos: [0, 40, 20], lookAt: [0, 0, 0] },
+        { t: 0.15, pos: [25, 30, 10], lookAt: [0, 0, 0] },
+        { t: 0.3, pos: [30, 25, -15], lookAt: [0, 0, 0] },
+        { t: 0.5, pos: [15, 20, -25], lookAt: [0, 0, 0] },
+        { t: 0.65, pos: [-15, 18, -15], lookAt: [0, 0, 0] },
+        { t: 0.8, pos: [-10, 12, 5], lookAt: [0, 0, 0] },
+        { t: 1.0, pos: [0, 8, 12], lookAt: [0, 1, 0] },
+      ];
+    }
+    // Default: old ISHAMI_CITY1 centered at [68, 0, -140]
+    return [
+      { t: 0, pos: [68, 55, -80], lookAt: [68, 0, -140] },
+      { t: 0.15, pos: [100, 40, -120], lookAt: [68, 0, -140] },
+      { t: 0.3, pos: [140, 35, -160], lookAt: [68, 0, -140] },
+      { t: 0.5, pos: [120, 30, -100], lookAt: [68, 0, -140] },
+      { t: 0.65, pos: [30, 25, -120], lookAt: [68, 0, -140] },
+      { t: 0.8, pos: [50, 15, -110], lookAt: [68, 0, -130] },
+      { t: 1.0, pos: [68, 10, -116], lookAt: [68, 1, -130] },
+    ];
+  }, [cityModel]);
 
   const getCurrentTransform = useCallback((progress: number) => {
     let kA = keyframes[0];
@@ -987,7 +1002,7 @@ function SceneContents({
 
       {/* Aerial flyover camera */}
       {phase === 'aerial' && onAerialComplete && (
-        <AerialFlyoverCamera onComplete={onAerialComplete} />
+        <AerialFlyoverCamera onComplete={onAerialComplete} cityModel={cityModel} />
       )}
 
       {/* Route preview camera — flies along the waypoint path */}

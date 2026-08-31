@@ -125,7 +125,7 @@ function AnimatedPedestrian({
   const cloned = model.scene.clone(true);
   return (
     <group ref={groupRef}>
-      <primitive object={cloned} scale={[0.4, 0.4, 0.4]} />
+      <primitive object={cloned} scale={[0.06, 0.06, 0.06]} />
     </group>
   );
 }
