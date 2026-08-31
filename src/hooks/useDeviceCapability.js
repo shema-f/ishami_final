@@ -11,7 +11,9 @@ import { useState, useEffect } from 'react'
 
 function getMobileBreakpoint() {
   if (typeof window === 'undefined') return false
-  return window.innerWidth < 640
+  // Detect by touch support + screen size — covers phones AND tablets
+  const hasTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0)
+  return hasTouchScreen && window.innerWidth < 1024
 }
 
 function getReducedMotion() {
@@ -98,7 +100,6 @@ export default function useDeviceCapability() {
       setState(prev => ({
         ...prev,
         isMobile: nowMobile,
-        is3DCapable: prev.is3DCapable || !nowMobile,
       }))
     }
 

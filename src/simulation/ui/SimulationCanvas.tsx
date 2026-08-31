@@ -905,23 +905,24 @@ function RoutePreviewVisuals({ waypoints }: { waypoints: Waypoint[] }) {
 // ─── Lighting ──────────────────────────────────────────────
 
 function SceneLighting() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   return (
     <>
-      <ambientLight color="#667799" intensity={0.4} />
+      <ambientLight color="#667799" intensity={isMobile ? 0.6 : 0.4} />
       <directionalLight
         position={[10, 15, 8]}
         color="#ddeeff"
-        intensity={1.8}
-        castShadow
-        shadow-mapSize={[1024, 1024]}
-        shadow-camera-far={50}
+        intensity={isMobile ? 1.5 : 1.8}
+        castShadow={!isMobile}
+        shadow-mapSize={isMobile ? [512, 512] : [1024, 1024]}
+        shadow-camera-far={isMobile ? 30 : 50}
         shadow-camera-left={-20}
         shadow-camera-right={20}
         shadow-camera-top={20}
         shadow-camera-bottom={-20}
       />
-      <directionalLight position={[-5, 8, 3]} color="#8899bb" intensity={0.8} />
-      <hemisphereLight skyColor="#8899bb" groundColor="#222233" intensity={0.5} />
+      <directionalLight position={[-5, 8, 3]} color="#8899bb" intensity={isMobile ? 0.6 : 0.8} />
+      <hemisphereLight skyColor="#8899bb" groundColor="#222233" intensity={isMobile ? 0.4 : 0.5} />
     </>
   );
 }
@@ -929,9 +930,10 @@ function SceneLighting() {
 // ─── Ground Plane ──────────────────────────────────────────
 
 function Ground() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
-      <planeGeometry args={[500, 500]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow={!isMobile}>
+      <planeGeometry args={[isMobile ? 200 : 500, isMobile ? 200 : 500]} />
       <meshStandardMaterial color="#1e2330" roughness={1} />
     </mesh>
   );
@@ -941,16 +943,17 @@ function Ground() {
 
 function DynamicFog({ phase }: { phase: string }) {
   const fogRef = useRef<THREE.Fog>(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useFrame(() => {
     if (!fogRef.current) return;
-    const targetNear = phase === 'aerial' ? 10 : 80;
-    const targetFar = phase === 'aerial' ? 400 : 300;
+    const targetNear = phase === 'aerial' ? 10 : isMobile ? 50 : 80;
+    const targetFar = phase === 'aerial' ? (isMobile ? 250 : 400) : (isMobile ? 180 : 300);
     fogRef.current.near += (targetNear - fogRef.current.near) * 0.03;
     fogRef.current.far += (targetFar - fogRef.current.far) * 0.03;
   });
 
-  return <fog ref={fogRef} attach="fog" args={['#1a1e2a', 80, 300]} />;
+  return <fog ref={fogRef} attach="fog" args={['#1a1e2a', 50, 180]} />;
 }
 
 function SceneContents({
@@ -1189,18 +1192,18 @@ function SceneContents({
           [3, 0, -1.5], [3, 0, -9],
           [-22, 0, -5], [5, 0, -5],
         ]} />
-        <FloatingParticles count={20} area={25} height={6} color="#aaccff" speed={0.1} />
+        <FloatingParticles count={isMobile ? 6 : 20} area={25} height={6} color="#aaccff" speed={0.1} />
       </>)}
       {/* LOW POLY CITY: DRIVING PHASE MARKINGS */}
       {cityModel === 'low_poly' && phase === 'driving' && (<>
-        <SpeedBump position={[-17, 0, -5.25]} width={3.5} />
-        <SpeedBump position={[1, 0, -5.25]} width={3.5} />
-        <LowPolyTree position={[-24, 0, -2]} leafColor="#2d8a4e" scale={0.6} />
+        {!isMobile && <><SpeedBump position={[-17, 0, -5.25]} width={3.5} />
+        <SpeedBump position={[1, 0, -5.25]} width={3.5} /></>}
+        {!isMobile && <><LowPolyTree position={[-24, 0, -2]} leafColor="#2d8a4e" scale={0.6} />
         <LowPolyTree position={[-24, 0, -8.5]} leafColor="#3aaf60" scale={0.6} />
         <LowPolyTree position={[6, 0, -2]} leafColor="#2d8a4e" scale={0.6} />
         <LowPolyTree position={[6, 0, -8.5]} leafColor="#3aaf60" scale={0.6} />
         <LowPolyTree position={[-9, 0, -1.5]} leafColor="#44bb66" scale={0.5} />
-        <LowPolyTree position={[-9, 0, -9]} leafColor="#339955" scale={0.5} />
+        <LowPolyTree position={[-9, 0, -9]} leafColor="#339955" scale={0.5} /></>}
       </>)}
 
       <Environment preset="city" background={false} />
@@ -1245,17 +1248,20 @@ export default function SimulationCanvas({
   aiVehicles?: { position: [number, number, number]; color: number; speed: number; path: [number, number, number][] }[];
   pedestrians?: { position: [number, number, number]; path: [number, number, number][]; speed: number }[];
 }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isSmall = typeof window !== 'undefined' && window.innerWidth < 640;
+
   return (
     <Canvas
-      shadows={typeof window !== 'undefined' && window.innerWidth >= 768 ? 'soft' : false}
-      camera={{ position: [0, 12, 20], fov: 60, near: 0.1, far: 500 }}
+      shadows={isMobile ? false : 'soft'}
+      camera={{ position: [0, 12, 20], fov: 60, near: 0.1, far: isMobile ? 300 : 500 }}
       gl={{
-        antialias: typeof window !== 'undefined' ? window.innerWidth >= 768 : true,
+        antialias: !isMobile,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1.0,
         powerPreference: 'high-performance',
       }}
-      dpr={[1, 2]}
+      dpr={isSmall ? [1, 1] : isMobile ? [1, 1.5] : [1, 2]}
       style={{ background: '#1a1e2a' }}
       onCreated={onReady}
     >
