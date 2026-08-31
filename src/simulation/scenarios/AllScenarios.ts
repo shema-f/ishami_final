@@ -2211,7 +2211,24 @@ export const REVERSE_DRIVING: ScenarioConfig = {
 
 // ─── Scenario Registry ────────────────────────────────────
 
+import {
+  LOWPOLY_START_AND_GO,
+  LOWPOLY_TRAFFIC_FLOW,
+  LOWPOLY_CORNERS_TURNS,
+  LOWPOLY_REVERSE_DRIVING,
+  LOWPOLY_BETWEEN_PARKING,
+  LOWPOLY_STOP_AND_GO,
+} from './LowPolyScenarios';
+
 export const ALL_SCENARIO_CONFIGS: ScenarioConfig[] = [
+  // ─── Low Poly City Scenarios (first 6 — beginner) ───
+  LOWPOLY_START_AND_GO,
+  LOWPOLY_TRAFFIC_FLOW,
+  LOWPOLY_CORNERS_TURNS,
+  LOWPOLY_REVERSE_DRIVING,
+  LOWPOLY_BETWEEN_PARKING,
+  LOWPOLY_STOP_AND_GO,
+  // ─── Original City Scenarios ───
   TRAFFIC_FLOW,
   CORNERS_TURNS,
   REVERSE_DRIVING,

@@ -13,6 +13,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { VehiclePhysics } from '../vehicle/VehiclePhysics';
 import { CollisionSystem } from '../core/CollisionSystem';
 import TrafficSystem from './TrafficSystem';
+import { LowPolyCityEnvironment, ZebraCrossing, PeopleSpawner, ParkedCar, WaypointMarker as LowPolyWaypointMarker } from './LowPolyCityEnvironment';
 import type { SimulationState, Waypoint } from '../core/SimulationState';
 
 // ─── GLB Cache ──────────────────────────────────────────────
@@ -897,6 +898,10 @@ function SceneContents({
   zoomLevel,
   speedLimit,
   objectives,
+  cityModel,
+  trafficLights,
+  aiVehicles,
+  pedestrians,
 }: {
   onSpeedUpdate: (speed: number, rpm: number) => void;
   waypoints: Waypoint[];
@@ -909,6 +914,10 @@ function SceneContents({
   zoomLevel: number;
   speedLimit?: number;
   objectives?: { id: string; text: string; textRW: string; icon: string }[];
+  cityModel?: 'default' | 'low_poly';
+  trafficLights?: { position: [number, number, number]; rotation: number }[];
+  aiVehicles?: { position: [number, number, number]; color: number; speed: number; path: [number, number, number][] }[];
+  pedestrians?: { position: [number, number, number]; path: [number, number, number][]; speed: number }[];
 }) {
   const physics = useMemo(() => new VehiclePhysics(), []);
   const collisionSystem = useMemo(() => new CollisionSystem(), []);
@@ -948,8 +957,17 @@ function SceneContents({
       <DynamicFog phase={phase} />
 
       <Ground />
-      <CityEnvironment onSceneReady={handleCityScene} />
-      <TrafficSystem visible={phase === 'driving' || phase === 'preparation' || phase === 'route_preview'} />
+      {/* City model selection */}
+      {cityModel === 'low_poly' ? (
+        <LowPolyCityEnvironment onSceneReady={handleCityScene} />
+      ) : (
+        <CityEnvironment onSceneReady={handleCityScene} />
+      )}
+      <TrafficSystem
+        visible={phase === 'driving' || phase === 'preparation' || phase === 'route_preview'}
+        trafficLights={trafficLights}
+        aiVehicles={aiVehicles}
+      />
       <RoadMarkings waypoints={waypoints} />
 
       <CarModel
@@ -1013,6 +1031,29 @@ function SceneContents({
         <RoutePreviewVisuals waypoints={waypoints} />
       )}
 
+      {/* Low Poly City: Pedestrians & Zebra Crossings */}
+      {cityModel === 'low_poly' && phase === 'driving' && pedestrians && pedestrians.length > 0 && (
+        <PeopleSpawner
+          paths={pedestrians.map((p, i) => ({
+            id: `ped_${i}`,
+            start: p.position,
+            end: p.path[p.path.length - 1] || p.position,
+            speed: p.speed,
+            delay: i * 2,
+          }))}
+        />
+      )}
+
+      {/* Low Poly City: Zebra Crossings at pedestrian waypoints */}
+      {cityModel === 'low_poly' && phase === 'driving' && pedestrians && pedestrians.map((ped, i) => (
+        <ZebraCrossing
+          key={`zebra_${i}`}
+          position={[ped.position[0], 0.01, ped.position[2] + 2]}
+          width={3}
+          length={6}
+        />
+      ))}
+
       <Environment preset="city" background={false} />
     </>
   );
@@ -1033,6 +1074,10 @@ export default function SimulationCanvas({
   zoomLevel = 1,
   speedLimit,
   objectives,
+  cityModel = 'default',
+  trafficLights,
+  aiVehicles,
+  pedestrians,
 }: {
   onSpeedUpdate: (speed: number, rpm: number) => void;
   waypoints: Waypoint[];
@@ -1046,6 +1091,10 @@ export default function SimulationCanvas({
   zoomLevel?: number;
   speedLimit?: number;
   objectives?: { id: string; text: string; textRW: string; icon: string }[];
+  cityModel?: 'default' | 'low_poly';
+  trafficLights?: { position: [number, number, number]; rotation: number }[];
+  aiVehicles?: { position: [number, number, number]; color: number; speed: number; path: [number, number, number][] }[];
+  pedestrians?: { position: [number, number, number]; path: [number, number, number][]; speed: number }[];
 }) {
   return (
     <Canvas
@@ -1074,6 +1123,10 @@ export default function SimulationCanvas({
           zoomLevel={zoomLevel}
           speedLimit={speedLimit}
           objectives={objectives}
+          cityModel={cityModel}
+          trafficLights={trafficLights}
+          aiVehicles={aiVehicles}
+          pedestrians={pedestrians}
         />
       </Suspense>
     </Canvas>

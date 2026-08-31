@@ -1249,6 +1249,10 @@ export default function Simulation() {
           zoomLevel={zoomLevel}
           speedLimit={scenarioConfig.speedLimit}
           objectives={scenarioConfig.objectives}
+          cityModel={activeScenario?.id?.startsWith('lowpoly_') ? 'low_poly' : 'default'}
+          trafficLights={activeScenario?.trafficLights}
+          aiVehicles={activeScenario?.aiVehicles}
+          pedestrians={activeScenario?.pedestrians}
         />
       </div>
 
