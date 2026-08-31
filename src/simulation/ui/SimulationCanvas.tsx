@@ -12,6 +12,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { VehiclePhysics } from '../vehicle/VehiclePhysics';
 import { CollisionSystem } from '../core/CollisionSystem';
+import { RoadBoundarySystem } from '../core/RoadBoundarySystem';
 import TrafficSystem from './TrafficSystem';
 import { LowPolyCityEnvironment, ZebraCrossing, PeopleSpawner, ParkedCar, WaypointMarker as LowPolyWaypointMarker } from './LowPolyCityEnvironment';
 import { RoadMarkings as LowPolyRoadMarkings, StreetLights, FloatingParticles, RoadArrow, StopLine as LowPolyStopLine, SpeedBump, LowPolyTree, RoadSegment, AnimatedZebraCrossing } from '../effects/LowPolyEffects';
@@ -166,6 +167,7 @@ function CollisionFlash({ position, active }: { position: THREE.Vector3; active:
 function CarModel({
   physics,
   collisionSystem,
+  roadBoundarySystem,
   onSpeedUpdate,
   onPositionUpdate,
   onCollision,
@@ -173,6 +175,7 @@ function CarModel({
 }: {
   physics: VehiclePhysics;
   collisionSystem: CollisionSystem;
+  roadBoundarySystem: RoadBoundarySystem | null;
   onSpeedUpdate: (speed: number, rpm: number) => void;
   onPositionUpdate?: (pos: THREE.Vector3, rot: number) => void;
   onCollision?: (severity: 'MINOR' | 'WARNING' | 'MAJOR', point: THREE.Vector3) => void;
@@ -181,13 +184,28 @@ function CarModel({
   const { gltf, loading } = useCachedGLB('/models/modern_cartoon_sports_car.glb');
   const groupRef = useRef<THREE.Group>(null);
   const rotationRef = useRef(0);
+  // Validate start position is on a road — snap to nearest road if off-road
+  const validatedStartPos = useMemo(() => {
+    const rawX = startPos?.[0] ?? 68;
+    const rawZ = startPos?.[2] ?? -126;
+    if (roadBoundarySystem && !roadBoundarySystem.isOnRoad(rawX, rawZ, 1.5)) {
+      const nearest = roadBoundarySystem.getClosestRoadPoint(rawX, rawZ, 1.5);
+      if (nearest) {
+        console.warn(`[ISHAMI] Start position (${rawX}, ${rawZ}) is off-road. Snapping to nearest road at (${nearest.point.x.toFixed(1)}, ${nearest.point.z.toFixed(1)})`);
+        return { x: nearest.point.x, y: (startPos?.[1] ?? 0) + 0.8, z: nearest.point.z };
+      }
+    }
+    return { x: rawX, y: (startPos?.[1] ?? 0) + 0.8, z: rawZ };
+  }, [startPos, roadBoundarySystem]);
+
   const positionRef = useRef(new THREE.Vector3(
-    startPos?.[0] ?? 68,
-    (startPos?.[1] ?? 0) + 0.8,
-    startPos?.[2] ?? -126
+    validatedStartPos.x,
+    validatedStartPos.y,
+    validatedStartPos.z
   ));
   const collisionCooldown = useRef(0);
   const lastCollisionPos = useRef(new THREE.Vector3());
+  const offRoadCooldown = useRef(0);
 
   // Rwanda flag colors: Blue (top), Yellow (middle), Green (bottom)
   const rwandaBlue = useMemo(() => new THREE.Color('#0072C6'), []);
@@ -251,9 +269,39 @@ function CarModel({
     const moveSpeed = result.speed;
 
     // Calculate new position
-    const newX = positionRef.current.x + Math.sin(moveAngle) * moveSpeed * delta;
-    const newZ = positionRef.current.z + Math.cos(moveAngle) * moveSpeed * delta;
+    let newX = positionRef.current.x + Math.sin(moveAngle) * moveSpeed * delta;
+    let newZ = positionRef.current.z + Math.cos(moveAngle) * moveSpeed * delta;
     const newRot = rotationRef.current + result.rotation * delta;
+
+    // ─── Road Boundary Check ───
+    // Car must stay on roads — constrain movement to road segments
+    if (roadBoundarySystem && Math.abs(moveSpeed) > 0.01) {
+      const constrained = roadBoundarySystem.constrainToRoad(
+        positionRef.current.x,
+        positionRef.current.z,
+        newX,
+        newZ,
+        1.5 // car bounding radius
+      );
+
+      if (constrained.constrained) {
+        // Car is trying to go off-road — push it back and slow down
+        newX = constrained.x;
+        newZ = constrained.z;
+
+        // Slow the car when going off-road
+        physics._smoothSpeed *= 0.5;
+
+        // Off-road cooldown to avoid spam
+        if (offRoadCooldown.current <= 0) {
+          offRoadCooldown.current = 0.3;
+          if (onCollision) {
+            const offRoadPoint = new THREE.Vector3(newX, positionRef.current.y, newZ);
+            onCollision('MINOR', offRoadPoint);
+          }
+        }
+      }
+    }
 
     // ─── Collision Detection ───
     const testPos = new THREE.Vector3(newX, positionRef.current.y, newZ);
@@ -290,9 +338,12 @@ function CarModel({
       rotationRef.current = newRot;
     }
 
-    // Cooldown timer
+    // Cooldown timers
     if (collisionCooldown.current > 0) {
       collisionCooldown.current -= delta;
+    }
+    if (offRoadCooldown.current > 0) {
+      offRoadCooldown.current -= delta;
     }
 
     // Update visual position
@@ -320,7 +371,7 @@ function CarModel({
   const scene = gltf.scene.clone(true);
 
   return (
-    <group ref={groupRef} position={startPos ? [startPos[0], startPos[1] + 0.8, startPos[2]] : [68, 0.8, -126]}>
+    <group ref={groupRef} position={[validatedStartPos.x, validatedStartPos.y, validatedStartPos.z]}>
       <primitive object={scene} scale={1.4} />
       {/* Ground shadow disc */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
@@ -937,6 +988,15 @@ function SceneContents({
 }) {
   const physics = useMemo(() => new VehiclePhysics(), []);
   const collisionSystem = useMemo(() => new CollisionSystem(), []);
+  const roadBoundarySystem = useMemo(() => {
+    if (cityModel === 'low_poly') {
+      return RoadBoundarySystem.createLowPolyRoads();
+    }
+    // Build roads dynamically from the scenario's waypoint path
+    // so the car always starts and drives on roads for any scenario
+    const wpPositions: [number, number, number][] = waypoints.map(wp => wp.position as [number, number, number]);
+    return RoadBoundarySystem.createFromWaypoints(wpPositions, 8);
+  }, [cityModel, waypoints]);
   const speedRef = useRef(0);
   const collisionFlashPos = useRef(new THREE.Vector3());
   const [flashActive, setFlashActive] = useState(false);
@@ -990,6 +1050,7 @@ function SceneContents({
       <CarModel
         physics={physics}
         collisionSystem={collisionSystem}
+        roadBoundarySystem={roadBoundarySystem}
         onSpeedUpdate={(speed, rpm) => {
           speedRef.current = speed;
           onSpeedUpdate(speed, rpm);
