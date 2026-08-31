@@ -16,6 +16,7 @@ interface SimulationHUDProps {
   onCameraChange?: () => void;
   onMute?: () => void;
   isMuted?: boolean;
+  isMobile?: boolean;
 }
 
 // Stage progress indicator
@@ -41,6 +42,7 @@ export default function SimulationHUD({
   onCameraChange,
   onMute,
   isMuted = false,
+  isMobile = false,
 }: SimulationHUDProps) {
   const [showControls, setShowControls] = useState(true);
 
@@ -55,8 +57,8 @@ export default function SimulationHUD({
   return (
     <div className="absolute inset-0 z-20 pointer-events-none">
       {/* Top Left — Mission Info */}
-      <div className="absolute top-4 left-4 pointer-events-auto">
-        <div className="bg-[#111827]/80 backdrop-blur-lg rounded-2xl border border-white/10 px-4 py-3">
+      <div className={`absolute ${isMobile ? 'top-2 left-2' : 'top-4 left-4'} pointer-events-auto`}>        
+        <div className={`bg-[#111827]/80 backdrop-blur-lg rounded-2xl border border-white/10 ${isMobile ? 'px-2 py-1.5' : 'px-4 py-3'}`}>
           <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">
             Mission 01
           </div>
@@ -85,8 +87,8 @@ export default function SimulationHUD({
       </div>
 
       {/* Top Right — Speed */}
-      <div className="absolute top-4 right-4 pointer-events-auto">
-        <div className="bg-[#111827]/80 backdrop-blur-lg rounded-2xl border border-white/10 px-5 py-3 text-right">
+      <div className={`absolute ${isMobile ? 'top-2 right-2' : 'top-4 right-4'} pointer-events-auto`}>        
+        <div className={`bg-[#111827]/80 backdrop-blur-lg rounded-2xl border border-white/10 ${isMobile ? 'px-3 py-1.5' : 'px-5 py-3'} text-right`}>
           <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">
             Speed
           </div>
@@ -121,6 +123,7 @@ export default function SimulationHUD({
       </div>
 
       {/* Bottom Center — Status Indicators */}
+      {!isMobile && (
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-auto">
         <div className="bg-[#111827]/80 backdrop-blur-lg rounded-2xl border border-white/10 px-4 py-2 flex items-center gap-4">
           <StatusIndicator label="SEATBELT" active={state.seatbeltFastened} />
@@ -134,6 +137,7 @@ export default function SimulationHUD({
           />
         </div>
       </div>
+      )}
 
       {/* Bottom Right — Controls */}
       <div className="absolute bottom-4 right-4 pointer-events-auto">

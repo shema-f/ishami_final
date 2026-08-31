@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>ISHAMI - Rwanda Traffic Rules | Amategeko y'Umuhanda</title>
     <meta name="description" content="Master Rwanda Traffic Rules with interactive quizzes, AI assistance, and 3D simulations." />
     <meta name="theme-color" content="#3D3D41" />
@@ -22,10 +22,16 @@
     <!-- Critical inline styles to prevent CLS -->
     <style>
       html { background: #333337; }
-      body { margin: 0; background: transparent; min-height: 100dvh; }
+      body { margin: 0; background: transparent; min-height: 100dvh; overscroll-behavior: none; }
       #root { min-height: 100dvh; }
       /* Prevent hero layout shift */
       .hero-placeholder { height: 100dvh; min-height: 600px; background: #0a0e14; }
+      /* Mobile: prevent pull-to-refresh and overscroll */
+      html, body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
+      /* Landscape simulation mode */
+      @media (max-width: 768px) and (orientation: landscape) {
+        body { overscroll-behavior: none; touch-action: none; }
+      }
     </style>
     
     <!-- PWA -->

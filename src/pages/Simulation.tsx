@@ -30,6 +30,7 @@ import MobileControls from '../simulation/ui/MobileControls';
 import CockpitDashboard from '../simulation/ui/CockpitDashboard';
 import ScorePopup from '../simulation/ui/ScorePopup';
 import MiniMap from '../simulation/ui/MiniMap';
+import RotatePrompt from '../components/RotatePrompt';
 
 // ─── New Systems ──────────────────────────────────────────
 import { getAudioEngine } from '../simulation/audio/AudioEngine';
@@ -1222,7 +1223,10 @@ export default function Simulation() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0d1117] overflow-hidden">
+    <div className="relative min-h-screen bg-[#0d1117] overflow-hidden" style={{ touchAction: 'none' }}>
+      {/* Rotate Prompt for Mobile */}
+      <RotatePrompt />
+
       {/* Back Button */}
       <div className="absolute top-4 left-4 z-50">
         <button
@@ -1415,6 +1419,7 @@ export default function Simulation() {
             rpm={rpm}
             onCameraChange={() => setCameraMode((prev) => prev === 'thirdPerson' ? 'cockpit' : 'thirdPerson')}
             onPause={() => setIsMuted(audioRef.current.toggleMute())}
+            isMobile={isMobile}
           />
 
           {/* Score Popups & Combo Display */}
@@ -1462,12 +1467,22 @@ export default function Simulation() {
                   ⌨️ {lang === 'rw' ? 'Ubuyobozi' : 'Controls'}
                 </div>
                 <div className="grid grid-cols-3 gap-x-6 gap-y-1 text-[11px] text-slate-400">
-                  <span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">W/S</kbd> Gas / Brake</span>
+                  {!isMobile ? (
+                  <><span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">W/S</kbd> Gas / Brake</span>
                   <span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">A/D</kbd> Steer</span>
-                  <span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">1/2/R</kbd> Gears</span>
+                  <span><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[10px]">1/2/R</kbd> Gears</span></>
+                ) : (
+                  <><span>🎮 <span className="text-white">GAS/BRK</span> Pedals</span>
+                  <span>🔄 <span className="text-white">Wheel</span> Steer</span>
+                  <span>⚙️ <span className="text-white">N/1/2/R</span> Gears</span></>
+                )}
                 </div>
                 <div className="mt-2 text-[10px] text-slate-500">
-                  <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">Scroll</kbd> Zoom in/out &nbsp;·&nbsp; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">C</kbd> Camera &nbsp;·&nbsp; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">M</kbd> Mute
+                  {!isMobile ? (
+                    <><kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">Scroll</kbd> Zoom in/out &nbsp;·&nbsp; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">C</kbd> Camera &nbsp;·&nbsp; <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white text-[9px]">M</kbd> Mute</>
+                  ) : (
+                    <>👆 <span className="text-white">Pinch</span> Zoom &nbsp;·&nbsp; 📷 <span className="text-white">Camera</span> &nbsp;·&nbsp; 🔧 <span className="text-white">Handbrake</span></>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -1477,7 +1492,7 @@ export default function Simulation() {
           <MiniMap waypoints={waypoints} visible={phase === 'driving' || phase === 'preparation'} />
 
           {/* ═══ ZOOM CONTROLS ═══ */}
-          {(phase === 'driving' || phase === 'preparation') && (
+          {(phase === 'driving' || phase === 'preparation') && !isMobile && (
             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-2">
               <button
                 onClick={() => setZoomLevel((z) => Math.max(0, z - 1))}

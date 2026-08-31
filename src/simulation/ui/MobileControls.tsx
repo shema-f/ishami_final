@@ -1,6 +1,7 @@
 // ============================================================
-// ISHAMI SIMULATION — Mobile Touch Controls
-// Steering wheel, pedals, and gear controls for mobile
+// ISHAMI SIMULATION — Mobile Touch Controls (Landscape Optimized)
+// Left thumb: steering | Right thumb: pedals | Top: gears + actions
+// Designed for landscape mode on smartphones
 // ============================================================
 
 import { useRef, useState, useCallback, useEffect } from 'react';
@@ -34,7 +35,7 @@ export default function MobileControls({
   const [isSteering, setIsSteering] = useState(false);
   const touchIdRef = useRef<number | null>(null);
 
-  // ─── Steering Wheel ──────────────────────────────────
+  // ─── Steering Wheel (Left side of screen) ─────────────
 
   const handleSteerStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
@@ -71,10 +72,11 @@ export default function MobileControls({
     }
   }, [onSteer]);
 
-  // ─── Pedals ───────────────────────────────────────────
+  // ─── Pedals (Right side of screen) ───────────────────
 
   const handlePedalStart = useCallback((type: 'accel' | 'brake' | 'clutch') => (e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (type === 'accel') onAccelerate(true);
     else if (type === 'brake') onBrake(true);
     else if (type === 'clutch') onClutch(true);
@@ -82,6 +84,7 @@ export default function MobileControls({
 
   const handlePedalEnd = useCallback((type: 'accel' | 'brake' | 'clutch') => (e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (type === 'accel') onAccelerate(false);
     else if (type === 'brake') onBrake(false);
     else if (type === 'clutch') onClutch(false);
@@ -90,14 +93,12 @@ export default function MobileControls({
   // ─── Gyroscope Steering ───────────────────────────────
 
   useEffect(() => {
-    let lastGamma = 0;
     let active = false;
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (!active) return;
-      const gamma = e.gamma || 0; // left/right tilt (-90 to 90)
+      const gamma = e.gamma || 0;
       const normalized = Math.max(-1, Math.min(1, gamma / 30));
-      // Only use if significant
       if (Math.abs(normalized) > 0.05) {
         setSteerAngle(normalized);
         onSteer(normalized);
@@ -105,10 +106,8 @@ export default function MobileControls({
         setSteerAngle(0);
         onSteer(0);
       }
-      lastGamma = gamma;
     };
 
-    // Check if device orientation is available
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', handleOrientation);
       active = true;
@@ -122,130 +121,130 @@ export default function MobileControls({
   const gears = ['N', '1', '2', 'R'];
 
   return (
-    <div className="absolute inset-0 z-30 pointer-events-none">
-      {/* ─── Left Side: Steering + Clutch ─── */}
-      <div className="absolute left-4 bottom-4 pointer-events-auto flex flex-col items-center gap-3">
-        {/* Clutch Button */}
+    <div className="absolute inset-0 z-30 pointer-events-none select-none" style={{ touchAction: 'none' }}>
+
+      {/* ═══ LEFT SIDE: Steering Wheel ═══ */}
+      <div className="absolute left-3 bottom-3 pointer-events-auto flex flex-col items-center gap-2">
+        {/* Clutch button — small, above steering wheel */}
         <button
           onTouchStart={handlePedalStart('clutch')}
           onTouchEnd={handlePedalEnd('clutch')}
-          className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-xs font-bold text-white active:bg-blue-500/30 active:border-blue-500/50 transition-colors select-none"
+          className="w-11 h-11 rounded-xl bg-white/8 border border-white/15 flex items-center justify-center text-[9px] font-bold text-white/60 active:bg-yellow-500/25 active:border-yellow-500/40 active:text-yellow-300 transition-colors"
         >
           CLT
         </button>
 
-        {/* Steering Wheel */}
+        {/* Steering Wheel — main touch area */}
         <div
           ref={steerRef}
           onTouchStart={handleSteerStart}
           onTouchMove={handleSteerMove}
           onTouchEnd={handleSteerEnd}
-          className="relative w-36 h-36 rounded-full bg-[#111827]/80 border-2 border-white/10 flex items-center justify-center select-none touch-none"
+          className="relative w-28 h-28 rounded-full bg-[#111827]/80 border-2 border-white/10 flex items-center justify-center touch-none"
         >
           {/* Outer ring */}
-          <div className="absolute inset-2 rounded-full border-2 border-white/5" />
+          <div className="absolute inset-2 rounded-full border border-white/5" />
 
-          {/* Steering wheel visual */}
+          {/* Inner rotating wheel */}
           <div
-            className="w-24 h-24 rounded-full border-4 border-blue-500/50 flex items-center justify-center transition-transform"
+            className="w-20 h-20 rounded-full border-3 border-blue-500/40 flex items-center justify-center"
             style={{
               transform: `rotate(${steerAngle * 45}deg)`,
-              background: `radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)`,
+              borderWidth: '3px',
+              background: `radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)`,
             }}
           >
-            {/* Center hub */}
-            <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-              <span className="text-xs text-blue-400">●</span>
+            <div className="w-7 h-7 rounded-full bg-blue-500/15 border border-blue-500/25 flex items-center justify-center">
+              <span className="text-[10px] text-blue-400">●</span>
             </div>
           </div>
 
           {/* Left/Right indicators */}
-          <div className={`absolute left-2 top-1/2 -translate-y-1/2 w-1 h-6 rounded-full transition-colors ${steerAngle < -0.1 ? 'bg-red-400' : 'bg-white/10'}`} />
-          <div className={`absolute right-2 top-1/2 -translate-y-1/2 w-1 h-6 rounded-full transition-colors ${steerAngle > 0.1 ? 'bg-red-400' : 'bg-white/10'}`} />
+          <div className={`absolute left-1.5 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full transition-colors ${steerAngle < -0.1 ? 'bg-red-400' : 'bg-white/5'}`} />
+          <div className={`absolute right-1.5 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full transition-colors ${steerAngle > 0.1 ? 'bg-red-400' : 'bg-white/5'}`} />
 
-          {/* Angle display */}
-          <div className="absolute -bottom-1 text-[9px] text-slate-500 font-mono">
-            {Math.round(steerAngle * 100)}°
-          </div>
+          {/* Label */}
+          <div className="absolute -bottom-4 text-[8px] text-slate-600 font-medium tracking-wider">STEER</div>
         </div>
       </div>
 
-      {/* ─── Right Side: Pedals + Gears ─── */}
-      <div className="absolute right-4 bottom-4 pointer-events-auto flex flex-col items-center gap-2">
-        {/* Gear Selector */}
-        <div className="flex gap-1.5 mb-2">
-          {gears.map(g => (
-            <button
-              key={g}
-              onTouchStart={(e) => { e.preventDefault(); onGearSelect(g); }}
-              className={`w-10 h-10 rounded-xl text-xs font-bold select-none transition-all ${
-                currentGear === g
-                  ? 'bg-blue-500/30 border-2 border-blue-500/50 text-white'
-                  : 'bg-white/5 border border-white/10 text-slate-500 active:bg-white/10'
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
+      {/* ═══ RIGHT SIDE: Pedals ═══ */}
+      <div className="absolute right-3 bottom-3 pointer-events-auto flex items-end gap-1.5">
+        {/* Clutch pedal */}
+        <button
+          onTouchStart={handlePedalStart('clutch')}
+          onTouchEnd={handlePedalEnd('clutch')}
+          className="w-10 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[8px] font-bold text-slate-600 active:bg-yellow-500/20 active:border-yellow-500/30 active:text-yellow-300 transition-colors"
+        >
+          CLT
+        </button>
 
-        {/* Pedals */}
-        <div className="flex gap-2 items-end">
-          {/* Clutch (left pedal) */}
-          <button
-            onTouchStart={handlePedalStart('clutch')}
-            onTouchEnd={handlePedalEnd('clutch')}
-            className="w-12 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-500 active:bg-yellow-500/20 active:border-yellow-500/30 active:text-yellow-400 transition-colors select-none"
-          >
-            CLT
-          </button>
+        {/* Brake pedal — medium height */}
+        <button
+          onTouchStart={handlePedalStart('brake')}
+          onTouchEnd={handlePedalEnd('brake')}
+          className="w-12 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[9px] font-bold text-slate-500 active:bg-red-500/20 active:border-red-500/30 active:text-red-400 transition-colors"
+        >
+          BRK
+        </button>
 
-          {/* Brake (middle pedal) */}
-          <button
-            onTouchStart={handlePedalStart('brake')}
-            onTouchEnd={handlePedalEnd('brake')}
-            className="w-12 h-24 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-500 active:bg-red-500/20 active:border-red-500/30 active:text-red-400 transition-colors select-none"
-          >
-            BRK
-          </button>
-
-          {/* Accelerator (right pedal) */}
-          <button
-            onTouchStart={handlePedalStart('accel')}
-            onTouchEnd={handlePedalEnd('accel')}
-            className="w-12 h-28 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-500 active:bg-green-500/20 active:border-green-500/30 active:text-green-400 transition-colors select-none"
-          >
-            GAS
-          </button>
-        </div>
+        {/* Gas pedal — tallest */}
+        <button
+          onTouchStart={handlePedalStart('accel')}
+          onTouchEnd={handlePedalEnd('accel')}
+          className="w-12 h-24 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[9px] font-bold text-slate-500 active:bg-green-500/20 active:border-green-500/30 active:text-green-400 transition-colors"
+        >
+          GAS
+        </button>
       </div>
 
-      {/* ─── Top Right: Quick Actions ─── */}
-      <div className="absolute top-4 right-4 pointer-events-auto flex gap-2">
+      {/* ═══ TOP CENTER: Gear Selector ═══ */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 pointer-events-auto flex items-center gap-1.5">
+        {gears.map(g => (
+          <button
+            key={g}
+            onTouchStart={(e) => { e.preventDefault(); onGearSelect(g); }}
+            className={`w-9 h-9 rounded-lg text-[10px] font-bold transition-all ${
+              currentGear === g
+                ? g === 'R'
+                  ? 'bg-red-500/30 border-2 border-red-500/50 text-red-300'
+                  : g === 'N'
+                  ? 'bg-amber-500/30 border-2 border-amber-500/50 text-amber-300'
+                  : 'bg-blue-500/30 border-2 border-blue-500/50 text-white'
+                : 'bg-white/5 border border-white/10 text-slate-600 active:bg-white/10'
+            }`}
+          >
+            {g}
+          </button>
+        ))}
+      </div>
+
+      {/* ═══ TOP RIGHT: Quick Actions ═══ */}
+      <div className="absolute top-2 right-3 pointer-events-auto flex gap-1.5">
         <button
           onTouchStart={(e) => { e.preventDefault(); onCameraToggle(); }}
-          className="p-2.5 rounded-xl bg-[#111827]/80 border border-white/10 text-slate-400 active:text-white active:bg-white/10 transition-colors select-none"
+          className="w-9 h-9 rounded-lg bg-[#111827]/70 border border-white/10 flex items-center justify-center text-slate-500 active:text-white active:bg-white/10 transition-colors"
         >
           📷
         </button>
         <button
           onTouchStart={(e) => { e.preventDefault(); onHandbrake(); }}
-          className="p-2.5 rounded-xl bg-[#111827]/80 border border-white/10 text-slate-400 active:text-amber-400 active:bg-amber-500/10 transition-colors select-none"
+          className="w-9 h-9 rounded-lg bg-[#111827]/70 border border-white/10 flex items-center justify-center text-slate-500 active:text-amber-400 active:bg-amber-500/10 transition-colors"
         >
           🔧
         </button>
       </div>
 
-      {/* ─── Steering Angle Indicator ─── */}
+      {/* ═══ STEERING ANGLE FEEDBACK ═══ */}
       {isSteering && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 pointer-events-none"
         >
-          <div className="px-3 py-1.5 rounded-full bg-[#111827]/90 border border-white/10">
-            <span className="text-xs text-blue-400 font-mono">
-              Steering: {Math.round(steerAngle * 100)}%
+          <div className="px-2 py-1 rounded-full bg-[#111827]/80 border border-white/10">
+            <span className="text-[9px] text-blue-400 font-mono">
+              {Math.round(steerAngle * 100)}%
             </span>
           </div>
         </motion.div>

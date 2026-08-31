@@ -110,7 +110,7 @@ export default function ScenarioSelect() {
           </motion.div>
 
           {/* Difficulty Filter */}
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 md:gap-2">
             {difficulties.map(d => (
               <button
                 key={d}
