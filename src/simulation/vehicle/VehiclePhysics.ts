@@ -122,8 +122,10 @@ export class VehiclePhysics {
     }
 
     // Accelerator force — snappier response
+    // In R gear, accelerator pushes BACKWARD (multiply by -1)
     if (state.acceleratorPressed && state.engineRunning && !state.engineStalled) {
-      const acceleratorForce = this.config.enginePower * 100 * clutchFactor;
+      const gearDirection = gear === 'R' ? -1 : 1;
+      const acceleratorForce = this.config.enginePower * 100 * clutchFactor * gearDirection;
       driveForce += acceleratorForce * (this.rpm / this.config.maxRPM);
     }
 
