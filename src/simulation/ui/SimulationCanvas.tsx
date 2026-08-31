@@ -1074,30 +1074,28 @@ function SceneContents({
       {/* LOW POLY CITY VISUAL POLISH */}
       {cityModel === 'low_poly' && phase === 'driving' && (<>
         <LowPolyRoadMarkings roads={[
-          { start: [0, 0, 15], end: [0, 0, -35], type: 'center' },
-          { start: [0, 0, 15], end: [85, 0, 15], type: 'center' },
-          { start: [20, 0, 15], end: [20, 0, -45], type: 'center' },
-          { start: [80, 0, 5], end: [80, 0, -45], type: 'center' },
-          { start: [0, 0, -40], end: [85, 0, -40], type: 'center' },
+          { start: [-25, 0, -3.5], end: [5, 0, -3.5], type: 'center' },
+          { start: [-25, 0, -7], end: [5, 0, -7], type: 'center' },
+          { start: [-15, 0, -3.5], end: [-15, 0, -7], type: 'center' },
+          { start: [-5, 0, -3.5], end: [-5, 0, -7], type: 'center' },
+          { start: [3, 0, -3.5], end: [3, 0, -7], type: 'center' },
         ]} />
         <StreetLights positions={[
-          [22, 0, 2], [22, 0, -38], [62, 0, -38],
-          [0, 0, 10], [80, 0, 10], [40, 0, -20],
+          [-12, 0, -3], [-12, 0, -8],
+          [-2, 0, -3], [-2, 0, -8],
+          [3, 0, -3], [3, 0, -8],
         ]} />
-        <FloatingParticles count={40} area={50} height={12} color="#aaccff" speed={0.2} />
-        <RoadArrow position={[0, 0, 5]} rotation={Math.PI} color="#ffffff" />
-        <RoadArrow position={[20, 0, -15]} rotation={Math.PI} color="#ffffff" />
-        <RoadArrow position={[50, 0, -40]} rotation={Math.PI / 2} color="#ffffff" />
-        <LowPolyStopLine position={[19, 0, 2]} width={5} />
-        <LowPolyStopLine position={[19, 0, -38]} width={5} />
-        <SpeedBump position={[10, 0, -25]} width={5} />
-        <LowPolyTree position={[-3, 0, 5]} leafColor="#2d8a4e" />
-        <LowPolyTree position={[3, 0, 5]} leafColor="#3aaf60" />
-        <LowPolyTree position={[-3, 0, -15]} leafColor="#2d8a4e" />
-        <LowPolyTree position={[3, 0, -15]} leafColor="#3aaf60" />
-        <LowPolyTree position={[25, 0, 5]} scale={0.8} leafColor="#44bb77" />
-        <LowPolyTree position={[55, 0, -35]} leafColor="#2d8a4e" />
-        <LowPolyTree position={[75, 0, -35]} scale={0.9} leafColor="#3aaf60" />
+        <FloatingParticles count={30} area={30} height={8} color="#aaccff" speed={0.15} />
+        <RoadArrow position={[-18, 0, -3.5]} rotation={0} color="#ffffff" />
+        <RoadArrow position={[-8, 0, -7]} rotation={Math.PI} color="#ffffff" />
+        <RoadArrow position={[0, 0, -3.5]} rotation={0} color="#ffffff" />
+        <LowPolyStopLine position={[-12, 0, -3.5]} width={4} />
+        <LowPolyStopLine position={[-2, 0, -3.5]} width={4} />
+        <SpeedBump position={[-8, 0, -5.2]} width={4} />
+        <LowPolyTree position={[-25, 0, -3]} leafColor="#2d8a4e" scale={0.7} />
+        <LowPolyTree position={[-25, 0, -7.5]} leafColor="#3aaf60" scale={0.7} />
+        <LowPolyTree position={[5, 0, -3]} leafColor="#2d8a4e" scale={0.7} />
+        <LowPolyTree position={[5, 0, -7.5]} leafColor="#3aaf60" scale={0.7} />
       </>)}
 
       <Environment preset="city" background={false} />

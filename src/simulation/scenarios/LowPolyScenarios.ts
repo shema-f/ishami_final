@@ -1,20 +1,21 @@
 // ============================================================
 // ISHAMI SIMULATION — Low Poly City Scenarios
 // 6 new beginner scenarios using the low_poly_city model
-// Simple, educational, highly visual
+// Waypoints adjusted to match actual road layout:
+//   Main road: x=[-25,5], z=[-7,0]
+//   Side roads: at x positions, z=[-7,0]
 // ============================================================
 
 import type { ScenarioConfig } from './AllScenarios';
 
 // ─── Scenario 1: Start & Move 5 Meters ─────────────────────
-// The simplest possible scenario — start engine, move forward 5 meters, done!
 
 export const LOWPOLY_START_AND_GO: ScenarioConfig = {
   id: 'lowpoly_start_go',
   title: 'Start & Move Forward',
   titleRW: 'Tangira Ujye Imbere',
   description: 'The very first lesson: start your engine, select first gear, and drive forward 5 meters. You can do it!',
-  descriptionRW: 'Igitangira: tangira injini, hitamo igeari ya mbere, kandi ujye imbere mita 5.',
+  descriptionRW: 'Igitangira: tangira injini, hitamo igeari ya mbere, kandi ujye imbere metero 5.',
   difficulty: 'BEGINNER',
   location: 'Low Poly City — Main Road Start',
   locationRW: 'Low Poly City — Umuhanda wa Tangira',
@@ -32,8 +33,8 @@ export const LOWPOLY_START_AND_GO: ScenarioConfig = {
   waypoints: [
     {
       id: 'SG_START',
-      position: [0, 0, 0],
-      radius: 5,
+      position: [-20, 0, -3.5],
+      radius: 4,
       objective: 'Starting position — engine off',
       instruction: 'You are parked on the main road. Start your engine first.',
       completed: false,
@@ -41,8 +42,8 @@ export const LOWPOLY_START_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SG_GEAR',
-      position: [0, 0, -8],
-      radius: 4,
+      position: [-20, 0, -7],
+      radius: 3,
       objective: 'Select first gear',
       instruction: 'Clutch in, select first gear, release handbrake gently.',
       completed: false,
@@ -50,8 +51,8 @@ export const LOWPOLY_START_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SG_HALF',
-      position: [0, 0, -18],
-      radius: 5,
+      position: [-15, 0, -7],
+      radius: 4,
       objective: 'Halfway — keep going!',
       instruction: 'Great start! Keep the steering straight and maintain gentle throttle.',
       completed: false,
@@ -59,8 +60,8 @@ export const LOWPOLY_START_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SG_FINISH',
-      position: [0, 0, -30],
-      radius: 5,
+      position: [-10, 0, -7],
+      radius: 4,
       objective: 'Stop here — 5 meters driven!',
       instruction: 'Brake gently and come to a complete stop. You did it!',
       completed: false,
@@ -93,37 +94,34 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     { id: 'stay_lane', text: 'Stay in your lane', textRW: 'Guma mu imbanza yawe', icon: '🛣️' },
     { id: 'safe_speed', text: 'Maintain safe speed', textRW: 'Kurikiza umuvuduko', icon: '⚡' },
   ],
-  // Traffic lights at intersections
   trafficLights: [
-    { position: [20, 0, 0], rotation: 0 },
-    { position: [20, 0, -40], rotation: 0 },
-    { position: [60, 0, -40], rotation: Math.PI / 2 },
+    { position: [-10, 0, -3], rotation: 0 },
+    { position: [-10, 0, -7], rotation: Math.PI },
+    { position: [0, 0, -3], rotation: 0 },
   ],
-  // AI vehicles driving around
   aiVehicles: [
     {
-      position: [40, 0, 0],
+      position: [-15, 0, -3.5],
       color: 0xcc3333,
-      speed: 8,
-      path: [[40, 0, 0], [40, 0, -40], [80, 0, -40], [80, 0, 0], [40, 0, 0]],
+      speed: 6,
+      path: [[-15, 0, -3.5], [-5, 0, -3.5], [5, 0, -3.5], [5, 0, -7], [-5, 0, -7], [-15, 0, -7], [-15, 0, -3.5]],
     },
     {
-      position: [0, 0, -40],
+      position: [-20, 0, -7],
       color: 0x3366cc,
-      speed: 6,
-      path: [[0, 0, -40], [40, 0, -40], [40, 0, -80], [0, 0, -80], [0, 0, -40]],
+      speed: 4,
+      path: [[-20, 0, -7], [-10, 0, -7], [0, 0, -7], [0, 0, -3.5], [-10, 0, -3.5], [-20, 0, -3.5], [-20, 0, -7]],
     },
   ],
-  // Pedestrians crossing at zebra
   pedestrians: [
-    { position: [20, 0, -20], path: [[20, 0, -20], [20, 0, -15]], speed: 1.5 },
-    { position: [60, 0, -60], path: [[60, 0, -60], [60, 0, -55]], speed: 1.2 },
+    { position: [-10, 0, -5], path: [[-10, 0, -5], [-10, 0, -2]], speed: 1.2 },
+    { position: [0, 0, -5], path: [[0, 0, -5], [0, 0, -2]], speed: 1.0 },
   ],
   waypoints: [
     {
       id: 'TF_START',
-      position: [0, 0, 10],
-      radius: 5,
+      position: [-22, 0, -3.5],
+      radius: 4,
       objective: 'Start driving on the main road',
       instruction: 'Begin driving on the main road. Watch for traffic lights ahead.',
       completed: false,
@@ -131,17 +129,17 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     },
     {
       id: 'TF_LIGHT_1',
-      position: [20, 0, 5],
-      radius: 4,
+      position: [-12, 0, -3.5],
+      radius: 3,
       objective: 'Obey first traffic light',
-      instruction: 'Traffic light ahead! Stop if red, proceed if green. Use your indicators.',
+      instruction: 'Traffic light ahead! Stop if red, proceed if green.',
       completed: false,
       instructorMessage: 'Traffic light! Check the color. Red = STOP. Green = GO carefully.',
     },
     {
       id: 'TF_ZEBRA',
-      position: [20, 0, -18],
-      radius: 4,
+      position: [-10, 0, -5],
+      radius: 3,
       objective: 'Stop at zebra crossing',
       instruction: 'Zebra crossing with pedestrians! Stop completely and let them cross.',
       completed: false,
@@ -149,17 +147,17 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     },
     {
       id: 'TF_LIGHT_2',
-      position: [40, 0, -40],
-      radius: 4,
+      position: [-2, 0, -3.5],
+      radius: 3,
       objective: 'Navigate second traffic light',
-      instruction: 'Second intersection. Check traffic light and all mirrors before proceeding.',
+      instruction: 'Second intersection. Check traffic light before proceeding.',
       completed: false,
       instructorMessage: 'Intersection ahead! Check light, check mirrors, then decide.',
     },
     {
       id: 'TF_TURN',
-      position: [60, 0, -40],
-      radius: 4,
+      position: [3, 0, -3.5],
+      radius: 3,
       objective: 'Turn right at intersection',
       instruction: 'Signal right and make a smooth turn at the intersection.',
       completed: false,
@@ -167,8 +165,8 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     },
     {
       id: 'TF_ZEBRA_2',
-      position: [60, 0, -58],
-      radius: 4,
+      position: [3, 0, -5.5],
+      radius: 3,
       objective: 'Stop at second zebra crossing',
       instruction: 'Another zebra crossing! Stop and wait for pedestrians.',
       completed: false,
@@ -176,8 +174,8 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     },
     {
       id: 'TF_FINISH',
-      position: [80, 0, -40],
-      radius: 5,
+      position: [-5, 0, -7],
+      radius: 4,
       objective: 'Mission complete!',
       instruction: 'You completed the traffic flow course. Well done!',
       completed: false,
@@ -187,7 +185,6 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
 };
 
 // ─── Scenario 3: Corners & Turns ───────────────────────────
-// Drive around the city making turns while staying within road lines
 
 export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
   id: 'lowpoly_corners_turns',
@@ -212,8 +209,8 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
   waypoints: [
     {
       id: 'CT_START',
-      position: [0, 0, 10],
-      radius: 5,
+      position: [-22, 0, -3.5],
+      radius: 4,
       objective: 'Start the turning course',
       instruction: 'Begin driving straight. A series of turns is coming up.',
       completed: false,
@@ -221,17 +218,17 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
     },
     {
       id: 'CT_TURN_1',
-      position: [15, 0, 10],
-      radius: 4,
+      position: [-15, 0, -3.5],
+      radius: 3,
       objective: 'Sharp right turn',
-      instruction: 'Slow down and make a sharp right turn. Stay within the road.',
+      instruction: 'Slow down and make a right turn. Stay within the road.',
       completed: false,
       instructorMessage: 'Sharp right! Slow down, signal right, check mirrors, then turn!',
     },
     {
       id: 'CT_TURN_2',
-      position: [15, 0, -15],
-      radius: 4,
+      position: [-15, 0, -7],
+      radius: 3,
       objective: 'Left turn at corner',
       instruction: 'Turn left at this corner. Use indicator and stay in lane.',
       completed: false,
@@ -239,8 +236,8 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
     },
     {
       id: 'CT_STRAIGHT',
-      position: [0, 0, -15],
-      radius: 5,
+      position: [-5, 0, -7],
+      radius: 4,
       objective: 'Straight section — keep steady',
       instruction: 'Drive straight through this section. Maintain steady speed.',
       completed: false,
@@ -248,17 +245,17 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
     },
     {
       id: 'CT_TURN_3',
-      position: [0, 0, -35],
-      radius: 4,
+      position: [3, 0, -7],
+      radius: 3,
       objective: 'Right turn at T-junction',
-      instruction: 'T-junction ahead! Signal right and turn onto the main road.',
+      instruction: 'T-junction ahead! Signal right and turn onto the side road.',
       completed: false,
       instructorMessage: 'T-junction! Signal right, check BOTH ways, then turn when safe.',
     },
     {
       id: 'CT_TURN_4',
-      position: [20, 0, -35],
-      radius: 4,
+      position: [3, 0, -3.5],
+      radius: 3,
       objective: 'U-turn — change direction',
       instruction: 'Make a safe U-turn when the road is clear. Signal both directions.',
       completed: false,
@@ -266,8 +263,8 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
     },
     {
       id: 'CT_FINISH',
-      position: [20, 0, -10],
-      radius: 5,
+      position: [-5, 0, -3.5],
+      radius: 4,
       objective: 'Turn course complete!',
       instruction: 'Stop here. You completed all turns successfully!',
       completed: false,
@@ -277,7 +274,6 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
 };
 
 // ─── Scenario 4: Reverse & Backup Driving ──────────────────
-// Test reversing in straight line and turning corners in reverse
 
 export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
   id: 'lowpoly_reverse_driving',
@@ -303,8 +299,8 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
   waypoints: [
     {
       id: 'RV_START',
-      position: [0, 0, 10],
-      radius: 5,
+      position: [-20, 0, -3.5],
+      radius: 4,
       objective: 'Starting position — forward facing',
       instruction: 'Stop here and prepare to reverse. Check behind you first!',
       completed: false,
@@ -312,8 +308,8 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
     },
     {
       id: 'RV_GEAR',
-      position: [0, 0, 15],
-      radius: 3,
+      position: [-20, 0, -5],
+      radius: 2,
       objective: 'Engage reverse gear',
       instruction: 'Clutch in, select R gear, check mirrors and over shoulder.',
       completed: false,
@@ -321,8 +317,8 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
     },
     {
       id: 'RV_STRAIGHT',
-      position: [0, 0, 30],
-      radius: 4,
+      position: [-20, 0, -7],
+      radius: 3,
       objective: 'Reverse in straight line',
       instruction: 'Keep steering straight and reverse slowly. Watch your mirrors!',
       completed: false,
@@ -330,8 +326,8 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
     },
     {
       id: 'RV_CORNER',
-      position: [10, 0, 30],
-      radius: 4,
+      position: [-15, 0, -7],
+      radius: 3,
       objective: 'Reverse around corner',
       instruction: 'Turn the wheel and reverse around the corner. Remember: steering is inverted!',
       completed: false,
@@ -339,7 +335,7 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
     },
     {
       id: 'RV_FINISH',
-      position: [10, 0, 45],
+      position: [-15, 0, -3.5],
       radius: 3,
       objective: 'Stop at target — reverse complete!',
       instruction: 'Stop precisely at the target. Engage handbrake and neutral.',
@@ -350,7 +346,6 @@ export const LOWPOLY_REVERSE_DRIVING: ScenarioConfig = {
 };
 
 // ─── Scenario 5: Parking Between Two Cars ──────────────────
-// Park your car between two parked vehicles
 
 export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
   id: 'lowpoly_between_parking',
@@ -376,8 +371,8 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
   waypoints: [
     {
       id: 'PK_APPROACH',
-      position: [-20, 0, 0],
-      radius: 5,
+      position: [-22, 0, -7],
+      radius: 4,
       objective: 'Approach the parking area',
       instruction: 'Drive slowly toward the parking area. Two cars are parked ahead.',
       completed: false,
@@ -385,8 +380,8 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
     },
     {
       id: 'PK_ALIGN',
-      position: [-5, 0, 0],
-      radius: 4,
+      position: [-12, 0, -7],
+      radius: 3,
       objective: 'Align with the parking space',
       instruction: 'Position yourself alongside the parking space. Get ready to steer in.',
       completed: false,
@@ -394,8 +389,8 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
     },
     {
       id: 'PK_DRIVE_IN',
-      position: [5, 0, 0],
-      radius: 3,
+      position: [-12, 0, -5],
+      radius: 2,
       objective: 'Drive into the parking space',
       instruction: 'Turn right and drive slowly into the parking space.',
       completed: false,
@@ -403,7 +398,7 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
     },
     {
       id: 'PK_CENTER',
-      position: [5, 0, -4],
+      position: [-12, 0, -3.5],
       radius: 2,
       objective: 'Center between the two cars',
       instruction: 'Straighten the wheel and center yourself between both vehicles.',
@@ -412,7 +407,7 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
     },
     {
       id: 'PK_COMPLETE',
-      position: [5, 0, -8],
+      position: [-12, 0, -2],
       radius: 2,
       objective: 'Park complete — handbrake on!',
       instruction: 'Come to a stop. Handbrake on, neutral gear. You parked perfectly!',
@@ -423,7 +418,6 @@ export const LOWPOLY_BETWEEN_PARKING: ScenarioConfig = {
 };
 
 // ─── Scenario 6: Stop & Go ─────────────────────────────────
-// Practice stopping and starting — essential for city driving
 
 export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
   id: 'lowpoly_stop_and_go',
@@ -448,8 +442,8 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
   waypoints: [
     {
       id: 'SGO_START',
-      position: [0, 0, 10],
-      radius: 5,
+      position: [-22, 0, -3.5],
+      radius: 4,
       objective: 'Start driving on the avenue',
       instruction: 'Begin driving on the main avenue. A stop sign is ahead.',
       completed: false,
@@ -457,7 +451,7 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SGO_STOP_1',
-      position: [30, 0, 10],
+      position: [-12, 0, -3.5],
       radius: 3,
       objective: 'Stop at the stop sign',
       instruction: 'STOP sign ahead! Come to a complete stop behind the line.',
@@ -466,8 +460,8 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SGO_GO_1',
-      position: [30, 0, -10],
-      radius: 4,
+      position: [-12, 0, -7],
+      radius: 3,
       objective: 'Start moving after stop',
       instruction: 'Check left-right-left. When clear, start driving again smoothly.',
       completed: false,
@@ -475,7 +469,7 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SGO_BEHIND',
-      position: [30, 0, -30],
+      position: [-2, 0, -7],
       radius: 3,
       objective: 'Stop behind the car ahead',
       instruction: 'Car ahead is stopped! Stop behind it with a safe gap.',
@@ -484,8 +478,8 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
     },
     {
       id: 'SGO_FINAL',
-      position: [50, 0, -30],
-      radius: 5,
+      position: [3, 0, -7],
+      radius: 4,
       objective: 'Stop & Go course complete!',
       instruction: 'One more smooth stop and you are done!',
       completed: false,
