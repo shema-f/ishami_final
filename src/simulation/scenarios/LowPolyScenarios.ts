@@ -24,6 +24,14 @@ export const LOWPOLY_START_AND_GO: ScenarioConfig = {
   speedLimit: 15,
   xpReward: 150,
   trainingMode: true,
+  aiVehicles: [
+    {
+      position: [0, 0, -7],
+      color: 0x22aa44,
+      speed: 2,
+      path: [[0, 0, -7], [-10, 0, -7], [-20, 0, -7], [-20, 0, -3.5], [-10, 0, -3.5], [0, 0, -3.5], [0, 0, -7]],
+    },
+  ],
   objectives: [
     { id: 'start_engine', text: 'Start the engine', textRW: 'Tangira injini', icon: '🔑' },
     { id: 'first_gear', text: 'Select first gear', textRW: 'Hitamo igeari ya mbere', icon: '⚙️' },
@@ -95,27 +103,28 @@ export const LOWPOLY_TRAFFIC_FLOW: ScenarioConfig = {
     { id: 'safe_speed', text: 'Maintain safe speed', textRW: 'Kurikiza umuvuduko', icon: '⚡' },
   ],
   trafficLights: [
-    { position: [-10, 0, -3], rotation: 0 },
-    { position: [-10, 0, -7], rotation: Math.PI },
-    { position: [0, 0, -3], rotation: 0 },
+    { position: [-15, 0, -3.5], rotation: 0 },
+    { position: [-15, 0, -7], rotation: Math.PI },
+    { position: [-5, 0, -3.5], rotation: 0 },
+    { position: [-5, 0, -7], rotation: Math.PI },
   ],
   aiVehicles: [
     {
-      position: [-15, 0, -3.5],
+      position: [-20, 0, -3.5],
       color: 0xcc3333,
-      speed: 6,
-      path: [[-15, 0, -3.5], [-5, 0, -3.5], [5, 0, -3.5], [5, 0, -7], [-5, 0, -7], [-15, 0, -7], [-15, 0, -3.5]],
+      speed: 3,
+      path: [[-20, 0, -3.5], [-15, 0, -3.5], [-10, 0, -3.5], [-5, 0, -3.5], [0, 0, -3.5], [3, 0, -3.5], [3, 0, -7], [0, 0, -7], [-5, 0, -7], [-10, 0, -7], [-15, 0, -7], [-20, 0, -7], [-20, 0, -3.5]],
     },
     {
-      position: [-20, 0, -7],
+      position: [-8, 0, -7],
       color: 0x3366cc,
-      speed: 4,
-      path: [[-20, 0, -7], [-10, 0, -7], [0, 0, -7], [0, 0, -3.5], [-10, 0, -3.5], [-20, 0, -3.5], [-20, 0, -7]],
+      speed: 2.5,
+      path: [[-8, 0, -7], [-3, 0, -7], [3, 0, -7], [3, 0, -3.5], [-3, 0, -3.5], [-8, 0, -3.5], [-8, 0, -7]],
     },
   ],
   pedestrians: [
-    { position: [-10, 0, -5], path: [[-10, 0, -5], [-10, 0, -2]], speed: 1.2 },
-    { position: [0, 0, -5], path: [[0, 0, -5], [0, 0, -2]], speed: 1.0 },
+    { position: [-15, 0, -5.25], path: [[-15, 0, -5.25], [-15, 0, -2]], speed: 1.2 },
+    { position: [-5, 0, -5.25], path: [[-5, 0, -5.25], [-5, 0, -2]], speed: 1.0 },
   ],
   waypoints: [
     {
@@ -200,6 +209,14 @@ export const LOWPOLY_CORNERS_TURNS: ScenarioConfig = {
   speedLimit: 20,
   xpReward: 200,
   trainingMode: true,
+  aiVehicles: [
+    {
+      position: [-8, 0, -3.5],
+      color: 0xcc6600,
+      speed: 2.5,
+      path: [[-8, 0, -3.5], [-3, 0, -3.5], [3, 0, -3.5], [3, 0, -7], [-3, 0, -7], [-8, 0, -7], [-8, 0, -3.5]],
+    },
+  ],
   objectives: [
     { id: 'signal_turns', text: 'Signal at every turn', textRW: 'Oreza buri furuka', icon: '🔄' },
     { id: 'stay_road', text: 'Stay within road lines', textRW: 'Guma mu imbanza', icon: '🛣️' },
@@ -433,6 +450,14 @@ export const LOWPOLY_STOP_AND_GO: ScenarioConfig = {
   speedLimit: 25,
   xpReward: 200,
   trainingMode: true,
+  aiVehicles: [
+    {
+      position: [0, 0, -3.5],
+      color: 0x6633cc,
+      speed: 2,
+      path: [[0, 0, -3.5], [-10, 0, -3.5], [-20, 0, -3.5], [-20, 0, -7], [-10, 0, -7], [0, 0, -7], [0, 0, -3.5]],
+    },
+  ],
   objectives: [
     { id: 'stop_sign', text: 'Stop at stop sign', textRW: 'Hagarika ku ibimenyetso', icon: '🛑' },
     { id: 'smooth_start', text: 'Start smoothly after stop', textRW: 'Tangira neza', icon: '🚗' },

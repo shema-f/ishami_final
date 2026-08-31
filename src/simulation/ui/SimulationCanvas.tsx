@@ -14,7 +14,7 @@ import { VehiclePhysics } from '../vehicle/VehiclePhysics';
 import { CollisionSystem } from '../core/CollisionSystem';
 import TrafficSystem from './TrafficSystem';
 import { LowPolyCityEnvironment, ZebraCrossing, PeopleSpawner, ParkedCar, WaypointMarker as LowPolyWaypointMarker } from './LowPolyCityEnvironment';
-import { RoadMarkings as LowPolyRoadMarkings, StreetLights, FloatingParticles, RoadArrow, StopLine as LowPolyStopLine, SpeedBump, LowPolyTree } from '../effects/LowPolyEffects';
+import { RoadMarkings as LowPolyRoadMarkings, StreetLights, FloatingParticles, RoadArrow, StopLine as LowPolyStopLine, SpeedBump, LowPolyTree, RoadSegment, AnimatedZebraCrossing } from '../effects/LowPolyEffects';
 import type { SimulationState, Waypoint } from '../core/SimulationState';
 
 // ─── GLB Cache ──────────────────────────────────────────────
@@ -1071,31 +1071,75 @@ function SceneContents({
         />
       ))}
 
-      {/* LOW POLY CITY VISUAL POLISH */}
-      {cityModel === 'low_poly' && phase === 'driving' && (<>
-        <LowPolyRoadMarkings roads={[
-          { start: [-25, 0, -3.5], end: [5, 0, -3.5], type: 'center' },
-          { start: [-25, 0, -7], end: [5, 0, -7], type: 'center' },
-          { start: [-15, 0, -3.5], end: [-15, 0, -7], type: 'center' },
-          { start: [-5, 0, -3.5], end: [-5, 0, -7], type: 'center' },
-          { start: [3, 0, -3.5], end: [3, 0, -7], type: 'center' },
+      {/* LOW POLY CITY: ROAD SURFACES + MARKINGS */}
+      {cityModel === 'low_poly' && (<>
+        {/* Main horizontal road — top lane (west to east) */}
+        <RoadSegment start={[-25, 0, -3.5]} end={[5, 0, -3.5]} width={3.5} color="#2d2d2d" />
+        {/* Main horizontal road — bottom lane (east to west) */}
+        <RoadSegment start={[-25, 0, -7]} end={[5, 0, -7]} width={3.5} color="#2d2d2d" />
+        {/* Center divider between lanes */}
+        <mesh position={[-10, 0.04, -5.25]} rotation={[-Math.PI/2, 0, 0]}>
+          <planeGeometry args={[30, 0.15]} />
+          <meshStandardMaterial color="#ffdd00" emissive="#ffaa00" emissiveIntensity={0.3} />
+        </mesh>
+        {/* Side road 1 — x=-15 */}
+        <RoadSegment start={[-15, 0, -3.5]} end={[-15, 0, -7]} width={3.5} color="#2d2d2d" />
+        {/* Side road 2 — x=-5 */}
+        <RoadSegment start={[-5, 0, -3.5]} end={[-5, 0, -7]} width={3.5} color="#2d2d2d" />
+        {/* Side road 3 — x=3 */}
+        <RoadSegment start={[3, 0, -3.5]} end={[3, 0, -7]} width={3.5} color="#2d2d2d" />
+        {/* Top edge line */}
+        <mesh position={[-10, 0.05, -1.8]} rotation={[-Math.PI/2, 0, 0]}>
+          <planeGeometry args={[30, 0.08]} />
+          <meshStandardMaterial color="#ffffff" transparent opacity={0.7} />
+        </mesh>
+        {/* Bottom edge line */}
+        <mesh position={[-10, 0.05, -8.7]} rotation={[-Math.PI/2, 0, 0]}>
+          <planeGeometry args={[30, 0.08]} />
+          <meshStandardMaterial color="#ffffff" transparent opacity={0.7} />
+        </mesh>
+        {/* Animated center dashed lines — top lane */}
+        <LowPolyRoadMarkings roads={[          
+          { start: [-25, 0, -3.5], end: [5, 0, -3.5], type: 'center', color: '#ffffff' },
+          { start: [-25, 0, -7], end: [5, 0, -7], type: 'center', color: '#ffffff' },
+          { start: [-15, 0, -3.5], end: [-15, 0, -7], type: 'center', color: '#ffffff' },
+          { start: [-5, 0, -3.5], end: [-5, 0, -7], type: 'center', color: '#ffffff' },
+          { start: [3, 0, -3.5], end: [3, 0, -7], type: 'center', color: '#ffffff' },
         ]} />
-        <StreetLights positions={[
-          [-12, 0, -3], [-12, 0, -8],
-          [-2, 0, -3], [-2, 0, -8],
-          [3, 0, -3], [3, 0, -8],
-        ]} />
-        <FloatingParticles count={30} area={30} height={8} color="#aaccff" speed={0.15} />
-        <RoadArrow position={[-18, 0, -3.5]} rotation={0} color="#ffffff" />
-        <RoadArrow position={[-8, 0, -7]} rotation={Math.PI} color="#ffffff" />
+        {/* Zebra crossings at intersections */}
+        <AnimatedZebraCrossing position={[-15, 0.03, -5.25]} rotation={0} width={3.5} length={3} />
+        <AnimatedZebraCrossing position={[-5, 0.03, -5.25]} rotation={0} width={3.5} length={3} />
+        <AnimatedZebraCrossing position={[3, 0.03, -5.25]} rotation={0} width={3.5} length={3} />
+        {/* Direction arrows on main road */}
+        <RoadArrow position={[-20, 0, -3.5]} rotation={0} color="#ffffff" />
+        <RoadArrow position={[-13, 0, -3.5]} rotation={0} color="#ffffff" />
         <RoadArrow position={[0, 0, -3.5]} rotation={0} color="#ffffff" />
-        <LowPolyStopLine position={[-12, 0, -3.5]} width={4} />
-        <LowPolyStopLine position={[-2, 0, -3.5]} width={4} />
-        <SpeedBump position={[-8, 0, -5.2]} width={4} />
-        <LowPolyTree position={[-25, 0, -3]} leafColor="#2d8a4e" scale={0.7} />
-        <LowPolyTree position={[-25, 0, -7.5]} leafColor="#3aaf60" scale={0.7} />
-        <LowPolyTree position={[5, 0, -3]} leafColor="#2d8a4e" scale={0.7} />
-        <LowPolyTree position={[5, 0, -7.5]} leafColor="#3aaf60" scale={0.7} />
+        <RoadArrow position={[-20, 0, -7]} rotation={Math.PI} color="#ffffff" />
+        <RoadArrow position={[-10, 0, -7]} rotation={Math.PI} color="#ffffff" />
+        <RoadArrow position={[2, 0, -7]} rotation={Math.PI} color="#ffffff" />
+        {/* Stop lines at intersections */}
+        <LowPolyStopLine position={[-12.5, 0, -3.5]} width={3} />
+        <LowPolyStopLine position={[-7.5, 0, -3.5]} width={3} />
+        <LowPolyStopLine position={[0.5, 0, -3.5]} width={3} />
+        {/* Street lights at corners */}
+        <StreetLights positions={[          
+          [-15, 0, -1.5], [-15, 0, -9],
+          [-5, 0, -1.5], [-5, 0, -9],
+          [3, 0, -1.5], [3, 0, -9],
+          [-22, 0, -5], [5, 0, -5],
+        ]} />
+        <FloatingParticles count={20} area={25} height={6} color="#aaccff" speed={0.1} />
+      </>)}
+      {/* LOW POLY CITY: DRIVING PHASE MARKINGS */}
+      {cityModel === 'low_poly' && phase === 'driving' && (<>
+        <SpeedBump position={[-17, 0, -5.25]} width={3.5} />
+        <SpeedBump position={[1, 0, -5.25]} width={3.5} />
+        <LowPolyTree position={[-24, 0, -2]} leafColor="#2d8a4e" scale={0.6} />
+        <LowPolyTree position={[-24, 0, -8.5]} leafColor="#3aaf60" scale={0.6} />
+        <LowPolyTree position={[6, 0, -2]} leafColor="#2d8a4e" scale={0.6} />
+        <LowPolyTree position={[6, 0, -8.5]} leafColor="#3aaf60" scale={0.6} />
+        <LowPolyTree position={[-9, 0, -1.5]} leafColor="#44bb66" scale={0.5} />
+        <LowPolyTree position={[-9, 0, -9]} leafColor="#339955" scale={0.5} />
       </>)}
 
       <Environment preset="city" background={false} />

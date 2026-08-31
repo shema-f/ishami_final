@@ -141,7 +141,7 @@ function AnimatedPedestrian({
 
   return (
     <group ref={groupRef}>
-      <primitive object={personMesh} scale={[1, 1, 1]} />
+      <primitive object={personMesh} scale={[0.015, 0.015, 0.015]} />
     </group>
   );
 }
