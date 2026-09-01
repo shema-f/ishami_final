@@ -88,6 +88,8 @@ const UserSchema = new Schema({
   passwordHash: { type: String, required: true },
   isPro: { type: Boolean, default: false },
   accessTier: { type: String, enum: ['free', 'quiz', 'full'], default: 'free' },
+  aiFreeQuestionsUsed: { type: Number, default: 0 },
+  quizFreeQuestionsUsed: { type: Number, default: 0 },
   role: { type: String, default: 'user' },
   loginStreak: { type: Number, default: 0 },
   badges: { type: [String], default: [] },
@@ -1109,6 +1111,48 @@ app.post('/api/auth/reset', async (req, res) => {
   }
 });
 
+// ── Free Usage Tracking ──────────────────────────────────────────────────────
+app.get('/api/usage', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('aiFreeQuestionsUsed quizFreeQuestionsUsed accessTier isPro');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({
+      aiFreeQuestionsUsed: user.aiFreeQuestionsUsed || 0,
+      quizFreeQuestionsUsed: user.quizFreeQuestionsUsed || 0,
+      accessTier: user.accessTier || 'free',
+      isPro: user.isPro || false,
+    });
+  } catch (e) {
+    console.error('[Usage] GET error:', e?.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/usage/increment', authMiddleware, async (req, res) => {
+  try {
+    const { type } = req.body || {};
+    if (type !== 'ai' && type !== 'quiz') {
+      return res.status(400).json({ message: 'Invalid type. Must be ai or quiz' });
+    }
+    const field = type === 'ai' ? 'aiFreeQuestionsUsed' : 'quizFreeQuestionsUsed';
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $inc: { [field]: 1 } },
+      { new: true }
+    ).select('aiFreeQuestionsUsed quizFreeQuestionsUsed accessTier isPro');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({
+      aiFreeQuestionsUsed: user.aiFreeQuestionsUsed || 0,
+      quizFreeQuestionsUsed: user.quizFreeQuestionsUsed || 0,
+      accessTier: user.accessTier || 'free',
+      isPro: user.isPro || false,
+    });
+  } catch (e) {
+    console.error('[Usage] POST error:', e?.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.get('/api/ai/status', async (_req, res) => {
   try {
     try { await getOllamaModels(); } catch {}
@@ -1772,13 +1816,13 @@ app.post('/api/payment/initiate', authMiddleware, async (req, res) => {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else if (prod === 'quiz' || prod === 'quiz_access') {
-      expected = 1000;
+      expected = 100;
       accessTierGranted = 'quiz';
     } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
       expected = 3000;
       accessTierGranted = 'full';
     } else {
-      expected = 1000;
+      expected = 100;
     }
 
     if (Number(amount) !== expected) {
@@ -1882,7 +1926,7 @@ app.post('/api/payments/initiate', authMiddleware, async (req, res) => {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else if (prod === 'quiz' || prod === 'quiz_access') {
-      expected = 1000;
+      expected = 100;
       accessTierGranted = 'quiz';
     } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
       expected = 3000;
@@ -2039,7 +2083,7 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
       const licenseType = iremboData?.licenseType || 'provisional';
       expected = licenseType === 'permanent' ? 10500 : 5500;
     } else if (prod === 'quiz' || prod === 'quiz_access') {
-      expected = 1000;
+      expected = 100;
       accessTierGranted = 'quiz';
     } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
       expected = 3000;

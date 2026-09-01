@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { quizAPI, paymentAPI, pdfQuizAPI } from '../services/api';
+import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
@@ -54,6 +54,29 @@ export default function Quiz() {
   const [payPhoneError, setPayPhoneError] = useState<string | null>(null);
   const [countedQuestions, setCountedQuestions] = useState<Set<string>>(new Set());
   const [quizLang, setQuizLang] = useState<'rw' | 'en'>(lang === 'en' ? 'en' : 'rw');
+  const [quizFreeUsed, setQuizFreeUsed] = useState<number>(0);
+  const FREE_QUIZ_LIMIT = 5;
+
+  // Load quiz free usage from backend database
+  useEffect(() => {
+    (async () => {
+      try {
+        if (user?.id) {
+          const usage = await usageAPI.getUsage();
+          setQuizFreeUsed(usage.quizFreeQuestionsUsed || 0);
+        } else {
+          // Guest fallback: localStorage
+          const saved = localStorage.getItem('ishami_quiz_free_used');
+          if (saved) setQuizFreeUsed(parseInt(saved, 10) || 0);
+        }
+      } catch {
+        try {
+          const saved = localStorage.getItem('ishami_quiz_free_used');
+          if (saved) setQuizFreeUsed(parseInt(saved, 10) || 0);
+        } catch {}
+      }
+    })();
+  }, [user?.id]);
 
   useEffect(() => {
     if (timeLeft > 0 && !quizCompleted) {
@@ -138,13 +161,24 @@ export default function Quiz() {
     if (answered) return;
 
     const canContinue = user?.isPro || (user?.accessTier === 'quiz' || user?.accessTier === 'full');
-    if (!canContinue && currentQuestion >= paywallAfter) {
+    if (!canContinue && quizFreeUsed >= FREE_QUIZ_LIMIT) {
       setShowPaywall(true);
       return;
     }
 
     setSelectedAnswer(optionIndex);
     setAnswered(true);
+
+    // Track free quiz usage (only for non-paying users answering free questions)
+    if (!canContinue && quizFreeUsed < FREE_QUIZ_LIMIT) {
+      const newUsed = quizFreeUsed + 1;
+      setQuizFreeUsed(newUsed);
+      if (user?.id) {
+        usageAPI.increment('quiz').catch(() => {});
+      } else {
+        try { localStorage.setItem('ishami_quiz_free_used', String(newUsed)); } catch {}
+      }
+    }
 
     if (questions[currentQuestion].options[optionIndex].isCorrect) {
       const qid = questions[currentQuestion].id;
@@ -625,7 +659,9 @@ export default function Quiz() {
               </div>
               <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock More Questions')}</h2>
               <p className="text-gray-400 mb-6">
-                {t('quiz.paywall.description', "You've completed 6 free questions! Choose a plan to continue:")}
+                {lang === 'rw'
+                  ? "Wakoresha ibibazo 5 by'ubuntu! Hitamwo igereko ukomeze."
+                  : "You've used your 5 free quiz questions! Choose a plan to continue:"}
               </p>
 
               {/* Sign In prompt for guests */}
@@ -657,12 +693,12 @@ export default function Quiz() {
                   {/* ── Quiz Access Tier ── */}
                   <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-left">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-blue-400">Quiz Access</h3>
-                      <span className="text-2xl font-bold text-blue-400">1,000 RWF</span>
+                      <h3 className="text-lg font-bold text-blue-400">{lang === 'rw' ? 'Umwanya w\'Ibibazo' : 'Quiz Access'}</h3>
+                      <span className="text-2xl font-bold text-blue-400">100 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">Unlock all quiz questions (beyond the 6 free ones)</p>
+                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura ibibazo byose\'ikizamini' : 'Unlock all quiz questions beyond the free ones'}</p>
                     <div className="space-y-2">
-                      {[t('quiz.paywall.features.unlimited_quizzes', 'Unlimited quiz questions'), t('quiz.paywall.features.quiz_certificates', 'Earn certificates')].map((label, i) => (
+                      {[lang === 'rw' ? 'Ibibazo by\'ubuntu byose' : 'Unlimited quiz questions', lang === 'rw' ? 'Ibyemezo by\'ikizamini' : 'Earn certificates'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2 text-left">
                           <CheckCircle className="w-4 h-4 text-blue-400 shrink-0" />
                           <span className="text-sm text-gray-300">{label}</span>
@@ -671,16 +707,16 @@ export default function Quiz() {
                     </div>
                   </div>
 
-                  {/* ── Full Access Tier ── */}
+                  {/* ── VIP Premium Tier ── */}
                   <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-2xl p-5 border border-yellow-500/30 text-left relative">
-                    <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg">BEST VALUE</div>
+                    <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg">{lang === 'rw' ? 'AMAHORO CYANE' : 'BEST VALUE'}</div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-yellow-400">Full Access</h3>
+                      <h3 className="text-lg font-bold text-yellow-400">{lang === 'rw' ? 'VIP Premium' : 'VIP Premium'}</h3>
                       <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">Unlock everything: quizzes, courses, AI assistant, and 3D simulation</p>
+                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: ibibazo, amasomero, AI, 3D simulation' : 'Unlock everything: quizzes, courses, AI assistant, and 3D simulation'}</p>
                     <div className="space-y-2">
-                      {[t('quiz.paywall.features.unlimited_quizzes', 'Unlimited quiz questions'), t('quiz.paywall.features.quiz_certificates', 'Earn certificates'), t('quiz.paywall.features.full_simulation', '3D driving simulation'), t('quiz.paywall.features.unlimited_ai', 'AI assistant access'), t('quiz.paywall.features.premium_resources', 'All courses & resources')].map((label, i) => (
+                      {[lang === 'rw' ? 'Ibibazo byose\'ubuntu' : 'Unlimited quiz questions', lang === 'rw' ? 'Amasomero yose' : 'All courses & resources', lang === 'rw' ? 'AI Assistant' : 'AI assistant access', lang === 'rw' ? '3D Simulation' : '3D driving simulation', lang === 'rw' ? 'Ibyemezo' : 'Certificate of completion'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2 text-left">
                           <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
                           <span className="text-sm text-gray-300">{label}</span>
@@ -727,7 +763,7 @@ export default function Quiz() {
                           setPaymentError(null);
                           try {
                             const res = await paymentAPI.paypackCashin({
-                              amount: 1000,
+                              amount: 100,
                               phone: payPhone,
                               product: 'quiz',
                             });
@@ -764,10 +800,10 @@ export default function Quiz() {
                         }}
                         className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button_quiz', 'Quiz Access - 1,000 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : (lang === 'rw' ? 'Umwanya w\'Ibibazo — 100 RWF' : 'Quiz Access — 100 RWF')}
                       </button>
 
-                      {/* Full Access Button */}
+                      {/* VIP Premium Button */}
                       <button
                         disabled={!payPhone || !!payPhoneError || paymentStatus === 'PENDING'}
                         onClick={async () => {
@@ -816,7 +852,7 @@ export default function Quiz() {
                         }}
                         className="w-full px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                       >
-                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quiz.paywall.pay_button_full', 'Full Access - 3,000 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : (lang === 'rw' ? 'VIP Premium — 3,000 RWF' : 'VIP Premium — 3,000 RWF')}
                       </button>
                     </>
                   )}

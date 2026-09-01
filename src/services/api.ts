@@ -514,6 +514,32 @@ export const simulationAPI = {
 };
 
 // ============================================
+// USAGE TRACKING APIs
+// ============================================
+
+export const usageAPI = {
+  /**
+   * Get free question usage counts for the current user.
+   * Backend endpoint: GET /api/usage
+   */
+  getUsage: async () => {
+    return apiCall('/api/usage');
+  },
+
+  /**
+   * Increment free question usage count.
+   * @param type - 'ai' or 'quiz'
+   * Backend endpoint: POST /api/usage/increment
+   */
+  increment: async (type: 'ai' | 'quiz') => {
+    return apiCall('/api/usage/increment', {
+      method: 'POST',
+      body: JSON.stringify({ type }),
+    });
+  },
+};
+
+// ============================================
 // CONVERSATION (CHAT HISTORY) APIs
 // ============================================
 

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useChat } from '../contexts/ChatContext';
-import { aiAPI, conversationAPI, paymentAPI } from '../services/api';
+import { aiAPI, conversationAPI, paymentAPI, usageAPI } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
 
 /* ─── Types ───────────────────────────────────────────── */
@@ -179,27 +179,31 @@ export default function AIAssistant() {
   const abortControllerRef = useRef<AbortController | null>(null);
   const nextMsgIdRef = useRef(2);
 
-  // Load question count from localStorage when user becomes available
+  // Load question count from backend API (database-backed)
   useEffect(() => {
     if (questionCountSynced.current) return;
-    try {
-      const key = user?.id ? `ishami_ai_question_count_${user.id}` : 'ishami_ai_question_count_guest';
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const n = parseInt(saved, 10) || 0;
-        setQuestionCount(n);
+    (async () => {
+      try {
+        if (user?.id) {
+          const usage = await usageAPI.getUsage();
+          setQuestionCount(usage.aiFreeQuestionsUsed || 0);
+        } else {
+          // Guest fallback: use localStorage
+          const saved = localStorage.getItem('ishami_ai_question_count_guest');
+          if (saved) setQuestionCount(parseInt(saved, 10) || 0);
+        }
+      } catch {
+        // Fallback to localStorage on API failure
+        try {
+          const key = user?.id ? `ishami_ai_question_count_${user.id}` : 'ishami_ai_question_count_guest';
+          const saved = localStorage.getItem(key);
+          if (saved) setQuestionCount(parseInt(saved, 10) || 0);
+        } catch {}
+      } finally {
+        questionCountSynced.current = true;
       }
-      questionCountSynced.current = true;
-    } catch {}
+    })();
   }, [user?.id]);
-
-  // Persist question count to localStorage
-  useEffect(() => {
-    try {
-      const key = user?.id ? `ishami_ai_question_count_${user.id}` : 'ishami_ai_question_count_guest';
-      localStorage.setItem(key, String(questionCount));
-    } catch {}
-  }, [questionCount, user?.id]);
 
   // Auto-create first conversation
   useEffect(() => {
@@ -284,10 +288,11 @@ export default function AIAssistant() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    // Guests: prompt sign-in after 5 free questions
-    if (!user && questionCount >= 5) { setShowPaywall(true); return; }
-    // Logged-in free users: prompt payment after 5 free questions
-    if (user && !(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
+    const FREE_AI_LIMIT = 2;
+    // Guests: prompt sign-in after 2 free questions
+    if (!user && questionCount >= FREE_AI_LIMIT) { setShowPaywall(true); return; }
+    // Logged-in free users: prompt payment after 2 free questions
+    if (user && !(user?.isPro || user?.accessTier === 'full') && questionCount >= FREE_AI_LIMIT) { setShowPaywall(true); return; }
     if (!activeConversation) { createNewConversation(); return; }
 
     abortControllerRef.current?.abort();
@@ -302,6 +307,13 @@ export default function AIAssistant() {
     addMessage(convId, { id: nextMsgIdRef.current++, text: userText, isUser: true, timestamp: new Date() });
     setInput('');
     setQuestionCount(prev => prev + 1);
+    // Persist to backend database for logged-in users
+    if (user?.id) {
+      usageAPI.increment('ai').catch(() => {});
+    } else {
+      // Guest fallback: persist to localStorage
+      try { localStorage.setItem('ishami_ai_question_count_guest', String(questionCount + 1)); } catch {}
+    }
     setIsLoading(true);
     setShowMobileTopicCards(false);
 
@@ -404,7 +416,7 @@ export default function AIAssistant() {
       const msgsToRemove = activeConversation.messages.slice(msgIndex + 1);
       for (const m of msgsToRemove) removeMessage(convId, m.id);
     }
-    if (!(user?.isPro || user?.accessTier === 'full') && questionCount >= 5) { setShowPaywall(true); return; }
+    if (!(user?.isPro || user?.accessTier === 'full') && questionCount >= 2) { setShowPaywall(true); return; }
     const sentiment = detectSentiment(editingText.trim());
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -793,7 +805,7 @@ export default function AIAssistant() {
                 </div>
                 {!(user?.isPro || user?.accessTier === 'full') && (
                   <p className="text-center text-[11px] text-gray-500 mt-2">
-                    {5 - questionCount} {lang === 'rw' ? 'ibibazo by\'ubuntu byasigaye' : 'free questions remaining'}
+                    {2 - questionCount} {lang === 'rw' ? 'ibibazo by\'ubuntu byasigaye' : 'free AI questions remaining'}
                   </p>
                 )}
               </div>
@@ -991,11 +1003,11 @@ export default function AIAssistant() {
               <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
                 <Zap className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Choose Your Plan'}</h2>
+              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Upgrade to Continue'}</h2>
               <p className="text-gray-400 mb-4 text-sm">
                 {lang === 'rw'
-                  ? "Ukoresheje ibibazo 5 bisanzwe! Hitamwo igereko ugire umwanya wose wa Moto-Sensei."
-                  : "You've used your 5 free questions! Choose a plan to unlock Moto-Sensei AI."}
+                  ? "Wakoresha ibibazo 2 by'ubuntu! Fungura umwanya wose wa Moto-Sensei."
+                  : "You've used your 2 free AI questions! Get full premium access to continue."}
               </p>
 
               {/* Sign In prompt for guests */}
@@ -1030,20 +1042,6 @@ export default function AIAssistant() {
                     <div className="space-y-2">
                       {['Unlimited AI questions', 'Unlimited quiz questions', '3D driving simulation', 'All courses & resources', 'Certificate of completion'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /><span className="text-sm text-gray-300">{label}</span></div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* ── Quiz Access Tier ── */}
-                  <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-left">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-blue-400">Quiz Access</h3>
-                      <span className="text-2xl font-bold text-blue-400">1,000 RWF</span>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura ibibazo byose n\'amasomero' : 'Unlock all quizzes and courses'}</p>
-                    <div className="space-y-2">
-                      {['Unlimited quiz questions', 'Access to free courses'].map((label, i) => (
-                        <div key={i} className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" /><span className="text-sm text-gray-300">{label}</span></div>
                       ))}
                     </div>
                   </div>
@@ -1083,26 +1081,7 @@ export default function AIAssistant() {
                         {paying ? (lang === 'rw' ? 'Birimo...' : 'Processing...') : (lang === 'rw' ? 'Umwanya Wose — 3,000 RWF' : 'Full Access — 3,000 RWF')}
                       </button>
 
-                      {/* Quiz Access Button */}
-                      <button disabled={!payPhone || !!payPhoneError || paymentStatus === 'PENDING'} onClick={async () => {
-                        if (!payPhone || !/^(\+250|0)(78|79|72|73)\d{7}$/.test(payPhone)) { setPayPhoneError(t('quiz.paywall.phone_invalid', 'Please enter a valid Rwandan phone number')); return; }
-                        setPaying(true); setPaymentError(null);
-                        try {
-                          const res = await paymentAPI.paypackCashin({ amount: 1000, phone: payPhone, product: 'quiz' });
-                          setTxnId(res.transactionId); setPaymentStatus('PENDING'); setPaying(false);
-                          let tries = 0;
-                          const iv = setInterval(async () => {
-                            tries++;
-                            try {
-                              const st = await paymentAPI.paypackStatus(res.transactionId);
-                              if (st.status === 'SUCCESS' || st.status === 'FAILED') { setPaymentStatus(st.status); clearInterval(iv); if (st.status === 'SUCCESS' && updateUser) { updateUser({ isPro: true, accessTier: 'quiz' }); } }
-                              if (tries > 40) { clearInterval(iv); setPaymentStatus('FAILED'); setPaymentError('Payment timed out'); }
-                            } catch { clearInterval(iv); setPaymentStatus('FAILED'); setPaymentError('Could not check payment status'); }
-                          }, 3000);
-                        } catch (e: any) { setPaying(false); setPaymentError(e?.message || 'Payment failed'); }
-                      }} className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {paying ? (lang === 'rw' ? 'Birimo...' : 'Processing...') : (lang === 'rw' ? 'Ibibazo Gusa — 1,000 RWF' : 'Quiz Access — 1,000 RWF')}
-                      </button>
+
                     </>
                   )}
 
