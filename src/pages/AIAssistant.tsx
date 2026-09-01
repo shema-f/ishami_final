@@ -288,11 +288,11 @@ export default function AIAssistant() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+    // Guests must sign in before asking any questions
+    if (!user) { setShowPaywall(true); return; }
     const FREE_AI_LIMIT = 2;
-    // Guests: prompt sign-in after 2 free questions
-    if (!user && questionCount >= FREE_AI_LIMIT) { setShowPaywall(true); return; }
     // Logged-in free users: prompt payment after 2 free questions
-    if (user && !(user?.isPro || user?.accessTier === 'full') && questionCount >= FREE_AI_LIMIT) { setShowPaywall(true); return; }
+    if (!(user.isPro || user.accessTier === 'full') && questionCount >= FREE_AI_LIMIT) { setShowPaywall(true); return; }
     if (!activeConversation) { createNewConversation(); return; }
 
     abortControllerRef.current?.abort();
@@ -995,30 +995,44 @@ export default function AIAssistant() {
         </div>
       </div>
 
-      {/* ─── Paywall Modal ──────────────────────────── */}
+      {/* ─── Paywall / Sign-In Modal ───────────────── */}
       {showPaywall && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => !paying && setShowPaywall(false)}>
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} onClick={(e) => e.stopPropagation()} className="bg-[#111827] rounded-3xl p-8 max-w-lg w-full border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="text-center">
-              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
-                <Zap className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Upgrade to Continue'}</h2>
-              <p className="text-gray-400 mb-4 text-sm">
-                {lang === 'rw'
-                  ? "Wakoresha ibibazo 2 by'ubuntu! Fungura umwanya wose wa Moto-Sensei."
-                  : "You've used your 2 free AI questions! Get full premium access to continue."}
-              </p>
-
-              {/* Sign In prompt for guests */}
-              {!user && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
-                  <p className="text-blue-300 text-sm mb-3">{lang === 'rw' ? 'Fite konti? Injira kugira ngo ubike iterambere yawe.' : 'Have an account? Sign in to save your progress and access paid features.'}</p>
-                  <a href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm">
-                    {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
-                  </a>
-                </div>
-              )}
+              {!user ? (
+                /* ── Guest: Sign In Required ── */
+                <>
+                  <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl mb-6 shadow-lg shadow-blue-500/30">
+                    <Bot className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Injira kugira ngo ukurikize' : 'Sign In to Continue'}</h2>
+                  <p className="text-gray-400 mb-6 text-sm">
+                    {lang === 'rw'
+                      ? "Ukeneye konti kugira ngo ukoreshe Moto-Sensei AI. Injira cyangwa iyandikishe."
+                      : "You need an account to use Moto-Sensei AI. Sign in or create a free account to get started."}
+                  </p>
+                  <div className="space-y-3">
+                    <a href="/auth" className="block w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 text-center">
+                      {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
+                    </a>
+                    <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors text-sm">
+                      {lang === 'rw' ? 'Subira inyuma' : 'Go Back'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* ── Logged-in user: Upgrade prompt ── */
+                <>
+                  <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+                    <Zap className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Upgrade to Continue'}</h2>
+                  <p className="text-gray-400 mb-4 text-sm">
+                    {lang === 'rw'
+                      ? "Wakoresha ibibazo 2 by'ubuntu! Fungura umwanya wose wa Moto-Sensei."
+                      : "You've used your 2 free AI questions! Get full premium access to continue."}
+                  </p>
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">
@@ -1103,6 +1117,8 @@ export default function AIAssistant() {
                     {t('quiz.paywall.maybe_later', 'Maybe Later')}
                   </button>
                 </div>
+              )}
+                </>
               )}
             </div>
           </motion.div>

@@ -131,8 +131,12 @@ export default function Quiz() {
   };
 
   const startQuiz = async (quiz: QuizCard) => {
+    // Guests must sign in before starting a quiz
+    if (!user) {
+      setShowPaywall(true);
+      return;
+    }
     try {
-      // Allow guests to start quizzes — paywall will show after 6 free questions
       // Check if this is a PDF quiz bundle
       const isPdfQuiz = quiz.id && quiz.id.startsWith('pdf_quiz_');
       let res: any;
@@ -654,25 +658,39 @@ export default function Quiz() {
             className="bg-[#111827] rounded-3xl p-8 max-w-lg w-full border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto"
           >
             <div className="text-center">
-              <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
-                <Zap className="w-10 h-10 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock More Questions')}</h2>
-              <p className="text-gray-400 mb-6">
-                {lang === 'rw'
-                  ? "Wakoresha ibibazo 5 by'ubuntu! Hitamwo igereko ukomeze."
-                  : "You've used your 5 free quiz questions! Choose a plan to continue:"}
-              </p>
-
-              {/* Sign In prompt for guests */}
-              {!user && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
-                  <p className="text-blue-300 text-sm mb-3">Have an account? Sign in to save your progress and access paid features.</p>
-                  <a href="/auth" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors text-sm">
-                    Sign In / Sign Up
-                  </a>
-                </div>
-              )}
+              {!user ? (
+                /* ── Guest: Sign In Required ── */
+                <>
+                  <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl mb-6 shadow-lg shadow-blue-500/30">
+                    <Award className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Injira kugira ngo utangire ikizamini' : 'Sign In to Start Quiz'}</h2>
+                  <p className="text-gray-400 mb-6 text-sm">
+                    {lang === 'rw'
+                      ? "Ukeneye konti kugira utangire ikizamini. Injira cyangwa iyandikishe."
+                      : "You need an account to take a quiz. Sign in or create a free account to get started."}
+                  </p>
+                  <div className="space-y-3">
+                    <a href="/auth" className="block w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 text-center">
+                      {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
+                    </a>
+                    <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors text-sm">
+                      {lang === 'rw' ? 'Subira inyuma' : 'Go Back'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* ── Logged-in user: Upgrade prompt ── */
+                <>
+                  <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
+                    <Zap className="w-10 h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock More Questions')}</h2>
+                  <p className="text-gray-400 mb-6">
+                    {lang === 'rw'
+                      ? "Wakoresha ibibazo 5 by'ubuntu! Hitamwo igereko ukomeze."
+                      : "You've used your 5 free quiz questions! Choose a plan to continue:"}
+                  </p>
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">
@@ -878,6 +896,8 @@ export default function Quiz() {
                     {t('quiz.paywall.maybe_later', 'Maybe Later')}
                   </button>
                 </div>
+              )}
+                </>
               )}
             </div>
           </motion.div>
