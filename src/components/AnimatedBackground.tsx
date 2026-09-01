@@ -34,7 +34,7 @@ export default function AnimatedBackground() {
 
   return (
     <div
-      className="fixed inset-0 z-[-1] overflow-hidden"
+      className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none"
       aria-hidden="true"
       style={{ backgroundColor: '#333337' }}
     >

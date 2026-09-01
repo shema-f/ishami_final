@@ -275,7 +275,6 @@ html[data-theme="light"] .nav-container {
   }
 
   html {
-    scroll-behavior: smooth;
     background: var(--background);
     color: var(--text-primary);
     /* Prevent CLS from scrollbar appearing/disappearing */
@@ -291,7 +290,6 @@ html[data-theme="light"] .nav-container {
     @apply bg-transparent text-foreground antialiased;
     font-family: var(--font-body);
     min-height: 100dvh;
-    overflow-x: hidden;
     line-height: 1.6;
     /* Prevent layout shift from font loading */
     text-rendering: optimizeLegibility;
