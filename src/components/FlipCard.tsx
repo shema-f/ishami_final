@@ -29,7 +29,7 @@ const ACCENTS = [
 const EMOJIS = ['🛑', '⚡', '⚠️', '🚗', '🛡️', '💡', '🚦', '🚶', '🛣️', '🔄', '📋', '🏁', '🌧️', '🅿️', '🔑'];
 
 const CATEGORIES = [
-  { id: 'all', label_en: 'All Topics', label_rw: 'Ibintu vyose', emoji: '📚' },
+  { id: 'all', label_en: 'All Topics', label_rw: 'Ibintu byose', emoji: '📚' },
   { id: 'speed', label_en: 'Speed Limits', label_rw: 'Umuvuduko', emoji: '⚡' },
   { id: 'signs', label_en: 'Road Signs', label_rw: 'Ibyapa', emoji: '🛑' },
   { id: 'rules', label_en: 'Traffic Rules', label_rw: 'Amategeko', emoji: '📋' },
@@ -88,7 +88,7 @@ const CARDS_PER_LOAD = 6;
 const ROTATION_INTERVAL = 25000;
 
 export default function FlipCard() {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const [cards, setCards] = useState<QuizQuestion[]>([]);
   const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
   const [answeredCards, setAnsweredCards] = useState<Map<number, { selected: number; correct: boolean }>>(new Map());
@@ -193,11 +193,11 @@ export default function FlipCard() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-gray-500 hidden sm:inline">
-            {lang === 'rw' ? 'Kanda ku kibaho kugira ngo urabe' : 'Click card to flip'}
+            {t('flip.click', 'Click card to flip')}
           </span>
           <button onClick={handleRefresh} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-medium rounded-lg transition-all">
             <Shuffle className="w-3.5 h-3.5" />
-            {lang === 'rw' ? 'Hindura' : 'New Set'}
+            {t('flip.new_set', 'New Set')}
           </button>
         </div>
       </motion.div>
@@ -242,7 +242,7 @@ export default function FlipCard() {
                     </div>
                     <div className="relative px-4">
                       <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
-                        {lang === 'rw' ? 'Icumuro' : 'Question'}
+                        {t('flip.question', 'Question')}
                       </span>
                     </div>
                   </div>
@@ -254,7 +254,7 @@ export default function FlipCard() {
                     </p>
                     <div className="flex items-center justify-center gap-1.5 text-[10px] text-blue-400 font-medium mt-2">
                       <RotateCcw className="w-3 h-3" />
-                      {lang === 'rw' ? 'Kanda kugira ngo urabe igisubizo' : 'Click to reveal answer'}
+                      {t('flip.reveal', 'Click to reveal answer')}
                     </div>
                   </div>
                 </div>
@@ -269,7 +269,7 @@ export default function FlipCard() {
                     <div className="relative flex items-center gap-2 px-4 pt-3">
                       <Lightbulb className="w-4 h-4 text-white/80" />
                       <span className="text-[10px] font-bold text-white uppercase tracking-widest">
-                        {lang === 'rw' ? 'Ibisubizo' : 'Answer Options'}
+                        {t('flip.answer_options', 'Answer Options')}
                       </span>
                     </div>
                   </div>
@@ -336,16 +336,14 @@ export default function FlipCard() {
               <Trophy className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-bold text-white mb-1 font-[family-name:var(--font-heading)]">
-              {lang === 'rw' ? 'Urakoze!' : 'Great Job!'}
+              {t('flip.great_job', 'Great Job!')}
             </h3>
             <p className="text-gray-400 text-sm mb-4">
-              {lang === 'rw'
-                ? `Wujeje ${totalCorrect}/${CARDS_PER_LOAD} ibibazo neza!`
-                : `You got ${totalCorrect}/${CARDS_PER_LOAD} correct!`}
+              {t('flip.score', `You got ${totalCorrect}/${CARDS_PER_LOAD} correct!`).replace('{correct}', String(totalCorrect)).replace('{total}', String(CARDS_PER_LOAD))}
             </p>
             <button onClick={handleRefresh} className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all">
               <Shuffle className="w-4 h-4" />
-              {lang === 'rw' ? 'Ibibazo Bishya' : 'New Questions'}
+              {t('flip.new_questions', 'New Questions')}
             </button>
           </motion.div>
         )}

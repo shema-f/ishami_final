@@ -609,7 +609,7 @@ export default function AIAssistant() {
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="text-[10px] text-emerald-400 font-medium">
-                    {lang === 'rw' ? '✓ Ubumenyi bwemejwe' : '✓ Rwanda Traffic Knowledge Verified'}
+                    {t('ai.verified', '✓ Rwanda Traffic Knowledge Verified')}
                   </span>
                 </div>
               </div>
@@ -630,7 +630,7 @@ export default function AIAssistant() {
                       <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                       <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
-                    <p className="text-sm text-gray-500">{lang === 'rw' ? "Gutangira amajambo..." : "Loading conversations..."}</p>
+                    <p className="text-sm text-gray-500">{t('ai.loading_conversations', 'Loading conversations...')}</p>
                   </div>
                 </div>
               ) : (
@@ -645,12 +645,10 @@ export default function AIAssistant() {
                         </div>
                       </div>
                       <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-                        {lang === 'rw' ? 'Muraho!' : 'Welcome back!'} 👋
+                        {t('ai.welcome_title', 'Welcome back!')} 👋
                       </h2>
                       <p className="text-gray-400 text-center max-w-md mb-8">
-                        {lang === 'rw'
-                          ? "Ndi Moto-Sensei — umwarimu wawe wa AI ku mategeko y'umuhanda mu Rwanda. Nshobora kukwigisha, kukugisha inama no kukugerageza."
-                          : "I'm Moto-Sensei — your Rwanda AI Driving Instructor. I can teach, guide, and test your traffic knowledge."}
+                        {t('ai.welcome_desc', "I'm Moto-Sensei — your Rwanda AI Driving Instructor. I can teach, guide, and test your traffic knowledge.")}
                       </p>
 
                       {/* Quick Topic Cards */}
@@ -706,7 +704,7 @@ export default function AIAssistant() {
                         )}
                         {message.isUser && (
                           <div className="flex items-center gap-2 mb-1.5 justify-end">
-                            <span className="text-xs text-gray-500 font-medium">{lang === 'rw' ? 'Wowe' : 'You'}</span>
+                            <span className="text-xs text-gray-500 font-medium">{t('ai.you', 'You')}</span>
                             <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
                               <User className="w-3.5 h-3.5 text-blue-400" />
                             </div>
@@ -726,8 +724,8 @@ export default function AIAssistant() {
                             <div className="space-y-2">
                               <textarea value={editingText} onChange={(e) => setEditingText(e.target.value)} className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-white text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-400" rows={3} autoFocus />
                               <div className="flex gap-2 justify-end">
-                                <button onClick={cancelEditing} className="px-3 py-1 text-xs text-gray-300 hover:text-white transition-colors">{lang === 'rw' ? 'Hagarika' : 'Cancel'}</button>
-                                <button onClick={() => saveEdit(message.id)} disabled={!editingText.trim()} className="px-3 py-1 text-xs bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-30">{lang === 'rw' ? 'Bika & Ongera' : 'Save & Resend'}</button>
+                                <button onClick={cancelEditing} className="px-3 py-1 text-xs text-gray-300 hover:text-white transition-colors">{t('common.cancel', 'Cancel')}</button>
+                                <button onClick={() => saveEdit(message.id)} disabled={!editingText.trim()} className="px-3 py-1 text-xs bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-30">{t('ai.save_resend', 'Save & Resend')}</button>
                               </div>
                             </div>
                           ) : (
@@ -741,7 +739,7 @@ export default function AIAssistant() {
                           {!message.isUser && (
                             <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/5">
                               <button onClick={() => shareToWhatsApp(message.text)} className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 text-[11px] transition-colors">
-                                <MessageCircle className="w-3 h-3" /> {lang === 'rw' ? "Tungura" : "Share"}
+                                <MessageCircle className="w-3 h-3" /> {t('ai.share', 'Share')}
                               </button>
                             </div>
                           )}
@@ -757,7 +755,7 @@ export default function AIAssistant() {
                         <div className="max-w-[75%]">
                           <div className="flex items-center gap-2 mb-1.5">
                             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center"><Bot className="w-3.5 h-3.5 text-white" /></div>
-                            <span className="text-xs text-gray-500 font-medium">Moto-Sensei {lang === 'rw' ? "yandika..." : "is thinking..."}</span>
+                            <span className="text-xs text-gray-500 font-medium">Moto-Sensei {t('ai.is_thinking', 'is thinking...')}</span>
                           </div>
                           <div className="px-4 py-3 rounded-2xl bg-[#111a2e] border border-white/5 rounded-tl-sm">
                             <div className="flex gap-1.5">
@@ -783,10 +781,10 @@ export default function AIAssistant() {
                       onChange={(e) => { setInput(e.target.value); const d = detectUiLangHint(e.target.value); if (d !== 'mixed') setUiLang(d); }}
                       onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                       placeholder={
-                        learningMode === 'exam' ? (lang === 'rw' ? 'Igeragezo ry\'ikizamini...  (e.g. Niba umwana yambaye mu muhanda, ugomba gukora iki?)' : 'Exam question... (e.g. What should you do if a child runs onto the road?)')
-                          : learningMode === 'learn' ? (lang === 'rw' ? 'Saba amasomo... (e.g. Njya kwiga iberekeye rond-point)' : 'Request a lesson... (e.g. Teach me about roundabouts)')
-                          : learningMode === 'practice' ? (lang === 'rw' ? 'Igeragezo ry\'imyitatingo... (e.g. Niri mu musizi, njya kubona icyapa cy\'umuhanda, nakora iki?)' : 'Practice scenario... (e.g. I\'m approaching a stop sign in the rain, what should I do?)')
-                          : (lang === 'rw' ? "Baza icyo ukeneye ku mategeko y'umuhanda..." : "Ask about traffic rules, signs, exams, safety...")
+                        learningMode === 'exam' ? t('ai.assistant.exam_placeholder', 'Exam question... (e.g. What should you do if a child runs onto the road?)')
+                          : learningMode === 'learn' ? t('ai.assistant.learn_placeholder', 'Request a lesson... (e.g. Teach me about roundabouts)')
+                          : learningMode === 'practice' ? t('ai.assistant.practice_placeholder', "Practice scenario... (e.g. I'm approaching a stop sign in the rain, what should I do?)")
+                          : t('ai.assistant.ask_placeholder', 'Ask about traffic rules, signs, exams, safety...')
                       }
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-white placeholder-gray-500 transition-all text-sm"
                       disabled={isTyping || isLoading}
@@ -805,7 +803,7 @@ export default function AIAssistant() {
                 </div>
                 {!(user?.isPro || user?.accessTier === 'full') && (
                   <p className="text-center text-[11px] text-gray-500 mt-2">
-                    {2 - questionCount} {lang === 'rw' ? 'ibibazo by\'ubuntu byasigaye' : 'free AI questions remaining'}
+                    {2 - questionCount} {t('ai.free_questions_remaining', 'free AI questions remaining')}
                   </p>
                 )}
               </div>
@@ -873,9 +871,9 @@ export default function AIAssistant() {
                     <Bot className="w-7 h-7 text-white" />
                   </div>
                 </div>
-                <h2 className="text-xl font-bold text-white mb-1 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Muraho!' : 'Welcome!'} 👋</h2>
+                <h2 className="text-xl font-bold text-white mb-1 font-[family-name:var(--font-heading)]">{t('ai.assistant.welcome_short', 'Welcome!')} 👋</h2>
                 <p className="text-gray-400 text-xs max-w-xs mx-auto">
-                  {lang === 'rw' ? "Ndi Moto-Sensei. Hitamwo inkingo ushaka kwiga:" : "Choose a topic to start learning:"}
+                  {t('ai.assistant.choose_topic', 'Choose a topic to start learning:')}
                 </p>
               </div>
 
@@ -944,7 +942,7 @@ export default function AIAssistant() {
                       {!message.isUser && (
                         <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/5">
                           <button onClick={() => shareToWhatsApp(message.text)} className="flex items-center gap-1 text-emerald-400 text-[10px]">
-                            <MessageCircle className="w-3 h-3" /> {lang === 'rw' ? 'Tungura' : 'Share'}
+                            <MessageCircle className="w-3 h-3" /> {t('ai.share', 'Share')}
                           </button>
                         </div>
                       )}
@@ -978,7 +976,7 @@ export default function AIAssistant() {
                   value={input}
                   onChange={(e) => { setInput(e.target.value); const d = detectUiLangHint(e.target.value); if (d !== 'mixed') setUiLang(d); }}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                  placeholder={lang === 'rw' ? "Andika ubutumwa bwawe..." : "Type your message..."}
+                  placeholder={t('ai.assistant.type_message', 'Type your message...')}
                   className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50 text-sm"
                   disabled={isTyping || isLoading}
                 />
@@ -1006,18 +1004,16 @@ export default function AIAssistant() {
                   <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl mb-6 shadow-lg shadow-blue-500/30">
                     <Bot className="w-10 h-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Injira kugira ngo ukurikize' : 'Sign In to Continue'}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('ai.assistant.signin_title', 'Sign In to Continue')}</h2>
                   <p className="text-gray-400 mb-6 text-sm">
-                    {lang === 'rw'
-                      ? "Ukeneye konti kugira ngo ukoreshe Moto-Sensei AI. Injira cyangwa iyandikishe."
-                      : "You need an account to use Moto-Sensei AI. Sign in or create a free account to get started."}
+                    {t('ai.assistant.signin_desc', 'You need an account to use Moto-Sensei AI. Sign in or create a free account to get started.')}
                   </p>
                   <div className="space-y-3">
                     <a href="/auth" className="block w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 text-center">
-                      {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
+                      {t('common.join', 'Sign In / Sign Up')}
                     </a>
                     <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors text-sm">
-                      {lang === 'rw' ? 'Subira inyuma' : 'Go Back'}
+                      {t('common.go_back', 'Go Back')}
                     </button>
                   </div>
                 </>
@@ -1027,20 +1023,18 @@ export default function AIAssistant() {
                   <div className="inline-flex p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl mb-6 shadow-lg shadow-yellow-500/30">
                     <Zap className="w-10 h-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Hitamwo Gigereko' : 'Upgrade to Continue'}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('ai.assistant.upgrade_title', 'Upgrade to Continue')}</h2>
                   <p className="text-gray-400 mb-4 text-sm">
-                    {lang === 'rw'
-                      ? "Wakoresha ibibazo 2 by'ubuntu! Fungura umwanya wose wa Moto-Sensei."
-                      : "You've used your 2 free AI questions! Get full premium access to continue."}
+                    {t('ai.assistant.upgrade_desc', "You've used your 2 free AI questions! Get full premium access to continue.")}
                   </p>
 
               {paymentStatus === 'SUCCESS' ? (
                 <div className="space-y-4">
                   <div className="inline-flex p-4 bg-green-500/20 rounded-3xl"><CheckCircle2 className="w-10 h-10 text-green-400" /></div>
-                  <p className="text-green-400 font-semibold">{lang === 'rw' ? 'Ubwishyu bwagenze neza! 🎉' : 'Payment Successful! 🎉'}</p>
-                  <p className="text-gray-400 text-sm">{lang === 'rw' ? 'Umwanya wawe wasubitswe.' : 'Your access has been upgraded.'}</p>
+                  <p className="text-green-400 font-semibold">{t('ai.assistant.payment_success', 'Payment Successful! 🎉')}</p>
+                  <p className="text-gray-400 text-sm">{t('ai.assistant.access_upgraded', 'Your access has been upgraded.')}</p>
                   <button onClick={() => { setShowPaywall(false); setPaymentStatus(null); window.location.reload(); }} className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300">
-                    {lang === 'rw' ? 'Komeza' : 'Continue'}
+                    {t('common.continue', 'Continue')}
                   </button>
                 </div>
               ) : (
@@ -1052,7 +1046,7 @@ export default function AIAssistant() {
                       <h3 className="text-lg font-bold text-yellow-400">Full Access</h3>
                       <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: AI, ibibazo, amasomo, na simulation ya 3D' : 'Unlock everything: AI, quizzes, courses, 3D simulation'}</p>
+                    <p className="text-sm text-gray-400 mb-3">{t('ai.assistant.full_desc', 'Unlock everything: AI, quizzes, courses, 3D simulation')}</p>
                     <div className="space-y-2">
                       {['Unlimited AI questions', 'Unlimited quiz questions', '3D driving simulation', 'All courses & resources', 'Certificate of completion'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /><span className="text-sm text-gray-300">{label}</span></div>
@@ -1092,7 +1086,7 @@ export default function AIAssistant() {
                           }, 3000);
                         } catch (e: any) { setPaying(false); setPaymentError(e?.message || 'Payment failed'); }
                       }} className="w-full px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
-                        {paying ? (lang === 'rw' ? 'Birimo...' : 'Processing...') : (lang === 'rw' ? 'Umwanya Wose — 3,000 RWF' : 'Full Access — 3,000 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('ai.assistant.full_button', 'Full Access — 3,000 RWF')}
                       </button>
 
 
@@ -1102,8 +1096,8 @@ export default function AIAssistant() {
                   {paymentStatus === 'PENDING' && (
                     <div className="py-4">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-3" />
-                      <p className="text-gray-300">📱 {lang === 'rw' ? 'Reba telefone yawe...' : 'Check your phone for USSD prompt...'}</p>
-                      <p className="text-xs text-gray-500 mt-1">{lang === 'rw' ? 'Emeza ubwishyu kuri telefone yawe' : 'Confirm the payment on your phone'}</p>
+                      <p className="text-gray-300">📱 {t('ai.assistant.ussd_check', 'Check your phone for USSD prompt...')}</p>
+                      <p className="text-xs text-gray-500 mt-1">{t('ai.assistant.ussd_confirm', 'Confirm the payment on your phone')}</p>
                     </div>
                   )}
 
@@ -1131,13 +1125,13 @@ export default function AIAssistant() {
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} onClick={(e) => e.stopPropagation()} className="bg-[#111827] rounded-3xl p-8 max-w-sm w-full border border-white/10 shadow-2xl">
             <div className="text-center">
               <div className="inline-flex p-4 bg-rose-500/20 rounded-3xl mb-6"><Trash2 className="w-10 h-10 text-rose-400" /></div>
-              <h2 className="text-xl font-bold text-white mb-2">{lang === 'rw' ? 'Siba Intindiro?' : 'Delete Conversation?'}</h2>
+              <h2 className="text-xl font-bold text-white mb-2">{t('ai.assistant.delete_title', 'Delete Conversation?')}</h2>
               <p className="text-gray-400 mb-6 text-sm">
-                {lang === 'rw' ? `"${deleteTarget.title}" irasibwa.` : `"${deleteTarget.title}" will be permanently deleted.`}
+                {t('ai.assistant.delete_desc', `"${deleteTarget.title}" will be permanently deleted.`).replace('{title}', deleteTarget.title)}
               </p>
               <div className="flex gap-3">
-                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-colors text-sm">{t('irembo.payment_dialog.cancel', 'Cancel')}</button>
-                <button onClick={confirmDelete} className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold transition-colors text-sm">{lang === 'rw' ? 'Siba' : 'Delete'}</button>
+                <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-white/10 transition-colors text-sm">{t('common.cancel', 'Cancel')}</button>
+                <button onClick={confirmDelete} className="flex-1 px-4 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-semibold transition-colors text-sm">{t('common.delete', 'Delete')}</button>
               </div>
             </div>
           </motion.div>

@@ -155,7 +155,7 @@ Imiterere y'imisozi y'u Rwanda n'imvura igwa mu bihe bitandukanye bisaba ubuhang
     title_en: 'Understanding Rwanda Road Signs: A Complete Visual Guide',
     title_rw: 'Kumenya Ibyapa by\'Umuhanda mu Rwanda: Amategeko yose',
     excerpt_en: 'Learn to identify and understand all road signs used in Rwanda — from warning signs to mandatory instructions and information markers.',
-    excerpt_rw: 'Menya ukumenya no gusobanukirwa ibyapa vyose bisanzwe mu Rwanda — ukuyobora, kumenyesha, n\'ibimenyetso.',
+    excerpt_rw: 'Menya no gusobanukirwa ibyapa byose by\'umuhanda mu Rwanda — byo kuyobora, kumenyesha, n\'ibindi bimenyetso.',
     content_en: `## Types of Road Signs in Rwanda
 
 Rwanda follows the Vienna Convention on Road Signs and Signals. Here are the main categories:
@@ -696,7 +696,7 @@ Ibi bihantu birabujijwe buri gihe:
 
 ### Ahantu Ha Kugabanya
 - **Mu gihe cy'ubwiyunge bw'umuhanda** — kurikira ibyapa by'agateganyo
-- **Mu gihe cy'ibikorwa vy'ubukwe** — umuhanda ushobora gufungwa
+- **Mu gihe cy'ibikorwa by'ubukwe** — umuhanda ushobora gufungwa
 - **Igihe uhagarariye hamwe n'ikindi kinyabiziga** — birabujijwe
 
 ## Igihe
@@ -712,7 +712,7 @@ Ibi bihantu birabujijwe buri gihe:
 - **Igihe kiringo:** Amasaha 8
 - **Uburyo bwo kwishyura:** Na SMS kuri 1515, cyangwa na application
 - **Amahera:** Ku mbere — Ku Gatandatu, 7:00 AM – 6:00 PM
-- **Ubuntu mu Kirumbizi n'ibikorwa vy'ubukwe**
+- **Ubuntu mu Kirumbizi n'ibikorwa by'ubukwe**
 
 ## Ibihano n'Amande
 

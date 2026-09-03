@@ -103,7 +103,7 @@ export default function PreparationPanel({
 
         <div className="p-4">
           <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3">
-            {lang === 'rw' ? 'Gutegura Ikinyabiziga' : 'Vehicle Preparation'}
+            {t('sim.vehicle_prep', 'Vehicle Preparation')}
           </div>
 
           {/* Step list */}

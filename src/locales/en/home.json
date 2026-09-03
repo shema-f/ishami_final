@@ -112,5 +112,8 @@
       "subtitle": "Join thousands of Rwandans mastering traffic rules with ISHAMI",
       "start": "Get Started Free"
     }
+  },
+  "cards": {
+    "view": "View"
   }
 }

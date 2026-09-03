@@ -7,7 +7,7 @@
     "clear_all": "Siba byose",
     "no_notifications": "Nta menyesha rirahari",
     "no_notifications_desc": "Uzakira imenyesha igihe abandi basubije ibitekerezo byawe.",
-    "browse_articles": "Shakisha Inyandiko",
+    "browse_articles": "Sura Inyandiko",
     "view_article": "Reba inyandiko",
     "mark_as_read": "Shyiramo ko byasomwe",
     "delete": "Siba"
@@ -21,7 +21,7 @@
     "no_bookmarks_desc": "Bika inyandiko ukunda kugira ngo uzibone byoroshye mu gihe kiri imbere.",
     "no_history": "Nta mateka y'ibyasomwe arahari",
     "no_history_desc": "Soma inyandiko zitandukanye kugira ngo ziboneke mu mateka yawe.",
-    "browse_articles": "Shakisha Inyandiko",
+    "browse_articles": "Sura Inyandiko",
     "clear_all_history": "Siba Amateka Yose",
     "read": "byasomwe"
   }

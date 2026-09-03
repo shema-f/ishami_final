@@ -99,6 +99,27 @@
       "processing": "Kuri kwishyura...",
       "success": "Kwishyura byagenze neza! Ubu ufite uburenganzira bwose.",
       "failed": "Kwishyura byanze. Ongera ugerageze."
+    },
+    "assistant": {
+      "welcome_short": "Muraho!",
+      "choose_topic": "Ndi Moto-Sensei. Hitamo ingingo ushaka kwiga:",
+      "type_message": "Andika ubutumwa bwawe...",
+      "exam_placeholder": "Ikibazo cy'ikizamini... (urugero: Niba umwana yirukankiye mu muhanda, ugomba gukora iki?)",
+      "learn_placeholder": "Saba isomo... (urugero: Nyigisha ibyerekeye rond-point)",
+      "practice_placeholder": "Imyitozo... (urugero: Ngeze ku cyapa cya STOP mu gihe cy'imvura, nakora iki?)",
+      "ask_placeholder": "Baza icyo ukeneye ku mategeko y'umuhanda...",
+      "signin_title": "Injira kugira ngo ukomeze",
+      "signin_desc": "Ukeneye konti kugira ngo ukoreshe Moto-Sensei AI. Injira cyangwa iyandikishe.",
+      "upgrade_title": "Zamura kuri Pro kugira ngo Ukomeze",
+      "upgrade_desc": "Wakoresheje ibibazo 2 byawe by'ubuntu bya AI! Fungura Umwanya Wose kugira ngo ukomeze.",
+      "payment_success": "Ubwishyu bwagenze neza! 🎉",
+      "access_upgraded": "Umwanya wawe warazamuwe.",
+      "full_desc": "Fungura byose: AI, ibibazo, amasomo, na simulation ya 3D",
+      "full_button": "Umwanya Wose — 3,000 RWF",
+      "ussd_check": "Reba telefone yawe...",
+      "ussd_confirm": "Emeza ubwishyu kuri telefone yawe",
+      "delete_title": "Siba Intindiro?",
+      "delete_desc": "\"{title}\" irasibwa."
     }
   }
 }

@@ -43,7 +43,7 @@ export const cameraKeyframes = [
   // 0.92 – High aerial: full city visible below
   { pos: [0, 28, -5], lookAt: [0, 0, 0] },
 
-  // 1.00 – Transition out: bird's-eye全景, pushed far up
+  // 1.00 – Transition out: bird's-eye view, pushed far up
   { pos: [0, 38, -10], lookAt: [0, 0, -5] },
 ]
 

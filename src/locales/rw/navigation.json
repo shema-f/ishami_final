@@ -1,6 +1,7 @@
 {
   "nav": {
     "home": "Ahabanza",
+    "ai": "AI",
     "aiAssistant": "Umufasha wa AI",
     "quiz": "Ibizamini",
     "simulation": "Imyitozo ya 3D",
@@ -26,7 +27,8 @@
     "cookies": "Politiki ya Kuki (Cookies)",
     "rights": "Uburenganzira bwose burizewe.",
     "madeIn": "Bikozwe na",
-    "partnership": "Ku bufatanye na"
+    "partnership": "Ku bufatanye na",
+    "developers": "ISHAMI ku Bakora Porogaramu"
   },
   "root": {
     "installTitle": "Shyira Porogaramu ya ISHAMI muri Telefoni",
@@ -38,6 +40,15 @@
     "select": "Hitamo Uburyo bw'Imyitozo",
     "estimated": "imin",
     "objectives": "Intego",
-    "difficulty": "Uburemere"
+    "difficulty": "Uburemere",
+    "cancel": "Hagarika",
+    "delete": "Siba",
+    "go_back": "Subira inyuma",
+    "join": "Injira / Iyandikishe",
+    "continue": "Komeza",
+    "just_now": "Aka kanya gashize",
+    "minutes_ago": "Iminota {n} ishize",
+    "hours_ago": "Amasaha {n} ashize",
+    "days_ago": "Iminsi {n} ishize"
   }
 }

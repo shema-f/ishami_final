@@ -12,7 +12,7 @@ interface CommentsProps {
 }
 
 export default function Comments({ articleId }: CommentsProps) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { user } = useAuth();
   const { getArticleComments, addComment } = useComments();
   const { addNotification } = useNotifications();
@@ -54,7 +54,7 @@ export default function Comments({ articleId }: CommentsProps) {
           <MessageSquare className="w-5 h-5 text-blue-400" />
         </div>
         <h2 className="text-2xl font-bold text-white font-[family-name:var(--font-heading)]">
-          {lang === 'rw' ? 'Ibiganiro' : 'Discussion'}
+          {t('comments.discussion', 'Discussion')}
         </h2>
         <span className="px-2 py-0.5 bg-white/10 rounded-full text-sm text-gray-400">
           {comments.length}
@@ -73,7 +73,7 @@ export default function Comments({ articleId }: CommentsProps) {
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                placeholder={lang === 'rw' ? 'Izina ryawe (optional)' : 'Your name (optional)'}
+                placeholder={t('comments.name', 'Your name (optional)')}
                 className="flex-1 bg-transparent border-b border-white/10 text-white placeholder-gray-500 py-2 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
@@ -83,7 +83,7 @@ export default function Comments({ articleId }: CommentsProps) {
                 type="email"
                 value={authorEmail}
                 onChange={(e) => setAuthorEmail(e.target.value)}
-                placeholder={lang === 'rw' ? 'Email (ukemera notifications)' : 'Email (to get notifications)'}
+                placeholder={t('comments.email_notifications', 'Email (to get notifications)')}
                 className="flex-1 bg-transparent border-b border-white/10 text-white placeholder-gray-500 py-2 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
@@ -91,15 +91,13 @@ export default function Comments({ articleId }: CommentsProps) {
           <textarea
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
-            placeholder={lang === 'rw' ? 'Andika igitekerezo cyawe...' : 'Write your comment...'}
+            placeholder={t('comments.write', 'Write your comment...')}
             rows={3}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
             <p className="text-xs text-gray-500">
-              {lang === 'rw' 
-                ? 'Injiza email yawe kugira ngo umve igihe abandi bapamuye.' 
-                : 'Enter your email to get notified when others reply.'}
+              {t('comments.email_hint', 'Enter your email to get notified when others reply.')}
             </p>
             <button
               type="submit"
@@ -111,7 +109,7 @@ export default function Comments({ articleId }: CommentsProps) {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              {lang === 'rw' ? 'Ohereza' : 'Post'}
+              {t('comments.post', 'Post')}
             </button>
           </div>
         </div>
@@ -140,12 +138,12 @@ export default function Comments({ articleId }: CommentsProps) {
           {showAll ? (
             <>
               <ChevronUp className="w-4 h-4" />
-              {lang === 'rw' ? 'Egera icyarimwe' : 'Show less'}
+              {t('comments.show_less', 'Show less')}
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4" />
-              {lang === 'rw' ? `Raba vyose (${comments.length})` : `Show all (${comments.length})`}
+              {t('comments.show_all', `Show all (${comments.length})`).replace('{n}', String(comments.length))}
             </>
           )}
         </motion.button>
@@ -156,9 +154,7 @@ export default function Comments({ articleId }: CommentsProps) {
         <div className="text-center py-12">
           <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-600" />
           <p className="text-gray-400">
-            {lang === 'rw' 
-              ? 'Nta biganiro biriho. Tangira icyo gihe!' 
-              : 'No comments yet. Be the first to share your thoughts!'}
+            {t('comments.none', 'No comments yet. Be the first to share your thoughts!')}
           </p>
         </div>
       )}
@@ -167,7 +163,7 @@ export default function Comments({ articleId }: CommentsProps) {
 }
 
 function CommentItem({ comment, articleId, depth }: { comment: Comment; articleId: string; depth: number }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { user } = useAuth();
   const { deleteComment, likeComment, addComment } = useComments();
   const { addNotification } = useNotifications();
@@ -187,10 +183,10 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     
-    if (minutes < 1) return lang === 'rw' ? 'Umusi' : 'Just now';
-    if (minutes < 60) return lang === 'rw' ? `Iminota ${minutes} ishize` : `${minutes}m ago`;
-    if (hours < 24) return lang === 'rw' ? `Amasaha ${hours} ashize` : `${hours}h ago`;
-    return lang === 'rw' ? `Iminsi ${days} ishize` : `${days}d ago`;
+    if (minutes < 1) return t('common.just_now', 'Just now');
+    if (minutes < 60) return t('common.minutes_ago', `${minutes}m ago`).replace('{n}', String(minutes));
+    if (hours < 24) return t('common.hours_ago', `${hours}h ago`).replace('{n}', String(hours));
+    return t('common.days_ago', `${days}d ago`).replace('{n}', String(days));
   };
 
   const handleReply = async () => {
@@ -221,7 +217,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
   };
 
   const handleDelete = () => {
-    if (confirm(lang === 'rw' ? 'Uremeza ko ushaka gusiba?' : 'Are you sure you want to delete?')) {
+    if (confirm(t('comments.delete_confirm', 'Are you sure you want to delete?'))) {
       deleteComment(articleId, comment.id);
     }
   };
@@ -267,7 +263,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
             className="flex items-center gap-1.5 text-gray-400 hover:text-red-400 transition-colors text-xs"
           >
             <Heart className="w-3.5 h-3.5" />
-            <span>{comment.likes > 0 ? comment.likes : ''} {lang === 'rw' ? 'Ndabiteye' : 'Like'}</span>
+            <span>{comment.likes > 0 ? comment.likes : ''} {t('comments.like', 'Like')}</span>
           </button>
           {depth < 2 && (
             <button
@@ -275,7 +271,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
               className="flex items-center gap-1.5 text-gray-400 hover:text-blue-400 transition-colors text-xs"
             >
               <Reply className="w-3.5 h-3.5" />
-              <span>{lang === 'rw' ? 'Subira' : 'Reply'}</span>
+              <span>{t('comments.reply', 'Reply')}</span>
             </button>
           )}
         </div>
@@ -294,7 +290,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
                   type="email"
                   value={replyEmail}
                   onChange={(e) => setReplyEmail(e.target.value)}
-                  placeholder={lang === 'rw' ? 'Email (kugira ngo umve notifications)' : 'Email (to get notified)'}
+                  placeholder={t('comments.email_notified', 'Email (to get notified)')}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
                 <div className="flex gap-2">
@@ -302,7 +298,7 @@ function CommentItem({ comment, articleId, depth }: { comment: Comment; articleI
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={lang === 'rw' ? 'Andika igisubizo...' : 'Write a reply...'}
+                    placeholder={t('comments.write_reply', 'Write a reply...')}
                     className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {

@@ -24,5 +24,15 @@
       "upgrade_button": "Upgrade to Pro - 100 RWF",
       "browse_free": "Browse Free Resources"
     }
+  },
+  "flip": {
+    "click": "Click card to flip",
+    "new_set": "New Set",
+    "question": "Question",
+    "reveal": "Click to reveal answer",
+    "answer_options": "Answer Options",
+    "great_job": "Great Job!",
+    "score": "You got {correct}/{total} correct!",
+    "new_questions": "New Questions"
   }
 }

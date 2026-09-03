@@ -34,5 +34,56 @@
     "share": "Share:",
     "copied": "Copied!",
     "copy_link": "Copy Link"
+  },
+  "sidebar": {
+    "sponsored": "Sponsored",
+    "company": "Software Development & Data Engineering Company",
+    "company_desc": "Building innovative digital solutions including the ISHAMI platform.",
+    "visit": "Visit Ferrivox",
+    "service": "Service",
+    "irembo_title": "Irembo Registration",
+    "irembo_desc": "Get help registering for your driving test through Irembo services.",
+    "irembo_fee": "Service Fee: 5,500 RWF",
+    "get_help": "Get Help",
+    "upgrade": "Upgrade",
+    "pro_title": "Unlock Pro Access",
+    "pro_desc": "Get unlimited quizzes, 3D simulations, and AI assistant.",
+    "pro_price": "For only 100 RWF",
+    "start_learning": "Start Learning"
+  },
+  "comments": {
+    "discussion": "Discussion",
+    "name": "Your name (optional)",
+    "email_notifications": "Email (to get notifications)",
+    "email_notified": "Email (to get notified)",
+    "write": "Write your comment...",
+    "email_hint": "Enter your email to get notified when others reply.",
+    "post": "Post",
+    "show_less": "Show less",
+    "show_all": "Show all ({n})",
+    "none": "No comments yet. Be the first to share your thoughts!",
+    "delete_confirm": "Are you sure you want to delete?",
+    "like": "Like",
+    "reply": "Reply",
+    "write_reply": "Write a reply..."
+  },
+  "reader": {
+    "change_mode": "Change reading mode"
+  },
+  "blogpage": {
+    "articles_badge": "Articles & Blog",
+    "subtitle": "Read traffic rules, driving guides, and important articles in both English and Kinyarwanda.",
+    "back_to_articles": "Back to Articles",
+    "read_min": "{n} min read",
+    "powered_by": "Powered by",
+    "visit": "Visit Ferrivox",
+    "not_found_title": "Article not found",
+    "not_found_back": "Back to articles",
+    "filter": "Filter:",
+    "no_articles": "No articles found",
+    "no_results_hint": "Try adjusting your search or filter criteria",
+    "clear_filters": "Clear Filters",
+    "count_articles": "{n} articles",
+    "count_of": "{shown} of {total} articles"
   }
 }

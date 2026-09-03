@@ -664,18 +664,16 @@ export default function Quiz() {
                   <div className="inline-flex p-4 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl mb-6 shadow-lg shadow-blue-500/30">
                     <Award className="w-10 h-10 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{lang === 'rw' ? 'Injira kugira ngo utangire ikizamini' : 'Sign In to Start Quiz'}</h2>
+                  <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quizpage.signin_title', 'Sign In to Start Quiz')}</h2>
                   <p className="text-gray-400 mb-6 text-sm">
-                    {lang === 'rw'
-                      ? "Ukeneye konti kugira utangire ikizamini. Injira cyangwa iyandikishe."
-                      : "You need an account to take a quiz. Sign in or create a free account to get started."}
+                    {t('quizpage.signin_desc', 'You need an account to take a quiz. Sign in or create a free account to get started.')}
                   </p>
                   <div className="space-y-3">
                     <a href="/auth" className="block w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 text-center">
-                      {lang === 'rw' ? 'Injira / Iyandikishe' : 'Sign In / Sign Up'}
+                      {t('common.join', 'Sign In / Sign Up')}
                     </a>
                     <button onClick={() => setShowPaywall(false)} className="w-full px-6 py-3 text-gray-400 hover:text-white transition-colors text-sm">
-                      {lang === 'rw' ? 'Subira inyuma' : 'Go Back'}
+                      {t('common.go_back', 'Go Back')}
                     </button>
                   </div>
                 </>
@@ -687,9 +685,7 @@ export default function Quiz() {
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">{t('quiz.paywall.title', 'Unlock More Questions')}</h2>
                   <p className="text-gray-400 mb-6">
-                    {lang === 'rw'
-                      ? "Wakoresha ibibazo 5 by'ubuntu! Hitamwo igereko ukomeze."
-                      : "You've used your 5 free quiz questions! Choose a plan to continue:"}
+                    {t('quizpage.upgrade_desc', "You've used your 5 free quiz questions! Choose a plan to continue:")}
                   </p>
 
               {paymentStatus === 'SUCCESS' ? (
@@ -711,12 +707,12 @@ export default function Quiz() {
                   {/* ── Quiz Access Tier ── */}
                   <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-left">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-blue-400">{lang === 'rw' ? 'Umwanya w\'Ibibazo' : 'Quiz Access'}</h3>
+                      <h3 className="text-lg font-bold text-blue-400">{t('quizpage.tier_access', 'Quiz Access')}</h3>
                       <span className="text-2xl font-bold text-blue-400">100 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura ibibazo byose\'ikizamini' : 'Unlock all quiz questions beyond the free ones'}</p>
+                    <p className="text-sm text-gray-400 mb-3">{t('quizpage.tier_unlock', 'Unlock all quiz questions beyond the free ones')}</p>
                     <div className="space-y-2">
-                      {[lang === 'rw' ? 'Ibibazo by\'ubuntu byose' : 'Unlimited quiz questions', lang === 'rw' ? 'Ibyemezo by\'ikizamini' : 'Earn certificates'].map((label, i) => (
+                      {[t('quizpage.unlimited', 'Unlimited quiz questions'), t('quizpage.certificates', 'Earn certificates')].map((label, i) => (
                         <div key={i} className="flex items-center gap-2 text-left">
                           <CheckCircle className="w-4 h-4 text-blue-400 shrink-0" />
                           <span className="text-sm text-gray-300">{label}</span>
@@ -727,14 +723,14 @@ export default function Quiz() {
 
                   {/* ── VIP Premium Tier ── */}
                   <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-2xl p-5 border border-yellow-500/30 text-left relative">
-                    <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg">{lang === 'rw' ? 'AMAHORO CYANE' : 'BEST VALUE'}</div>
+                    <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-xs font-bold text-white shadow-lg">{t('quizpage.best_value', 'BEST VALUE')}</div>
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-bold text-yellow-400">{lang === 'rw' ? 'VIP Premium' : 'VIP Premium'}</h3>
+                      <h3 className="text-lg font-bold text-yellow-400">{t('quizpage.vip', 'VIP Premium')}</h3>
                       <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: ibibazo, amasomo, AI, na simulation ya 3D' : 'Unlock everything: quizzes, courses, AI assistant, and 3D simulation'}</p>
+                    <p className="text-sm text-gray-400 mb-3">{t('quizpage.vip_desc', 'Unlock everything: quizzes, courses, AI assistant, and 3D simulation')}</p>
                     <div className="space-y-2">
-                      {[lang === 'rw' ? 'Ibibazo byose\'ubuntu' : 'Unlimited quiz questions', lang === 'rw' ? 'Amasomo yose' : 'All courses & resources', lang === 'rw' ? 'AI Assistant' : 'AI assistant access', lang === 'rw' ? '3D Simulation' : '3D driving simulation', lang === 'rw' ? 'Ibyemezo' : 'Certificate of completion'].map((label, i) => (
+                      {[t('quizpage.unlimited', 'Unlimited quiz questions'), t('quizpage.all_courses', 'All courses & resources'), t('quizpage.ai_access', 'AI assistant access'), t('quizpage.sim3d', '3D driving simulation'), t('quizpage.certificate', 'Certificate of completion')].map((label, i) => (
                         <div key={i} className="flex items-center gap-2 text-left">
                           <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
                           <span className="text-sm text-gray-300">{label}</span>
@@ -818,7 +814,7 @@ export default function Quiz() {
                         }}
                         className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {paying ? t('quiz.paywall.processing', 'Processing...') : (lang === 'rw' ? 'Umwanya w\'Ibibazo — 100 RWF' : 'Quiz Access — 100 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quizpage.access_btn', 'Quiz Access — 100 RWF')}
                       </button>
 
                       {/* VIP Premium Button */}
@@ -870,7 +866,7 @@ export default function Quiz() {
                         }}
                         className="w-full px-6 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                       >
-                        {paying ? t('quiz.paywall.processing', 'Processing...') : (lang === 'rw' ? 'VIP Premium — 3,000 RWF' : 'VIP Premium — 3,000 RWF')}
+                        {paying ? t('quiz.paywall.processing', 'Processing...') : t('quizpage.vip_btn', 'VIP Premium — 3,000 RWF')}
                       </button>
                     </>
                   )}

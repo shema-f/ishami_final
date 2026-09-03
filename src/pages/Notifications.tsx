@@ -5,7 +5,7 @@ import { useTranslation } from '../contexts/I18nContext';
 import { useNotifications, type Notification } from '../contexts/NotificationsContext';
 
 export default function Notifications() {
-  const { lang } = useTranslation();
+  const { t } = useTranslation();
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll } = useNotifications();
 
   const formatDate = (timestamp: number) => {
@@ -16,10 +16,10 @@ export default function Notifications() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     
-    if (minutes < 1) return lang === 'rw' ? 'Umusi' : 'Just now';
-    if (minutes < 60) return lang === 'rw' ? `Iminota ${minutes} ishize` : `${minutes}m ago`;
-    if (hours < 24) return lang === 'rw' ? `Amasaha ${hours} ashize` : `${hours}h ago`;
-    return lang === 'rw' ? `Iminsi ${days} ishize` : `${days}d ago`;
+    if (minutes < 1) return t('common.just_now', 'Just now');
+    if (minutes < 60) return t('common.minutes_ago', `${minutes}m ago`).replace('{n}', String(minutes));
+    if (hours < 24) return t('common.hours_ago', `${hours}h ago`).replace('{n}', String(hours));
+    return t('common.days_ago', `${days}d ago`).replace('{n}', String(days));
   };
 
   const getNotificationIcon = (type: Notification['type']) => {
@@ -61,12 +61,10 @@ export default function Notifications() {
             <Bell className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-            {lang === 'rw' ? 'Notifications' : 'Notifications'}
+            {t('notifications.title', 'Notifications')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {lang === 'rw'
-              ? 'Reba ubutumwa bwawe bw\'ibisubizo n\'ibindi bintu.'
-              : 'Stay updated with replies and activity on your comments.'}
+            {t('notifications.description', 'Stay updated with replies and activity on your comments.')}
           </p>
         </motion.div>
 
@@ -81,7 +79,7 @@ export default function Notifications() {
             <div className="flex items-center gap-3">
               {unreadCount > 0 && (
                 <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium">
-                  {unreadCount} {lang === 'rw' ? 'ntabonetse' : 'unread'}
+                  {unreadCount} {t('notifications.unread', 'unread')}
                 </span>
               )}
             </div>
@@ -92,7 +90,7 @@ export default function Notifications() {
                   className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all text-sm"
                 >
                   <CheckCheck className="w-4 h-4" />
-                  {lang === 'rw' ? 'Amese byose' : 'Mark all read'}
+                  {t('notifications.mark_all_read', 'Mark all read')}
                 </button>
               )}
               <button
@@ -100,7 +98,7 @@ export default function Notifications() {
                 className="flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all text-sm"
               >
                 <Trash2 className="w-4 h-4" />
-                {lang === 'rw' ? 'Siba byose' : 'Clear all'}
+                {t('notifications.clear_all', 'Clear all')}
               </button>
             </div>
           </motion.div>
@@ -115,19 +113,17 @@ export default function Notifications() {
           >
             <Bell className="w-16 h-16 mx-auto mb-4 text-gray-600" />
             <h3 className="text-xl font-bold text-white mb-2">
-              {lang === 'rw' ? 'Nta butumwa bushya' : 'No notifications yet'}
+              {t('notifications.no_notifications', 'No notifications yet')}
             </h3>
             <p className="text-gray-400 mb-6">
-              {lang === 'rw' 
-                ? 'Uzakira ubutumwa igihe abandi bapamuye mu biganiro byawe.'
-                : 'You\'ll receive notifications when others reply to your comments.'}
+              {t('notifications.no_notifications_desc', 'You\'ll receive notifications when others reply to your comments.')}
             </p>
             <Link
               to="/blog"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all"
             >
               <MessageSquare className="w-4 h-4" />
-              {lang === 'rw' ? 'Sura Inyandiko' : 'Browse Articles'}
+              {t('notifications.browse_articles', 'Browse Articles')}
             </Link>
           </motion.div>
         ) : (
@@ -162,7 +158,7 @@ export default function Notifications() {
                             to={`/blog/${notification.articleSlug}`}
                             className="text-blue-400 hover:text-blue-300"
                           >
-                            {lang === 'rw' ? 'Soma inyandiko' : 'View article'}
+                            {t('notifications.view_article', 'View article')}
                           </Link>
                         </>
                       )}
@@ -175,7 +171,7 @@ export default function Notifications() {
                       <button
                         onClick={() => markAsRead(notification.id)}
                         className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all"
-                        title={lang === 'rw' ? 'Jya wabonye' : 'Mark as read'}
+                        title={t('notifications.mark_as_read', 'Mark as read')}
                       >
                         <CheckCheck className="w-4 h-4" />
                       </button>
@@ -183,7 +179,7 @@ export default function Notifications() {
                     <button
                       onClick={() => deleteNotification(notification.id)}
                       className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-                      title={lang === 'rw' ? 'Siba' : 'Delete'}
+                      title={t('notifications.delete', 'Delete')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

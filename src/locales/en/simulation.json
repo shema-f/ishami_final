@@ -96,7 +96,12 @@
     "missions": {
       "select_scenario": "Select Scenario",
       "no_scenarios": "No scenarios available"
-    }
+    },
+    "controls": "Controls",
+    "vehicle_prep": "Vehicle Preparation",
+    "instructor_title": "Your Driving Instructor",
+    "scenario_select_title": "Driving Scenarios",
+    "scenario_select_subtitle": "Choose a scenario to test your driving skills"
   },
   "scen": {
     "1": {

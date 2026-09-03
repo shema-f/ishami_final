@@ -24,5 +24,15 @@
       "upgrade_button": "Zamura kuri Pro - 100 RWF",
       "browse_free": "Shakisha Ibifashishwa by'Ubuntu"
     }
+  },
+  "flip": {
+    "click": "Kanda ku kibaho kugira ngo urabe",
+    "new_set": "Hindura",
+    "question": "Ikibazo",
+    "reveal": "Kanda kugira ngo urabe igisubizo",
+    "answer_options": "Ibisubizo",
+    "great_job": "Wakoze Neza!",
+    "score": "Wujeje {correct}/{total} ibibazo neza!",
+    "new_questions": "Ibibazo Bishya"
   }
 }

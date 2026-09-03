@@ -79,5 +79,23 @@
       "switch_to_english": "Switch to English",
       "switch_to_kinyarwanda": "Switch to Kinyarwanda"
     }
+  },
+  "quizpage": {
+    "signin_title": "Sign In to Start Quiz",
+    "signin_desc": "You need an account to take a quiz. Sign in or create a free account to get started.",
+    "upgrade_desc": "You've used your 5 free quiz questions! Choose a plan to continue:",
+    "tier_access": "Quiz Access",
+    "tier_unlock": "Unlock all quiz questions beyond the free ones",
+    "unlimited": "Unlimited quiz questions",
+    "certificates": "Earn certificates",
+    "best_value": "BEST VALUE",
+    "vip": "VIP Premium",
+    "vip_desc": "Unlock everything: quizzes, courses, AI assistant, and 3D simulation",
+    "all_courses": "All courses & resources",
+    "ai_access": "AI assistant access",
+    "sim3d": "3D driving simulation",
+    "certificate": "Certificate of completion",
+    "access_btn": "Quiz Access — 100 RWF",
+    "vip_btn": "VIP Premium — 3,000 RWF"
   }
 }

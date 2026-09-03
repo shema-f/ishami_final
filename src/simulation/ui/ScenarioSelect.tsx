@@ -72,12 +72,10 @@ export default function ScenarioSelect() {
             className="text-center mb-8"
           >
             <h1 className="text-4xl font-black text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-              {lang === 'rw' ? 'Ibitekerezo byo Gutwara' : 'Driving Scenarios'}
+              {t('sim.scenario_select_title', 'Driving Scenarios')}
             </h1>
             <p className="text-slate-400">
-              {lang === 'rw'
-                ? 'Hitamo umutekano ukwishakisha ubumenyi bwawe'
-                : 'Choose a scenario to test your driving skills'}
+              {t('sim.scenario_select_subtitle', 'Choose a scenario to test your driving skills')}
             </p>
           </motion.div>
 

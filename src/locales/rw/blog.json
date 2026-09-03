@@ -34,5 +34,56 @@
     "share": "Sangiza:",
     "copied": "Byakoporowe!",
     "copy_link": "Koporora Ihuza"
+  },
+  "sidebar": {
+    "sponsored": "Ikanjyamo",
+    "company": "Isosiyete y'ikoranabuhanga ikora porogaramu n'amakuru",
+    "company_desc": "Dukora uburyo bw'ikoranabuhanga bushya, harimo urubuga rwa ISHAMI.",
+    "visit": "Sura Ferrivox",
+    "service": "Serivisi",
+    "irembo_title": "Irembo Registration",
+    "irembo_desc": "Twagufasha kubona kode yo gukorera ikizamini binyuze muri serivisi za Irembo.",
+    "irembo_fee": "Igiciro cya Serivisi: 5,500 RWF",
+    "get_help": "Bona Ubufasha",
+    "upgrade": "Kwiyongera",
+    "pro_title": "Fungura Byose nka Pro",
+    "pro_desc": "Fungura ibibazo byose, imyitozo ya 3D, n'ubufasha bwa AI.",
+    "pro_price": "Kuri 100 RWF gusa",
+    "start_learning": "Tangira Kwiga"
+  },
+  "comments": {
+    "discussion": "Ibiganiro",
+    "name": "Izina ryawe (optional)",
+    "email_notifications": "Email (kugira ngo umenyeshwe)",
+    "email_notified": "Email (kugira ngo umenyeshwe)",
+    "write": "Andika igitekerezo cyawe...",
+    "email_hint": "Andika imeyili yawe kugira ngo umenyeshwe iyo abandi basubije.",
+    "post": "Ohereza",
+    "show_less": "Erekana Bike",
+    "show_all": "Reba byose ({n})",
+    "none": "Nta biganiro birahari. Ba uwa mbere utange igitekerezo cyawe!",
+    "delete_confirm": "Uremeza ko ushaka gusiba?",
+    "like": "Like",
+    "reply": "Subiza",
+    "write_reply": "Andika igisubizo..."
+  },
+  "reader": {
+    "change_mode": "Hindura uburyo bwo gusoma"
+  },
+  "blogpage": {
+    "articles_badge": "Inyandiko n'Amateka",
+    "subtitle": "Soma amategeko y'umuhanda, amabwiriza yo gutwara, n'inkuru zingenzi ziri mu Kinyarwanda n'Icyongereza.",
+    "back_to_articles": "Subira ku Nkuru",
+    "read_min": "{n} min yo gusoma",
+    "powered_by": "Bikozwe na",
+    "visit": "Visit Ferrivox",
+    "not_found_title": "Inyandiko ntiyabonetse",
+    "not_found_back": "Subira ku nyandiko",
+    "filter": "Gushungura:",
+    "no_articles": "Nta nyandiko zibonetse",
+    "no_results_hint": "Kurikira inama cyangwa uzure amagambo yindi",
+    "clear_filters": "Siba Gushungura",
+    "count_articles": "Inyandiko {n}",
+    "count_of": "Inyandiko {shown} kuri {total}"
   }
 }

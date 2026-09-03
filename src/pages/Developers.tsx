@@ -34,7 +34,7 @@ const PRICING_TIERS = [
     requests: '50,000 requests/month',
     requests_rw: 'Ibisabwa 50,000 mu kwezi',
     features: ['All Starter features', 'Priority support', 'Custom rate limits', 'Analytics dashboard'],
-    features_rw: ['Ibintu vyose bitangiriro', 'Ubufasha bwihutirwa', 'Imigabire yihariye', 'Ikibaho c\'amakuru'],
+    features_rw: ['Ibintu byose bitangiriro', 'Ubufasha bwihutirwa', 'Imigabire yihariye', 'Ikibaho cy\'amakuru'],
     color: 'blue',
     popular: true,
   },
@@ -46,7 +46,7 @@ const PRICING_TIERS = [
     requests: 'Unlimited requests',
     requests_rw: 'Ibisabwa ntigishobora kugera ku giciro',
     features: ['All Growth features', 'Dedicated support', 'SLA guarantee', 'Custom integration'],
-    features_rw: ['Ibintu vyose vy\'Ukubaka', 'Ubufasha bwihariye', 'Urwego rwa serivisi', 'Uhuza no gukemura'],
+    features_rw: ['Ibintu byose by\'Ukubaka', 'Ubufasha bwihariye', 'Urwego rwa serivisi', 'Uhuza no gukemura'],
     color: 'violet',
     popular: false,
   },
@@ -99,7 +99,7 @@ const API_ENDPOINTS = [
     title: 'Random Cards',
     title_rw: 'Amakhadi Yerekeranyijwe',
     desc: 'Random flip card selection',
-    desc_rw: 'Urwitondero rw\'amakhadi',
+    desc_rw: 'Urwitondero rw\'amakarita',
   },
   {
     method: 'GET',
@@ -372,9 +372,7 @@ export default function Developers() {
               </span>
             </h1>
             <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-3">
-              {lang === 'rw'
-                ? 'Shakisha uburyo bwo gukoresha API yacu mu kwubaka urubuga rwawe bwangwa porogaramu yawe.'
-                : 'Integrate Rwanda traffic rules, quizzes, road signs, and flip cards into your app.'}
+              {t('dev.hero_sub', 'Integrate Rwanda traffic rules, quizzes, road signs, and flip cards into your app.')}
             </p>
             <p className="text-xs text-gray-500 mb-8">{POWERED_BY}</p>
 
@@ -384,7 +382,7 @@ export default function Developers() {
                 className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2"
               >
                 <Zap className="w-4 h-4" />
-                {lang === 'rw' ? 'Tangira none' : 'Get Started Free'}
+                {t('dev.get_started_free', 'Get Started Free')}
               </button>
               <button
                 onClick={generatePdf}
@@ -403,9 +401,9 @@ export default function Developers() {
         {/* Section Tabs */}
         <div className="flex gap-2 mb-10 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {[
-            { id: 'overview' as const, icon: Rocket, label: lang === 'rw' ? 'Amakuru yose' : 'Overview' },
-            { id: 'docs' as const, icon: BookOpen, label: lang === 'rw' ? 'Inyandiko' : 'Documentation' },
-            { id: 'pricing' as const, icon: CreditCard, label: lang === 'rw' ? 'Ibiciro' : 'Pricing' },
+            { id: 'overview' as const, icon: Rocket, label: t('dev.tab_overview', 'Overview') },
+            { id: 'docs' as const, icon: BookOpen, label: t('dev.tab_docs', 'Documentation') },
+            { id: 'pricing' as const, icon: CreditCard, label: t('dev.tab_pricing', 'Pricing') },
           ].map(tab => (
             <button
               key={tab.id}
@@ -429,13 +427,13 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
-                {lang === 'rw' ? 'Uko Bikoresha' : 'How It Works'}
+                {t('dev.how_title', 'How It Works')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {[
-                  { step: 1, icon: Key, title: lang === 'rw' ? 'Shakisha Inchesha ye API' : 'Generate API Key', desc: lang === 'rw' ? 'Kora inshya ye API hejuru. Ntikenewe kwiyandikisha.' : 'Create your free API key below. No signup required.', color: 'violet' },
-                  { step: 2, icon: Code, title: lang === 'rw' ? 'Tegura Ubushyuhe' : 'Make Requests', desc: lang === 'rw' ? 'Ongerera incamake X-API-Key mu bushyuhe bwawe kandi ukoresha endpoint yose.' : 'Add X-API-Key header and call any endpoint.', color: 'blue' },
-                  { step: 3, icon: Layers, title: lang === 'rw' ? 'Kubaka & Kwakira' : 'Build & Ship', desc: lang === 'rw' ? 'Koresha JSON mu porogaramu yawe. Igisubizo kirimo Ferrivox Ltd branding.' : 'Use JSON in your app. All responses include Ferrivox Ltd branding.', color: 'emerald' },
+                  { step: 1, icon: Key, title: t('dev.step1_title', 'Generate API Key'), desc: t('dev.step1_desc', 'Create your free API key below. No signup required.'), color: 'violet' },
+                  { step: 2, icon: Code, title: t('dev.step2_title', 'Make Requests'), desc: t('dev.step2_desc', 'Add X-API-Key header and call any endpoint.'), color: 'blue' },
+                  { step: 3, icon: Layers, title: t('dev.step3_title', 'Build & Ship'), desc: t('dev.step3_desc', 'Use JSON in your app. All responses include Ferrivox Ltd branding.'), color: 'emerald' },
                 ].map((item, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
                     <div className={`w-10 h-10 rounded-xl bg-${item.color}-500/15 flex items-center justify-center mb-4`}>
@@ -452,10 +450,10 @@ export default function Developers() {
             {/* Quick Stats */}
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: Database, value: '25+', label: lang === 'rw' ? 'Ibibazo' : 'Quiz Questions', color: 'blue' },
-                { icon: Wifi, value: '30+', label: lang === 'rw' ? 'Ibyapa' : 'Road Signs', color: 'emerald' },
-                { icon: FileJson, value: '25+', label: lang === 'rw' ? 'Amakhadi' : 'Flip Cards', color: 'violet' },
-                { icon: Globe, value: '2', label: lang === 'rw' ? 'Ururimi' : 'Languages', color: 'amber' },
+                { icon: Database, value: '25+', label: t('dev.stat_questions', 'Quiz Questions'), color: 'blue' },
+                { icon: Wifi, value: '30+', label: t('dev.stat_signs', 'Road Signs'), color: 'emerald' },
+                { icon: FileJson, value: '25+', label: t('dev.stat_cards', 'Flip Cards'), color: 'violet' },
+                { icon: Globe, value: '2', label: t('dev.stat_langs', 'Languages'), color: 'amber' },
               ].map((stat, i) => (
                 <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
                   <stat.icon className={`w-5 h-5 text-${stat.color}-400 mx-auto mb-2`} />
@@ -469,17 +467,17 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Key className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-                {lang === 'rw' ? 'Shakisha Inshya ye API' : 'Generate Your API Key'}
+                {t('dev.keys_title', 'Generate Your API Key')}
               </h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
                 {!user ? (
                   <div className="text-center py-6">
                     <Key className="w-10 h-10 text-gray-500 mx-auto mb-3" />
                     <p className="text-sm text-gray-400 mb-4">
-                      {lang === 'rw' ? 'Injira kugira ukore API key yawe.' : 'Sign in to create and manage your API keys.'}
+                      {t('dev.keys_signin', 'Sign in to create and manage your API keys.')}
                     </p>
                     <a href="/auth" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all">
-                      {lang === 'rw' ? 'Injira' : 'Sign In'}
+                      {t('dev.sign_in', 'Sign In')}
                     </a>
                   </div>
                 ) : (
@@ -487,7 +485,7 @@ export default function Developers() {
                 {apiKeys.length > 0 && (
                   <div className="mb-6 space-y-3">
                     <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                      {lang === 'rw' ? 'Inshya zawe' : 'Your Keys'} ({apiKeys.length})
+                      {t('dev.your_keys', 'Your Keys')} ({apiKeys.length})
                     </h3>
                     {apiKeys.map(key => (
                       <div key={key.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-[#0d1225] rounded-xl border border-white/5">
@@ -537,10 +535,10 @@ export default function Developers() {
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="bg-[#0d1225] rounded-xl p-5 border border-white/5 space-y-4">
                         <h3 className="text-sm font-semibold text-white">
-                          {lang === 'rw' ? 'Umuze Inshya ye API' : 'Create New API Key'}
+                          {t('dev.new_key_title', 'Create New API Key')}
                         </h3>
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">{lang === 'rw' ? 'Izina ry\'urubuga' : 'Key Name'} *</label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t('dev.key_name', 'Key Name')} *</label>
                           <input
                             type="text"
                             value={newKeyName}
@@ -550,7 +548,7 @@ export default function Developers() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">{lang === 'rw' ? 'Urubuga (OPTIONAL)' : 'Website (OPTIONAL)'}</label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t('dev.website', 'Website (OPTIONAL)')}</label>
                           <input
                             type="text"
                             value={newKeyWebsite}
@@ -561,10 +559,10 @@ export default function Developers() {
                         </div>
                         <div className="flex gap-3">
                           <button onClick={handleCreateKey} disabled={!newKeyName.trim()} className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all disabled:opacity-40">
-                            {lang === 'rw' ? 'Suzuma' : 'Generate Key'}
+                            {t('dev.generate_key', 'Generate Key')}
                           </button>
                           <button onClick={() => setShowKeyForm(false)} className="px-5 py-2.5 text-gray-400 hover:text-white text-sm transition-colors">
-                            {lang === 'rw' ? 'Hagarika' : 'Cancel'}
+                            {t('dev.cancel', 'Cancel')}
                           </button>
                         </div>
                       </div>
@@ -572,7 +570,7 @@ export default function Developers() {
                   ) : (
                     <button onClick={() => setShowKeyForm(true)} className="w-full flex items-center justify-center gap-2 px-5 py-4 border-2 border-dashed border-white/10 rounded-xl text-gray-400 hover:text-violet-400 hover:border-violet-500/30 transition-all">
                       <Plus className="w-5 h-5" />
-                      <span className="text-sm font-medium">{lang === 'rw' ? 'Shakisha Inshya ye API' : 'Generate New API Key'}</span>
+                      <span className="text-sm font-medium">{t('dev.new_key_btn', 'Generate New API Key')}</span>
                     </button>
                   )}
                 </AnimatePresence>
@@ -585,7 +583,7 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
-                {lang === 'rw' ? 'Amategeko y\'API' : 'Available Endpoints'}
+                {t('dev.endpoints', 'Available Endpoints')}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {API_ENDPOINTS.map((ep, i) => (
@@ -607,12 +605,10 @@ export default function Developers() {
               <div className="bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 rounded-2xl p-5 sm:p-6">
                 <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
                   <MessageCircle className="w-5 h-5 text-violet-400" />
-                  {lang === 'rw' ? 'Ijambo ry\'Ishuri' : 'Branding Requirement'}
+                  {t('dev.branding', 'Branding Requirement')}
                 </h3>
                 <p className="text-sm text-gray-300 mb-3">
-                  {lang === 'rw'
-                    ? 'Igisubizo cose kirimo _poweredBy. Mu gukemura ibihe vy\'API, ukeneye kwerura Ferrivox Ltd.'
-                    : 'All responses include a _poweredBy field. When displaying ISHAMI API data, you must credit Ferrivox Ltd.'}
+                  {t('dev.branding_desc', 'All responses include a _poweredBy field. When displaying ISHAMI API data, you must credit Ferrivox Ltd.')}
                 </p>
                 <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-sm text-violet-400">
                   {POWERED_BY} — https://ferrivox.com
@@ -629,13 +625,11 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-                {lang === 'rw' ? 'Kwemeza' : 'Authentication'}
+                {t('dev.auth', 'Authentication')}
               </h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
                 <p className="text-sm text-gray-300 mb-4">
-                  {lang === 'rw'
-                    ? 'Ibisabwa vyose bisaba inshya ye API yohejwe na X-API-Key. Inshya ziringana: 60 ibisabwa/umunota.'
-                    : 'All API requests require an API key passed via the X-API-Key header. Rate limit: 60 requests/minute.'}
+                  {t('dev.auth_desc', 'All API requests require an API key passed via the X-API-Key header. Rate limit: 60 requests/minute.')}
                 </p>
                 <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-sm overflow-x-auto">
                   <span className="text-gray-500"># Include your API key</span><br />
@@ -654,7 +648,7 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Terminal className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
-                {lang === 'rw' ? 'Amategeko y\'API yose' : 'All Endpoints'}
+                {t('dev.all_endpoints', 'All Endpoints')}
               </h2>
               <div className="space-y-3">
                 {API_ENDPOINTS.map((ep, i) => (
@@ -689,7 +683,7 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <Code className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
-                {lang === 'rw' ? 'Ingerero z\'Inyandiko' : 'Code Examples'}
+                {t('dev.code_examples', 'Code Examples')}
               </h2>
               <div className="space-y-4">
                 {[
@@ -730,7 +724,7 @@ export default function Developers() {
             <section>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
-                {lang === 'rw' ? 'Amakosa' : 'Error Codes'}
+                {t('dev.errors', 'Error Codes')}
               </h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
                 <div className="space-y-3 font-mono text-sm">
@@ -757,12 +751,10 @@ export default function Developers() {
             <section className="text-center mb-8">
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 flex items-center justify-center gap-2">
                 <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400" />
-                {lang === 'rw' ? 'Ibiciro by\'API' : 'API Pricing'}
+                {t('dev.pricing', 'API Pricing')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xl mx-auto">
-                {lang === 'rw'
-                  ? 'Hitamwo urwego rukwiye ku bukungu bwawe. Utangira urwo rubasha.'
-                  : 'Choose the plan that fits your needs. Start free, upgrade anytime.'}
+                {t('dev.pricing_desc', 'Choose the plan that fits your needs. Start free, upgrade anytime.')}
               </p>
             </section>
 
@@ -802,8 +794,8 @@ export default function Developers() {
                       : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
                   }`}>
                     {tier.price === 'Free' || tier.price === 'Birahwitse'
-                      ? (lang === 'rw' ? 'Tangira none' : 'Get Started')
-                      : (lang === 'rw' ? 'Tumira poroforme' : 'Contact Sales')}
+                      ? t('dev.get_started', 'Get Started')
+                      : t('dev.contact_sales', 'Contact Sales')}
                   </button>
                 </motion.div>
               ))}
@@ -814,12 +806,10 @@ export default function Developers() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 inline-block">
                 <HelpCircle className="w-8 h-8 text-violet-400 mx-auto mb-3" />
                 <h3 className="text-base font-bold text-white mb-2">
-                  {lang === 'rw' ? 'Ukeneye ubufasha bw\'ibiciro?' : 'Need custom pricing?'}
+                  {t('dev.custom_title', 'Need custom pricing?')}
                 </h3>
                 <p className="text-sm text-gray-400 mb-4">
-                  {lang === 'rw'
-                    ? 'Tumura ubusabane na timu yacu kubw\'ibiciro byihariye.'
-                    : 'Contact our team for enterprise solutions and custom pricing.'}
+                  {t('dev.custom_desc', 'Contact our team for enterprise solutions and custom pricing.')}
                 </p>
                 <a href="mailto:support@ishami.rw" className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-500/20 text-violet-400 rounded-xl font-semibold text-sm hover:bg-violet-500/30 transition-all">
                   <MessageCircle className="w-4 h-4" />
@@ -834,13 +824,13 @@ export default function Developers() {
         <div className="text-center py-8 mt-12 border-t border-white/5">
           <p className="text-sm text-gray-500">{POWERED_BY} · ISHAMI Rwanda Driving Education Platform</p>
           <p className="text-xs text-gray-600 mt-2">
-            {lang === 'rw' ? 'For API key requests, contact' : 'For API key requests, contact'}{' '}
+            {t('dev.footer_key', 'For API key requests, contact')}{' '}
             <a href="mailto:support@ishami.rw" className="text-violet-400 hover:text-violet-300">support@ishami.rw</a>
           </p>
           {user?.role === 'admin' && (
             <p className="text-xs text-gray-600 mt-2">
               <a href="/admin/api-keys" className="text-violet-400 hover:text-violet-300">
-                {lang === 'rw' ? 'Gushyiraho API (Admin)' : 'API Key Management (Admin)'}
+                {t('dev.admin', 'API Key Management (Admin)')}
               </a>
             </p>
           )}

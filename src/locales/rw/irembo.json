@@ -3,8 +3,8 @@
     "title": "Kwiyandikisha ku Kizamini cyo Gutwara Ibinyabiziga binyuze kuri Irembo",
     "subtitle": "Tuzagufasha kwiyandikisha ku kizamini cy'amategeko y'umuhanda binyuze kuri Irembo",
     "pricing": {
-      "provisional": "Licence y'Agateganyo (Provisional)",
-      "permanent": "Licence Yuzuye (Permanent)",
+      "provisional": "Uruhushya rw'Agateganyo",
+      "permanent": "Uruhushya rwa Burundu",
       "pro_features": "Ibyiza bya Pro"
     },
     "info_banner": {
@@ -23,7 +23,7 @@
       "national_id_placeholder": "Imibare 16 y'indangamuntu",
       "phone": "Nimero ya Telefone *",
       "phone_placeholder": "+250 78X XXX XXX",
-      "email": "Aderesi ya Imeri *",
+      "email": "Aderesi ya Imeyili *",
       "email_placeholder": "imeri.yawe@urugero.com",
       "language": "Ururimi Wifuza Gukoresha *",
       "license_type": "Ubwoko bw'Icyemezo (Licence) *",
@@ -41,7 +41,7 @@
       "national_id_digits": "Indangamuntu igomba kuba igizwe n'imibare 16 neza",
       "age_requirement": "Ugomba kuba ufite byibuze imyaka 16",
       "phone_invalid": "Nyamuneka andika nimero nyayo ya telefone yo mu Rwanda",
-      "email_invalid": "Nyamuneka andika aderesi nyayo ya imeri",
+      "email_invalid": "Nyamuneka andika aderesi nyayo ya imeyili",
       "terms_required": "Ugomba kwemera amategeko n'amabwiriza"
     },
     "success": {

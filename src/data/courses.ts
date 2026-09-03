@@ -51,7 +51,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-emerald-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Introduction to Rwanda Traffic Rules', titleKiny: "Intangiriro ya Amategeko y'Umuhanda y'u Rwanda", type: 'text', duration: '20 min', description: 'Overview of Rwanda\'s traffic law framework and why road safety matters.' },
         { id: 2, title: 'Understanding Traffic Signs', titleKiny: "Kumenya Ibimenyetso by'Umuhanda", type: 'text', duration: '30 min', description: 'Learn to identify and understand all traffic signs used in Rwanda.' },
@@ -82,7 +82,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-orange-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Introduction to Defensive Driving', titleKiny: "Intangiriro yo Kubaga Neza", type: 'text', duration: '20 min', description: 'What is defensive driving and why it saves lives.' },
         { id: 2, title: 'Identifying Road Hazards', titleKiny: "Kumenya Ibyago by\'Umuhanda", type: 'text', duration: '25 min', description: 'Learn to spot and react to hazards before they become accidents.' },
@@ -98,7 +98,7 @@ export const courses: Course[] = [
   {
     id: 'road-signs-markings',
     title: 'Road Signs & Markings Masterclass',
-    titleKiny: "Ibimenyetso by'Umuhanda n'Amabwiriza: Isomoro Ryuzuye",
+    titleKiny: "Ibimenyetso by'Umuhanda n'Amabwiriza: Isomo Ryuzuye",
     description: 'Become an expert at recognizing and understanding every warning, regulatory, and informative sign on Rwanda\'s roads.',
     descriptionKiny: "Jya ufata uburambe mu kumenya no gusobanura ibimenyetso byose by'umuhanda — ibirikwa, ibitegeko, n'iby'inkuru — ku muhanda w'u Rwanda.",
     level: 'Beginner',
@@ -113,7 +113,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-blue-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Overview of Sign Categories', titleKiny: "Ibiciro by'Ibimenyetso", type: 'text', duration: '15 min', description: 'Introduction to the three main categories of road signs.' },
         { id: 2, title: 'Warning Signs', titleKiny: "Ibimenyetso by'Iremenyo", type: 'interactive', duration: '30 min', description: 'Interactive gallery of all warning signs with meanings.' },
@@ -144,7 +144,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-yellow-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Intersection Types Overview', titleKiny: "Ibiciro by'Ibigereranyo", type: 'text', duration: '20 min', description: 'Understanding different types of intersections in Rwanda.' },
         { id: 2, title: 'T-Junctions & Crossroads', titleKiny: "Ibipimo n'Ibigereranyo", type: 'text', duration: '25 min', description: 'Rules for navigating T-junctions and crossroads safely.' },
@@ -175,14 +175,14 @@ export const courses: Course[] = [
     badgeColor: 'bg-purple-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Parking Techniques', titleKiny: "Uburyo bwo Gutega", type: 'video', duration: '30 min', description: 'Parallel, perpendicular, and angle parking techniques.' },
         { id: 2, title: 'Overtaking Safely', titleKiny: "Gukwiza Neza", type: 'text', duration: '25 min', description: 'When and how to overtake other vehicles safely.' },
         { id: 3, title: 'Lane Discipline', titleKiny: "Kuburanga mu Muhanda", type: 'interactive', duration: '25 min', description: 'Interactive lesson on proper lane usage and discipline.' },
         { id: 4, title: 'Highway Driving', titleKiny: "Kubaga ku Muhanda Mukuru", type: 'video', duration: '30 min', description: 'Special rules and considerations for highway driving.' },
         { id: 5, title: 'Decision Making Under Pressure', titleKiny: "Gukemura mu Bikorwa", type: 'text', duration: '25 min', description: 'How to make quick, safe decisions in challenging situations.' },
-        { id: 6, title: 'Real-World Scenarios', titleKiny: "Ibiciro by'Umusi wose", type: 'interactive', duration: '30 min', description: 'Practice making decisions in realistic driving scenarios.' },
+        { id: 6, title: 'Real-World Scenarios', titleKiny: "Imyitozo ishingiye ku bibaho mu muhanda", type: 'interactive', duration: '30 min', description: 'Practice making decisions in realistic driving scenarios.' },
         { id: 7, title: 'Knowledge Quiz', titleKiny: "Ibufasha bw\'Ubumenyi", type: 'quiz', duration: '15 min', description: 'Test your practical driving knowledge.' },
         { id: 8, title: 'Final Assessment', titleKiny: "Isuzuma Ry\'Impera", type: 'assessment', duration: '20 min', description: 'Complete the practical driving skills assessment.' },
       ],
@@ -209,7 +209,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-red-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Principles of Advanced Defensive Driving', titleKiny: "Amategeko y\'Kubaga mu Rwanda mu Buryo Bworoshe", type: 'text', duration: '25 min', description: 'Core principles and mindset for advanced defensive driving.' },
         { id: 2, title: 'Skid Control & Recovery', titleKiny: "Kugenzura Gukubita no Kwiyubuka", type: 'interactive', duration: '30 min', description: 'Interactive simulation of skid situations and recovery techniques.' },
@@ -240,7 +240,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-slate-600',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Introduction to Commercial Driving', titleKiny: "Intangiriro y\'Kubaga Imodoka z\'Akazi", type: 'text', duration: '25 min', description: 'Overview of commercial driving requirements in Rwanda.' },
         { id: 2, title: 'Vehicle Inspections & Maintenance', titleKiny: "Kugenzura no Gutunga Imodoka", type: 'text', duration: '30 min', description: 'Pre-trip inspections and maintenance requirements for commercial vehicles.' },
@@ -271,7 +271,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-indigo-600',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Night Driving Fundamentals', titleKiny: "Amategeko y\'Kubaga mu Gitondo", type: 'text', duration: '25 min', description: 'Core principles for safe night driving in Rwanda.' },
         { id: 2, title: 'Headlight Management & Visibility', titleKiny: "Gukoresha Amatara no Kubona", type: 'interactive', duration: '25 min', description: 'Interactive lesson on headlight use and maximizing visibility.' },
@@ -289,7 +289,7 @@ export const courses: Course[] = [
     title: 'Professional Driver Certification',
     titleKiny: "Icyemezo c'Akazi c'Muyobozi w'Imodoka",
     description: 'Comprehensive certification course for aspiring professional drivers in Rwanda. Covers all aspects of professional driving standards, customer service, and legal compliance.',
-    descriptionKiny: "Isomoro ry'icyemezo ryuzuye kuri abifuje kuba abashoferi b'akazi mu Rwanda. Ririnda uburyo bwose bwo kubaga neza, serivisi y'abakiriya, n'kwizera amategeko.",
+    descriptionKiny: "Isomo ry'icyemezo ryuzuye kuri abifuje kuba abashoferi b'akazi mu Rwanda. Ririnda uburyo bwose bwo kubaga neza, serivisi y'abakiriya, n'kwizera amategeko.",
     level: 'Advanced',
     levelKiny: 'Irwego ryegeje',
     instructor: 'Moto Sensei',
@@ -302,7 +302,7 @@ export const courses: Course[] = [
     badgeColor: 'bg-amber-500',
     curriculum: {
       title: 'Course Curriculum',
-      titleKiny: "Ibikubiyemo by'Isomoro",
+      titleKiny: "Ibikubiyemo by'Isomo",
       lessons: [
         { id: 1, title: 'Professional Driving Standards', titleKiny: "Amategeko y\'Kubaga mu Rwanda", type: 'text', duration: '25 min', description: 'Overview of professional driving standards and expectations.' },
         { id: 2, title: 'Customer Service & Passenger Safety', titleKiny: "Serivisi y\'Abakiriya n\'Umutekano w\'Abagenzi", type: 'text', duration: '25 min', description: 'Providing excellent service while ensuring passenger safety.' },

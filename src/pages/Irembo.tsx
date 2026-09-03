@@ -310,15 +310,15 @@ export default function Irembo() {
           {/* Pricing Cards */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto">
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-gray-200/20 dark:border-gray-700/20">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{lang === 'rw' ? 'Uruhushya rw\'Agateganyo' : 'Provisional License'}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{t('irembo.pricing.provisional', 'Provisional License')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">5,500 <span className="text-sm font-normal">RWF</span></div>
             </div>
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-[#00A3AD]/30">
-              <div className="text-xs text-[#00A3AD] uppercase tracking-wider mb-1 font-semibold">{lang === 'rw' ? 'Uruhushya rwa Burundu' : 'Permanent License'}</div>
+              <div className="text-xs text-[#00A3AD] uppercase tracking-wider mb-1 font-semibold">{t('irembo.pricing.permanent', 'Permanent License')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">10,500 <span className="text-sm font-normal">RWF</span></div>
             </div>
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-4 border border-gray-200/20 dark:border-gray-700/20">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{lang === 'rw' ? 'Ibiciro by\'Imikoreshereze' : 'Pro Features'}</div>
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{t('irembo.pricing.pro_features', 'Pro Features')}</div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">1,000 <span className="text-sm font-normal">RWF</span></div>
             </div>
           </div>
@@ -473,7 +473,7 @@ export default function Irembo() {
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}>
                   <input type="radio" name="licenseType" value="provisional" checked={formData.licenseType === 'provisional'} onChange={handleChange} className="sr-only" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{lang === 'rw' ? "Uruhushya rw'Agateganyo" : 'Provisional License'}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">{t('irembo.pricing.provisional', 'Provisional License')}</span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">5,500 <span className="text-sm font-normal">RWF</span></span>
                 </label>
                 <label className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
@@ -482,7 +482,7 @@ export default function Irembo() {
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}>
                   <input type="radio" name="licenseType" value="permanent" checked={formData.licenseType === 'permanent'} onChange={handleChange} className="sr-only" />
-                  <span className="text-sm text-[#00A3AD] font-semibold mb-1">{lang === 'rw' ? 'Uruhushya rwa Burundu' : 'Permanent License'}</span>
+                  <span className="text-sm text-[#00A3AD] font-semibold mb-1">{t('irembo.pricing.permanent', 'Permanent License')}</span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">10,500 <span className="text-sm font-normal">RWF</span></span>
                 </label>
               </div>

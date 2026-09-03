@@ -1490,7 +1490,7 @@ export default function Simulation() {
             >
               <div className="bg-[#111827]/90 backdrop-blur-lg rounded-2xl border border-white/10 px-6 py-3 text-center">
                 <div className="text-xs font-bold text-white uppercase tracking-wider mb-2">
-                  ⌨️ {lang === 'rw' ? 'Ubuyobozi' : 'Controls'}
+                  ⌨️ {t('sim.controls', 'Controls')}
                 </div>
                 <div className="grid grid-cols-3 gap-x-6 gap-y-1 text-[11px] text-slate-400">
                   {!isMobile ? (

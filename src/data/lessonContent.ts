@@ -96,7 +96,7 @@ const trafficRulesLessons: LessonContent[] = [
       {
         type: 'paragraph',
         text: "Traffic signs are the universal language of the road. In Rwanda, you'll encounter three main categories of signs: Warning signs (triangular), Regulatory signs (circular), and Informative signs (rectangular). Each color and shape tells you something different.",
-        textKiny: "Ibimenyetso by'umuhanda ni ururimi rushinaro rw'umuhanda. Mu Rwanda, uzabona ibiciro bitatu by'ibimenyetso: Ibimenyetso by'ik提醒 (ubusanzwe), Ibimenyetso by'amategeko (urub투), n'Ibimenyetso by'amakuru (ubusanzwe).",
+        textKiny: "Ibimenyetso by'umuhanda ni ururimi rusange rw'umuhanda. Mu Rwanda, uzabona ibiciro bitatu by'ibimenyetso: ibyo Kuburira (ishusho ya mpandeshatu), iby'Amategeko (uruziga), n'iby'Amakuru (ishusho ya rectangle).",
       },
       {
         heading: 'Warning Signs (Red Triangle)',
@@ -316,13 +316,13 @@ const trafficRulesLessons: LessonContent[] = [
           '🚗 You are driving on a 2-lane road in Kigali at 50 km/h',
           '🚶 A pedestrian steps onto a zebra crossing ahead',
           '🏍️ A motorcycle is approaching from behind, seemingly in a hurry',
-          '❓ What do you do?减速, 检查后视镜, and prepare to stop',
+          '❓ What do you do? Slow down, check your mirrors, and prepare to stop',
         ],
         itemsKiny: [
-          '🚗 Urabaga ku muhanda wa magere 2 mu Kigali ku 50 km/h',
-          '🚶 Umugenzi amaze guhinduka mu bibaho',
-          '🏍️ Umamoto urasohokera mu mbuye, bigaragara nk\'aho birambye',
-          '❓ Ushobora iki? Gereza, reba intambwe, kandi uzi guhagarika',
+          '🚗 Uratwara ku muhanda ufite imirongo ibiri mu Kigali kuri 50 km/h',
+          '🚶 Umuntu agiye kwambuka aho hagenewe abanyamaguru imbere yawe',
+          '🏍️ Ipikipiki iri kuza inyuma yawe, bigaragara ko ihutiye',
+          '❓ Wakora iki? Gabanya umuvuduko, reba mu ndorerwamo, kandi witegure guhagarara',
         ],
       },
       {
@@ -352,11 +352,11 @@ const trafficRulesLessons: LessonContent[] = [
         {
           id: 1,
           question: 'What shape are warning signs in Rwanda?',
-          questionKiny: 'Ibimenyetso by\'ik提醒 ni ubusanzwe bwa kigali mu Rwanda?',
+          questionKiny: 'Ibimenyetso byo kuburira bifite ishusho iyihe mu Rwanda?',
           options: ['Circle', 'Triangle', 'Rectangle', 'Diamond'],
           correctIndex: 1,
           explanation: 'Warning signs in Rwanda are triangular (pointing up) with a red border and white background.',
-          explanationKiny: 'Ibimenyetso by\'ik提醒 mu Rwanda ni ubusanzwe bwa burgundy.',
+          explanationKiny: 'Ibimenyetso byo kuburira mu Rwanda ni mpandeshatu zerekanira hejuru, zifite inkengero zitukura n\'ibara ryera imbere.',
         },
         {
           id: 2,
@@ -409,7 +409,7 @@ const trafficRulesLessons: LessonContent[] = [
       {
         type: 'paragraph',
         text: "Congratulations on completing the Rwanda Traffic Rules Fundamentals course! This final assessment tests everything you've learned. Pass with 70% or higher to earn your course certificate.",
-        textKiny: "Wakiriye neza mu gutangira isomoro ry'Amategeko y'Umuhanda y'u Rwanda! Isuzuma ry'amera riragereranya ibyo wizeose. Tanga 70% cyangwa hejuru kugira ngo uronke icyemezo.",
+        textKiny: "Wakiriye neza mu gutangira isomo ry'Amategeko y'Umuhanda y'u Rwanda! Isuzuma ry'amera riragereranya ibyo wizeose. Tanga 70% cyangwa hejuru kugira ngo uronke icyemezo.",
       },
     ],
     quiz: {
@@ -630,7 +630,7 @@ const safeDrivingLessons: LessonContent[] = [
           '4. Add more seconds in rain, fog, or at night (4-5 seconds)',
         ],
         itemsKiny: [
-          '1. Hitamwo icintu (ibimenyetso, igiti, ingamba) iri imbere',
+          '1. Hitamo icintu (ibimenyetso, igiti, ingamba) iri imbere',
           '2. Igihe imodoka iri imbere yayo, utangira kubara: "rimwe, kabiri, gatatu"',
           '3. Niba usohokera mbere yo gutangira, ujya hafi',
           '4. Yongera amasegonda mu gihe cy\'imvura, icyumba, cyangwa mu buzinzi',
@@ -750,7 +750,7 @@ const safeDrivingLessons: LessonContent[] = [
       {
         type: 'paragraph',
         text: "You've completed the Safe Driving & Road Safety course! This final assessment covers all key concepts. Score 70% or higher to earn your certificate.",
-        textKiny: "Wakiriye neza mu gutangira isomoro ry\'Kubaga Neza no Kubungabunga Umutekano! Isuzuma ry\'amera riragereranya amategeko yose.",
+        textKiny: "Wakiriye neza mu gutangira isomo ry\'Kubaga Neza no Kubungabunga Umutekano! Isuzuma ry\'amera riragereranya amategeko yose.",
       },
     ],
     quiz: {
@@ -832,9 +832,9 @@ const roadSignsLessons: LessonContent[] = [
           'Informative Signs — Rectangular, green/blue — provide useful information about destinations and services',
         ],
         itemsKiny: [
-          'Ibimenyetso by\'Iremenyo — Buri usanzwe bw\'umubato, impagarako y\'umutuku, umubiri mweru — birakuranga ibyago bihari',
-          'Ibimenyetso by\'Amategeko — Buri usanzwe bw\'urub투, buruburu cyangwa umutuku — birakuze cyangwa ntibikuze',
-          'Ibimenyetso by\'Amakuru — Buri usanzwe bw\'ubusanzwe, icyatsi/cy\'ubururu — biratanga amakuru y\'ahantu n\'serivisi',
+          'Ibimenyetso byo Kuburira — ishusho ya mpandeshatu, inkengero zitukura, ibara ryera — bikuburira ibyago biri imbere',
+              'Ibimenyetso by\'Amategeko — uruziga rw\'ubururu cyangwa umutuku — bikubwira ibyo ugomba cyangwa utagomba gukora',
+              'Ibimenyetso by\'Amakuru — ishusho ya rectangle, ibara ry\'icyatsi cyangwa urururu — bitanga amakuru y\'ahantu n\'amaserivisi',
         ],
       },
       {
@@ -888,14 +888,14 @@ const roadSignsLessons: LessonContent[] = [
           '🔺 Slippery road — reduce speed, especially in rain',
         ],
         itemsKiny: [
-          '🔺 Imisozi y\'ubukene — heba umuvuduko amahoro',
-          '🔺 Ikiyaga gikubye — hindura ingere kandi ukagure umuvuduko',
-          '🔺 Ibibaho by\'abagenzi — reba abantu bafata intambwe',
-          '🔺 Icyumba c\'isomero — abana bashobora kuboneka',
-          '北路 y\'umuhanda — umuhanda uratura imbere',
-          '🔺 Icyumba cy\'umwuka — utegereze abakozi n\'ibikoresho',
-          '🔺 Inkunga z\'inyamaswa — inkunga zashobora kuboneka mu muhanda',
-          '🔺 Umuhanda udakoroha — heba umuvuduko, cyane mu gihe cy\'imvura',
+          '🔺 Imfuruka ikaze imbere — gabanya umuvuduko ako kanya',
+          '🔺 Umusozi ugoretse — shyira muri vitesi nto ugabanye umuvuduko',
+          '🔺 Aho abanyamaguru bambukira — reba neza abantu bambuka',
+          '🔺 Agace k\'ishuri — abana bashobora kuba aho',
+          '🔺 Umuhanda ufungana — umuhanda uragabanuka imbere',
+          '🔺 Aho umuhanda ukorwaho — abakozi n\'ibikoresho bishobora kuba hari',
+          '🔺 Aho amatungo yambukira — amatungo ashobora kuba mu muhanda',
+          '🔺 Umuhanda uterera — gabanya umuvuduko, cyane mu gihe cy\'imvura',
         ],
       },
       {
@@ -915,7 +915,7 @@ const roadSignsLessons: LessonContent[] = [
       {
         type: 'paragraph',
         text: "Regulatory signs are circular and tell you what you MUST do or MUST NOT do. Blue circles mean mandatory actions; red circles with slashes mean prohibitions.",
-        textKiny: "Ibimenyetso by'amategeko ni ibisuzwe bya burub투, birakuze cyangwa ntibikuze. Ibisuzwe bya buruburu bigaragara nk'ibikwiye kubakoreshwa; ibisuzwe bya umutuku bigaragara nk'ibikakata.",
+        textKiny: "Ibimenyetso by'amategeko ni uruziga kandi bikubwira ibyo ugomba gukora cyangwa utagomba gukora. Uruziga rw'ubururu rugaragaza ibikorwa ugomba gukora; uruziga rutukura rufite umurongo unyura hagati rugaragaza ibyo byabujijwe.",
       },
       {
         heading: 'Mandatory Signs (Blue Circle)',
@@ -928,10 +928,10 @@ const roadSignsLessons: LessonContent[] = [
           '🔵 Roundabout ahead — follow the circular flow',
         ],
         itemsKiny: [
-          '🔵 Guhuza ibumoso/iburyo — usabwa kuja mu rya rw\'umwe',
-          '🔵 Gukomeza imbere gusa — ntihakurikizwe guhuza',
-          '🔵 Umuvuduko muciriranco — usabwa kubaga birenze iyi',
-          '🔵 Ibipimo biri imbere — kurikiza icyotsi cy\'urub투',
+          '🔵 Hindukira ibumoso/iburyo — ugomba kujya muri icyo cyerekezo',
+          '🔵 Komeza imbere gusa — ntabwo wemerewe guhindukira',
+          '🔵 Umuvuduko ntarengwa w\'igice — ugomba kugira byibuze urwo ruvuduko',
+          '🔵 Rond-point iri imbere — kurikira umuzenguruko warwo',
         ],
       },
       {
@@ -1140,11 +1140,11 @@ const roadSignsLessons: LessonContent[] = [
         {
           id: 2,
           question: 'A blue circular sign means:',
-          questionKiny: 'Buruburu bw\'urub투 bisobanura:',
+          questionKiny: 'Ikimenyetso cy\'uruziga rw\'ubururu gisobanura:',
           options: ['Prohibition', 'Warning', 'Mandatory action', 'Information'],
           correctIndex: 2,
           explanation: 'Blue circular signs indicate mandatory actions — you MUST do what they show.',
-          explanationKiny: 'Ibimenyetso bya buruburu bya burub투 biragaragara ibikwiye kubakoreshwa — usabwa kubikora.',
+          explanationKiny: 'Ibimenyetso by\'uruziga rw\'ubururu byerekana ibikorwa ugomba gukora — ugomba gukora ibyo byerekana.',
         },
         {
           id: 3,
@@ -1200,7 +1200,7 @@ const roadSignsLessons: LessonContent[] = [
         },
         {
           id: 2,
-          question: 'What does a red circular sign with a number indicate?',            questionKiny: "Buruburu bw'urub투 bufise umubare biragaragara iki?",
+          question: 'What does a red circular sign with a number indicate?',            questionKiny: "Ikimenyetso cy'uruziga rutukura kifite umubare gisobanura iki?",
           options: ['Recommended speed', 'Maximum speed limit', 'Minimum speed', 'Distance to destination'],
           correctIndex: 1,
           explanation: 'A red circle with a number is a prohibitory sign indicating the maximum speed limit.',            explanationKiny: "Ubusuzwe bwa umutuku bufise umubare ni ibimenyetso by'ibikakata biragaragara umuvuduko usabirirwa.",
@@ -1263,9 +1263,9 @@ const intersectionsLessons: LessonContent[] = [
         itemsKiny: [
           'T-Junction — aho umuhanda muto sura umuhanda mukuru mu buryo bw\'imfuruka',
           'Ibigereranyo — imihanda ibiri itandukana, iri hagati y\'ibara ry\'+',
-          'Ibipimo — ibigereranyo bya burub투 bifise icyotsi gikurikiranye',
-          'Ibyotsi — aho imihanda itandukana cyangwa yongera umuvuduko w\'umuhanda mukuru',
-          'Ibigereranyo bitandukanye — T-junctions zihambaye hafi y\'uburengeranzwa',
+          'Rond-point — ihuriro ry\'imihanda mu ruziga; ujya urenga ukurikije umuzenguruko',
+          'Inzira yo kwinjira cyangwa gusohoka — aho imihanda ihurira cyangwa itandukana ku muvuduko w\'umuhanda mukuru',
+          'Ibigereranyo bishingiye ku mpande — T-junctions ebyiri zegeranye ariko zitahuye',
         ],
       },
       {
@@ -1353,7 +1353,7 @@ const intersectionsLessons: LessonContent[] = [
         ],
         itemsKiny: [
           'Heba imodoka ziri mu ibipimo',
-          'Hitamwo intambwe yawe mbere yo kunjira — intambwe y\'iburyo yo guhinduka iburyo, intambwe y\'ibumoso yo guhinduka ibumoso',
+          'Hitamo intambwe yawe mbere yo kunjira — intambwe y\'iburyo yo guhinduka iburyo, intambwe y\'ibumoso yo guhinduka ibumoso',
           'Njira ihari umwanya umutekano mu mutekano',
           'Ntuhagarika mu ibipimo niba umutekano urabujijwe imbere',
         ],
@@ -1894,7 +1894,7 @@ const practicalSkillsLessons: LessonContent[] = [
         ],
         itemsKiny: [            'KUBONA — Reba ibyago n\'ibibazo bihari',
             'KUMENYA — Menya intambwe yo mu bushinu cane',
-            'GUKEMURA — Hitamwo igikorwa c\'umutekano cane',
+            'GUKEMURA — Hitamo igikorwa cy\'umutekano cyane',
             'GUKORA — Tegeka neza no mu buryo bw\'uburundu',
         ],
       },
@@ -1926,7 +1926,7 @@ const practicalSkillsLessons: LessonContent[] = [
     lessonId: 6,
     type: 'interactive',
     title: 'Real-World Scenarios',
-    titleKiny: "Ibiciro by'Umusi wose",
+    titleKiny: "Imyitozo ishingiye ku bibaho mu muhanda",
     content: [
       {
         type: 'paragraph',

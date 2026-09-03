@@ -87,7 +87,7 @@
       "time": "Igihe Wakoresheje",
       "objectives_completed": "Intego Zagezweho",
       "xp_earned": "Amanota ya XP Wungutse",
-      "medal": "Umdari",
+      "medal": "Umudari",
       "replay": "Reba Ukuntu Watwaye",
       "retry": "Ongera Ugerageze",
       "next_scenario": "Uruhare Rukurikira",
@@ -96,7 +96,12 @@
     "missions": {
       "select_scenario": "Hitamo Uruhare",
       "no_scenarios": "Nta ruhare ruhari"
-    }
+    },
+    "controls": "Ubuyobozi",
+    "vehicle_prep": "Gutegura Ikinyabiziga",
+    "instructor_title": "Umwarimu wawe wo Gutwara",
+    "scenario_select_title": "Imyitozo yo Gutwara",
+    "scenario_select_subtitle": "Hitamo umutekano ukwishakisha ubumenyi bwawe"
   },
   "scen": {
     "1": {

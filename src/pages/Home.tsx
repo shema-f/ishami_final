@@ -90,7 +90,7 @@ export default function Home() {
     { value: '10K+', label: t('home.stats.students', 'Students'), icon: <Target className="w-5 h-5" />, link: '/quiz' },
     { value: '500+', label: t('home.stats.questions', 'Questions'), icon: <BookOpen className="w-5 h-5" />, link: '/quiz' },
     { value: '95%', label: t('home.stats.pass_rate', 'Pass Rate'), icon: <Trophy className="w-5 h-5" />, link: '/quiz' },
-    { value: '🏆', label: lang === 'rw' ? 'Leaderboard' : 'Leaderboard', icon: <Star className="w-5 h-5 text-amber-400" />, link: '/leaderboard' },
+    { value: '🏆', label: t('home.leaderboard_section.badge', 'Leaderboard'), icon: <Star className="w-5 h-5 text-amber-400" />, link: '/leaderboard' },
   ];
 
   return (
@@ -181,15 +181,13 @@ export default function Home() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
               <BookOpen className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400 font-medium">{lang === 'rw' ? 'Kwiga mu Masomo Ateguye Neza' : 'Structured Learning'}</span>
+              <span className="text-sm text-blue-400 font-medium">{t('home.courses_section.badge', 'Structured Learning')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-              {lang === 'rw' ? 'Amasomo Yacu' : 'Our Courses'}
+              {t('home.courses_section.title', 'Our Courses')}
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              {lang === 'rw'
-                ? 'Amasomo ateguye neza yateguwe na Moto Sensei. Kuva ku by\'ibanze by\'amategeko kugeza ku bumenyi bwo hejuru bwo gutwara.'
-                : 'Structured courses designed by Moto Sensei. From traffic fundamentals to advanced driving skills.'}
+              {t('home.courses_section.description', 'Structured courses designed by Moto Sensei. From traffic fundamentals to advanced driving skills.')}
             </p>
           </motion.div>
 
@@ -230,7 +228,7 @@ export default function Home() {
                           <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" />{course.totalLessons}</span>
                         </div>
                         <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                          {lang === 'rw' ? 'Raba' : 'View'} <ChevronRight className="w-3 h-3" />
+                          {t('cards.view', 'View')} <ChevronRight className="w-3 h-3" />
                         </span>
                       </div>
                     </div>
@@ -250,7 +248,7 @@ export default function Home() {
               to="/courses"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300"
             >
-              {lang === 'rw' ? 'Reba Amasomo Yose' : 'View All Courses'}
+              {t('home.courses_section.view_all', 'View All Courses')}
               <ChevronRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -269,10 +267,10 @@ export default function Home() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm text-emerald-400 font-medium">{lang === 'rw' ? 'Komeza Ushingire' : 'Continue Learning'}</span>
+                <span className="text-sm text-emerald-400 font-medium">{t('home.continue_learning.badge', 'Continue Learning')}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white font-[family-name:var(--font-heading)]">
-                {lang === 'rw' ? 'Komereza Aho Wari Ugeze' : 'Pick Up Where You Left Off'}
+                {t('home.continue_learning.title', 'Pick Up Where You Left Off')}
               </h2>
             </motion.div>
 
@@ -307,7 +305,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="flex items-center justify-end text-emerald-400 text-sm font-medium">
-                        <span>{lang === 'rw' ? 'Komeza' : 'Continue'}</span>
+                        <span>{t('home.continue_learning.continue', 'Continue')}</span>
                         <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -448,18 +446,16 @@ export default function Home() {
                   </div>
                   <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-center">
                     <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-semibold w-fit mb-3">
-                      {lang === 'rw' ? 'Amabwiriza yo Gutwara' : 'Driving Guide'}
+                      {t('home.blog_section.driving_guide', 'Driving Guide')}
                     </span>
                     <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)] group-hover:text-blue-400 transition-colors">
-                      {lang === 'rw' ? "Amategeko y'Umuhanda mu Rwanda: Ibyapa, Uruhushya, n'Umutekano" : "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety"}
+                      {t('home.blog_section.guide_title', 'Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety')}
                     </h3>
                     <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                      {lang === 'rw'
-                        ? "Gutwara ikinyabiziga mu Rwanda bisaba gusobanukirwa neza amategeko y'umuhanda, uburyo ikoranabuhanga rikoreshwa mu kubungabunga umutekano."
-                        : "Driving in Rwanda requires a firm grasp of traffic regulations, digital enforcement systems, and terrain-specific driving techniques."}
+                      {t('home.blog_section.guide_desc', "Driving in Rwanda requires a firm grasp of traffic regulations, digital enforcement systems, and terrain-specific driving techniques.")}
                     </p>
                     <div className="flex items-center text-blue-400 text-sm font-medium">
-                      <span>{lang === 'rw' ? 'Soma byinshi' : 'Read the full guide'}</span>
+                      <span>{t('home.blog_section.read_full_guide', 'Read the full guide')}</span>
                       <ExternalLink className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
@@ -494,7 +490,7 @@ export default function Home() {
                           {lang === 'rw' ? article.title_rw : article.title_en}
                         </h4>
                         <div className="mt-3 flex items-center text-blue-400 text-xs font-semibold">
-                          <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
+                          <span>{t('home.blog_section.read_more', 'Read more')}</span>
                           <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-2 transition-transform duration-300" />
                         </div>
                       </div>
@@ -682,22 +678,20 @@ export default function Home() {
               <div className="flex-1 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6">
                   <Trophy className="w-4 h-4 text-amber-400" />
-                  <span className="text-sm text-amber-400 font-medium">{lang === 'rw' ? 'Leaderboard' : 'Leaderboard'}</span>
+                  <span className="text-sm text-amber-400 font-medium">{t('home.leaderboard_section.badge', 'Leaderboard')}</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-                  {lang === 'rw' ? 'Reba abakize mu bucuruzi' : 'See Who\'s Leading the Pack'}
+                  {t('home.leaderboard_section.title', 'See Who\'s Leading the Pack')}
                 </h2>
                 <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
-                  {lang === 'rw'
-                    ? 'Reba abize neza mu bizamini by\'amategeko y\'umuhanda. Ushobora noneho kwinjira mu rubuga!'
-                    : 'See top performers in Rwanda traffic rules quizzes. Compete, climb the ranks, and prove your knowledge!'}
+                  {t('home.leaderboard_section.description', 'See top performers in Rwanda traffic rules quizzes. Compete, climb the ranks, and prove your knowledge!')}
                 </p>
                 <Link
                   to="/leaderboard"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Trophy className="w-5 h-5" />
-                  <span>{lang === 'rw' ? 'Reba Leaderboard' : 'View Leaderboard'}</span>
+                  <span>{t('home.leaderboard_section.view_leaderboard', 'View Leaderboard')}</span>
                 </Link>
               </div>
               <div className="w-full lg:w-72">
@@ -714,7 +708,7 @@ export default function Home() {
                         <span className="text-lg w-7 text-center">{entry.medal}</span>
                         <div className="flex-1">
                           <span className="text-xs font-semibold text-white block">{entry.name}</span>
-                          <span className="text-[10px] text-slate-500">{lang === 'rw' ? 'Urwego' : 'Rank'} #{entry.rank}</span>
+                          <span className="text-[10px] text-slate-500">{t('home.leaderboard_section.rank', 'Rank')} #{entry.rank}</span>
                         </div>
                         <span className="text-sm font-bold text-amber-400">{entry.score}</span>
                       </div>
@@ -797,16 +791,14 @@ export default function Home() {
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6">
                   <Terminal className="w-4 h-4 text-violet-400" />
-                  <span className="text-sm text-violet-400 font-medium">{lang === 'rw' ? 'ISHAMI kwa Abakoresha' : 'ISHAMI for Developers'}</span>
+                  <span className="text-sm text-violet-400 font-medium">{t('home.developers_section.badge', 'ISHAMI for Developers')}</span>
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-                  {lang === 'rw' ? 'Shakisha API yacu' : 'Build with ISHAMI API'}
+                  {t('home.developers_section.title', 'Build with ISHAMI API')}
                 </h2>
                 <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
-                  {lang === 'rw'
-                    ? 'Shakisha uburyo bwo gukoresha API yacu mu kwubaka urubuga rwawe. Ibibazo, Ibyapa by\'Umuhanda, n\'Amakhadi hejuru.'
-                    : 'Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.'}
+                  {t('home.developers_section.description', 'Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.')}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -815,14 +807,14 @@ export default function Home() {
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-violet-500/25 transition-all duration-300 hover:-translate-y-0.5"
                   >
                     <Rocket className="w-4 h-4" />
-                    <span>{lang === 'rw' ? 'Tangira none' : 'Get Started Free'}</span>
+                    <span>{t('home.developers_section.get_started_free', 'Get Started Free')}</span>
                   </Link>
                   <Link
                     to="/api-docs"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all"
                   >
                     <BookOpen className="w-4 h-4" />
-                    <span>{lang === 'rw' ? 'Inyandiko' : 'Documentation'}</span>
+                    <span>{t('home.developers_section.documentation', 'Documentation')}</span>
                   </Link>
                 </div>
 

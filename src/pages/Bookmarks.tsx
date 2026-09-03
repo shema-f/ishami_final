@@ -8,7 +8,7 @@ import { useTranslation } from '../contexts/I18nContext';
 import { useBookmarks } from '../contexts/BookmarksContext';
 
 export default function Bookmarks() {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { bookmarks, readingHistory, removeBookmark, clearHistory, removeFromHistory } = useBookmarks();
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'history'>('bookmarks');
 
@@ -43,12 +43,10 @@ export default function Bookmarks() {
             <Bookmark className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-            {lang === 'rw' ? "Amabiko n'Amateka" : 'Bookmarks & History'}
+            {t('bookmarks.title', "Bookmarks & History")}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {lang === 'rw'
-              ? "Reba inyandiko wabikoze n'uburyo bwawe bwo gusoma."
-              : 'View your saved articles and reading history.'}
+            {t('bookmarks.description', 'View your saved articles and reading history.')}
           </p>
         </motion.div>
 
@@ -68,7 +66,7 @@ export default function Bookmarks() {
             }`}
           >
             <Bookmark className="w-4 h-4" />
-            {lang === 'rw' ? 'Amabiko' : 'Bookmarks'}
+            {t('bookmarks.bookmarks_tab', 'Bookmarks')}
             <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">{bookmarks.length}</span>
           </button>
           <button
@@ -80,7 +78,7 @@ export default function Bookmarks() {
             }`}
           >
             <History className="w-4 h-4" />
-            {lang === 'rw' ? 'Amateka' : 'History'}
+            {t('bookmarks.history_tab', 'History')}
             <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">{readingHistory.length}</span>
           </button>
         </motion.div>
@@ -92,19 +90,17 @@ export default function Bookmarks() {
               <div className="text-center py-20">
                 <Bookmark className="w-16 h-16 mx-auto mb-4 text-gray-600" />
                 <h3 className="text-xl font-bold text-white mb-2">
-                  {lang === 'rw' ? 'Nta bibiko bisabitswe' : 'No bookmarks yet'}
+                  {t('bookmarks.no_bookmarks', 'No bookmarks yet')}
                 </h3>
                 <p className="text-gray-400 mb-6">
-                  {lang === 'rw' 
-                    ? 'Bika inyandiko ukunda kugira ngo uzibone vuba.'
-                    : 'Save articles you love to find them easily later.'}
+                  {t('bookmarks.no_bookmarks_desc', 'Save articles you love to find them easily later.')}
                 </p>
                 <Link
                   to="/blog"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all"
                 >
                   <BookOpen className="w-4 h-4" />
-                  {lang === 'rw' ? 'Sura Inyandiko' : 'Browse Articles'}
+                  {t('bookmarks.browse_articles', 'Browse Articles')}
                 </Link>
               </div>
             ) : (
@@ -131,19 +127,17 @@ export default function Bookmarks() {
               <div className="text-center py-20">
                 <History className="w-16 h-16 mx-auto mb-4 text-gray-600" />
                 <h3 className="text-xl font-bold text-white mb-2">
-                  {lang === 'rw' ? 'Nta mateka ariho' : 'No reading history'}
+                  {t('bookmarks.no_history', 'No reading history')}
                 </h3>
                 <p className="text-gray-400 mb-6">
-                  {lang === 'rw' 
-                    ? 'Soma inyandiko kugira ngo amateka yawe ayobowe.'
-                    : 'Read articles to build your reading history.'}
+                  {t('bookmarks.no_history_desc', 'Read articles to build your reading history.')}
                 </p>
                 <Link
                   to="/blog"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-all"
                 >
                   <BookOpen className="w-4 h-4" />
-                  {lang === 'rw' ? 'Sura Inyandiko' : 'Browse Articles'}
+                  {t('bookmarks.browse_articles', 'Browse Articles')}
                 </Link>
               </div>
             ) : (
@@ -154,7 +148,7 @@ export default function Bookmarks() {
                     className="flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all text-sm"
                   >
                     <Trash2 className="w-4 h-4" />
-                    {lang === 'rw' ? 'Siba Amateka Yose' : 'Clear All History'}
+                    {t('bookmarks.clear_all_history', 'Clear All History')}
                   </button>
                 </div>
                 <div className="space-y-4">
@@ -255,7 +249,7 @@ function HistoryCard({ item, article, formatDate, onRemove }: {
             <div className="flex items-center gap-3 mt-1 text-gray-500 text-xs">
               <span>{formatDate(item.timestamp)}</span>
               <span>·</span>
-              <span>{item.readPercentage}% {lang === 'rw' ? 'wasoma' : 'read'}</span>
+              <span>{item.readPercentage}% {t('bookmarks.read', 'read')}</span>
             </div>
             <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div 

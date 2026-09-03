@@ -58,7 +58,7 @@
       "driving_guide": "Ubuyobozi bwo Gutwara",
       "guide_title": "Amategeko y'Umuhanda mu Rwanda: Ibyapa, Uruhushya, n'Umutekano",
       "guide_desc": "Gutwara ikinyabiziga mu Rwanda bisaba gusobanukirwa neza amategeko y'umuhanda, uburyo ikoranabuhanga rikoreshwa mu kubungabunga umutekano.",
-      "read_full_guide": "Soma igitabo cyose cy'ubuyobozi",
+      "read_full_guide": "Soma Ubuyobozi Bwuzuye",
       "read_more": "Soma ibindi"
     },
     "certificate_section": {
@@ -112,5 +112,8 @@
       "subtitle": "Fatanya n'ibihumbi by'Abanyarwanda barimo kumenya amategeko y'umuhanda bakoresheje ISHAMI",
       "start": "Tangira ku Buntu"
     }
+  },
+  "cards": {
+    "view": "Raba"
   }
 }

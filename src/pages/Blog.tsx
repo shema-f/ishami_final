@@ -13,7 +13,7 @@ import SEOHead from '../components/SEOHead';
 import { useArticleAnalytics } from '../contexts/ArticleAnalyticsContext';
 
 function ArticleCard({ article }: { article: Article }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { getArticleStats } = useArticleAnalytics();
   const stats = getArticleStats(article.id);
 
@@ -69,7 +69,7 @@ function ArticleCard({ article }: { article: Article }) {
           </p>
 
           <div className="mt-4 flex items-center text-blue-400 text-sm font-medium">
-            <span>{lang === 'rw' ? 'Soma byinshi' : 'Read more'}</span>
+            <span>{t('blog.read_more', 'Read more')}</span>
             <ExternalLink className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
@@ -79,7 +79,7 @@ function ArticleCard({ article }: { article: Article }) {
 }
 
 function ShareButtons({ title, slug }: { title: string; slug: string }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const url = typeof window !== 'undefined' ? `${window.location.origin}/blog/${slug}` : '';
   const shareText = `${title} — ISHAMI`;
@@ -104,7 +104,7 @@ function ShareButtons({ title, slug }: { title: string; slug: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className="text-sm text-gray-400 font-medium">{lang === 'rw' ? 'Sangiza:' : 'Share:'}</span>
+      <span className="text-sm text-gray-400 font-medium">{t('blog.share', 'Share:')}</span>
       
       {/* Facebook */}
       <a
@@ -158,12 +158,12 @@ function ShareButtons({ title, slug }: { title: string; slug: string }) {
         {copied ? (
           <>
             <Check className="w-4 h-4 text-green-400" />
-            <span className="text-green-400">{lang === 'rw' ? 'Byakoporowe!' : 'Copied!'}</span>
+            <span className="text-green-400">{t('blog.copied', 'Copied!')}</span>
           </>
         ) : (
           <>
             <Copy className="w-4 h-4" />
-            {lang === 'rw' ? 'Koporora ihuza' : 'Copy link'}
+            {t('blog.copy_link', 'Copy link')}
           </>
         )}
       </button>
@@ -209,7 +209,7 @@ function calculateReadingTime(content: string): number {
 }
 
 function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const allArticles = useMemo(() => getAllArticles(), []);
 
   const relatedArticles = useMemo(() => {
@@ -241,7 +241,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
       className="mt-12 mb-8"
     >
       <h2 className="text-2xl font-bold text-white mb-6 font-[family-name:var(--font-heading)]">
-        {lang === 'rw' ? 'Inyandiko Zikurikira' : 'Related Articles'}
+        {t('blog.related_articles', 'Related Articles')}
       </h2>
       <div className="grid md:grid-cols-2 gap-6">
         {displayArticles.map((related) => (
@@ -282,7 +282,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
     </motion.div>
   );
 }function ArticleDetail({ article }: { article: Article }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { readingMode } = useReadingMode();
   const styles = getReadingModeStyles(readingMode);
   const { trackView, updateViewDuration, markCompleted, getArticleStats } = useArticleAnalytics();
@@ -336,7 +336,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">{lang === 'rw' ? 'Subira inyuma' : 'Back to Articles'}</span>
+            <span className="text-sm">{t('blogpage.back_to_articles', 'Back to Articles')}</span>
           </Link>
         </motion.div>
 
@@ -352,7 +352,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {lang === 'rw' ? `${readTime} min isoma` : `${readTime} min read`}
+              {t('blogpage.read_min', `${readTime} min read`).replace('{n}', String(readTime))}
             </span>
             <span>{new Date(article.date).toLocaleDateString()}</span>
             {stats.totalViews > 0 && (
@@ -360,7 +360,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
                 <span>·</span>
                 <span className="flex items-center gap-1">
                   <Eye className="w-3 h-3" />
-                  {stats.totalViews} {lang === 'rw' ? 'amategeko' : 'views'}
+                  {stats.totalViews} {t('blog.views', 'views')}
                 </span>
               </>
             )}
@@ -476,10 +476,10 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
           className="bg-gradient-to-br from-[#111827] to-[#030712] rounded-3xl p-8 border border-white/10 mb-8"
         >
           <div className="text-center">
-            <p className="text-sm text-gray-400 mb-2">{lang === 'rw' ? 'Ibikorwa by\' Ishirahamwe' : 'Powered by'}</p>
+            <p className="text-sm text-gray-400 mb-2">{t('blogpage.powered_by', 'Powered by')}</p>
             <h3 className="text-2xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">Ferrivox Ltd</h3>
             <p className="text-gray-400 text-sm mb-4">
-              {lang === 'rw' ? 'Ishirahamwe ry\'Ikoranabuhanga n\'Ubufasha bw\'Amakuru' : 'Software Development & Data Engineering Company'}
+              {t('sidebar.company', 'Software Development & Data Engineering Company')}
             </p>
             <a
               href="https://ferrivox.com"
@@ -487,7 +487,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 border border-white/20 rounded-xl text-white text-sm font-medium hover:bg-white/20 transition-all"
             >
-              {lang === 'rw' ? 'Visit Ferrivox' : 'Visit Ferrivox'}
+              {t('blogpage.visit', 'Visit Ferrivox')}
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
@@ -543,8 +543,8 @@ export default function Blog() {
       return (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">{lang === 'rw' ? 'Inyandiko ntibonetse' : 'Article not found'}</h2>
-            <Link to="/blog" className="text-blue-400 hover:text-blue-300">{lang === 'rw' ? 'Subira ku nyandiko' : 'Back to articles'}</Link>
+            <h2 className="text-2xl font-bold text-white mb-4">{t('blogpage.not_found_title', 'Article not found')}</h2>
+            <Link to="/blog" className="text-blue-400 hover:text-blue-300">{t('blogpage.not_found_back', 'Back to articles')}</Link>
           </div>
         </div>
       );
@@ -566,12 +566,10 @@ export default function Blog() {
             <BookOpen className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-            {lang === 'rw' ? "Inyandiko n'Amateka" : 'Articles & Blog'}
+            {t('blogpage.articles_badge', 'Articles & Blog')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {lang === 'rw'
-              ? 'Soma amategeko y\'umuhanda, amabwiriza yo gutwara, n\'inkuru zingenzi ziri mu Kinyarwanda n\'Icyongereza.'
-              : 'Read traffic rules, driving guides, and important articles in both English and Kinyarwanda.'}
+            {t('blogpage.subtitle', 'Read traffic rules, driving guides, and important articles in both English and Kinyarwanda.')}
           </p>
         </motion.div>
 
@@ -590,7 +588,7 @@ export default function Blog() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={lang === 'rw' ? 'Shakisha inyandiko...' : 'Search articles...'}
+                placeholder={t('blog.search_placeholder', 'Search articles...')}
                 className="w-full pl-12 pr-12 py-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               {searchQuery && (
@@ -608,7 +606,7 @@ export default function Blog() {
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-2 text-gray-400 mr-2">
               <Filter className="w-4 h-4" />
-              <span className="text-sm font-medium">{lang === 'rw' ? 'Gushungura:' : 'Filter:'}</span>
+              <span className="text-sm font-medium">{t('blogpage.filter', 'Filter:')}</span>
             </div>
             
             <button
@@ -619,7 +617,7 @@ export default function Blog() {
                   : 'bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10 hover:text-white'
               }`}
             >
-              {lang === 'rw' ? 'Byose' : 'All'}
+              {t('blog.filter_all', 'All')}
             </button>
             
             {categories.map((category) => (
@@ -645,8 +643,8 @@ export default function Blog() {
             {/* Articles Count */}
             <div className="mb-6 text-gray-400 text-sm">
               {filteredArticles.length === articles.length 
-                ? (lang === 'rw' ? `Inyandiko ${articles.length}` : `${articles.length} articles`)
-                : (lang === 'rw' ? `Inyandiko ${filteredArticles.length} kuri ${articles.length}` : `${filteredArticles.length} of ${articles.length} articles`)
+                ? t('blogpage.count_articles', `${articles.length} articles`).replace('{n}', String(articles.length))
+                : t('blogpage.count_of', `${filteredArticles.length} of ${articles.length} articles`).replace('{shown}', String(filteredArticles.length)).replace('{total}', String(articles.length))
               }
             </div>
 
@@ -681,17 +679,15 @@ export default function Blog() {
               className="text-center py-20"
             >
               <Search className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-              <h3 className="text-xl font-bold text-white mb-2">{lang === 'rw' ? 'Nta nyandiko zibonetse' : 'No articles found'}</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('blogpage.no_articles', 'No articles found')}</h3>
               <p className="text-gray-400 mb-6">
-                {lang === 'rw' 
-                  ? 'Kurikira inama cyangwa uzure amagambo yindi' 
-                  : 'Try adjusting your search or filter criteria'}
+                {t('blogpage.no_results_hint', 'Try adjusting your search or filter criteria')}
               </p>
               <button
                 onClick={() => { setSearchQuery(''); setSelectedCategory(null); }}
                 className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all"
               >
-                {lang === 'rw' ? 'Siba Gushungura' : 'Clear Filters'}
+                {t('blogpage.clear_filters', 'Clear Filters')}
               </button>
             </motion.div>
           )}

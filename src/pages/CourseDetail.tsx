@@ -17,7 +17,7 @@ const lessonTypeIcons: Record<string, { icon: typeof FileText; color: string; la
 
 export default function CourseDetail() {
   const { courseId } = useParams();
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { user } = useAuth();
   const course = getCourseById(courseId || '');
   const userId = user?.id || user?.uid || 'guest';
@@ -29,10 +29,10 @@ export default function CourseDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-          <h2 className="text-2xl font-bold text-white mb-2">{lang === 'rw' ? 'Isomo Ntiryabonetse' : 'Course Not Found'}</h2>
-          <p className="text-gray-400 mb-6">{lang === 'rw' ? "Isomo urimo gushaka ntiribaho." : "The course you're looking for doesn't exist."}</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('course_detail.not_found_title', 'Course Not Found')}</h2>
+          <p className="text-gray-400 mb-6">{t('course_detail.not_found_desc', "The course you're looking for doesn't exist.")}</p>
           <Link to="/courses" className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">
-            {lang === 'rw' ? 'Subira ku Masomo' : 'Back to Courses'}
+            {t('course_detail.back_button', 'Back to Courses')}
           </Link>
         </div>
       </div>
@@ -42,8 +42,8 @@ export default function CourseDetail() {
   return (
     <AccessGate
       requiredTier="quiz"
-      title={lang === 'rw' ? 'Amasomo Asaba Uburenganzira bwa Quiz' : 'Courses Require Quiz Access'}
-      description={lang === 'rw' ? 'Gura Uburenganzira bwa Quiz (1,000 RWF) kugira ngo ufungure amasomo n\'inyigisho zose.' : 'Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons.'}
+      title={t('courses.require_quiz_access', 'Courses Require Quiz Access')}
+      description={t('courses.require_quiz_access_desc', 'Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons.')}
     >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
@@ -58,7 +58,7 @@ export default function CourseDetail() {
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">{lang === 'rw' ? 'Amasomo Yose' : 'All Courses'}</span>
+            <span className="text-sm font-medium">{t('course_detail.back_to_courses', 'All Courses')}</span>
           </Link>
         </motion.div>
 
@@ -133,8 +133,8 @@ export default function CourseDetail() {
               >
                 <Play className="w-5 h-5" />
                 {courseProgress && courseProgress.completedLessons.length > 0 && courseProgress.completedLessons.length < course.totalLessons
-                  ? (lang === 'rw' ? 'Komeza Isomoro' : 'Continue Course')
-                  : (lang === 'rw' ? 'Tangira Isomoro' : 'Start Course')
+                  ? t('course_detail.continue_course', 'Continue Course')
+                  : t('course_detail.start_course', 'Start Course')
                 }
               </motion.div>
             </Link>

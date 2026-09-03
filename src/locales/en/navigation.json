@@ -1,6 +1,7 @@
 {
   "nav": {
     "home": "Home",
+    "ai": "AI",
     "aiAssistant": "AI Assistant",
     "quiz": "Quiz",
     "simulation": "3D Simulation",
@@ -26,7 +27,8 @@
     "cookies": "Cookie Policy",
     "rights": "All rights reserved.",
     "madeIn": "Made with",
-    "partnership": "In partnership with"
+    "partnership": "In partnership with",
+    "developers": "ISHAMI for Developers"
   },
   "root": {
     "installTitle": "Install ISHAMI App",
@@ -38,6 +40,15 @@
     "select": "Select Scenario",
     "estimated": "min",
     "objectives": "Objectives",
-    "difficulty": "Difficulty"
+    "difficulty": "Difficulty",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "go_back": "Go Back",
+    "join": "Sign In / Sign Up",
+    "continue": "Continue",
+    "just_now": "Just now",
+    "minutes_ago": "{n}m ago",
+    "hours_ago": "{n}h ago",
+    "days_ago": "{n}d ago"
   }
 }

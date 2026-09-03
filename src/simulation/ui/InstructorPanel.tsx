@@ -20,7 +20,7 @@ export default function InstructorPanel({
   trigger = 'stage_enter',
   visible = true,
 }: InstructorPanelProps) {
-  const { lang } = useTranslation();
+  const { t } = useTranslation();
   const [message, setMessage] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const prevStageRef = useRef<InstructorStage>(stage);
@@ -99,7 +99,7 @@ export default function InstructorPanel({
                   Moto Sensei
                 </div>
                 <div className="text-[10px] text-slate-500">
-                  {lang === 'rw' ? 'Umwarimu wawe wo Gutwara' : 'Your Driving Instructor'}
+                  {t('sim.instructor_title', 'Your Driving Instructor')}
                 </div>
               </div>
             </div>

@@ -11,7 +11,7 @@ import AccessGate from '../components/AccessGate';
 const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const;
 
 export default function Courses() {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id || user?.uid || 'guest';
   const [filter, setFilter] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
@@ -21,8 +21,8 @@ export default function Courses() {
   return (
     <AccessGate
       requiredTier="quiz"
-      title={lang === 'rw' ? 'Amasomo Asaba Uburenganzira bwa Quiz' : 'Courses Require Quiz Access'}
-      description={lang === 'rw' ? 'Gura Uburenganzira bwa Quiz (1,000 RWF) kugira ngo ufungure amasomo n\'inyigisho zose.' : 'Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons.'}
+      title={t('courses.require_quiz_access', 'Courses Require Quiz Access')}
+      description={t('courses.require_quiz_access_desc', 'Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons.')}
     >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -36,12 +36,10 @@ export default function Courses() {
             <BookOpen className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-            {lang === 'rw' ? 'Amasomo' : 'Courses'}
+            {t('courses.title', 'Courses')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            {lang === 'rw'
-              ? 'Menya neza amategeko y\'umuhanda mu Rwanda unyuze mu masomo ateguye neza yakozwe na Moto Sensei. Kuva ku rwego rw\'abatangiye kugeza ku rwego rwo hejuru.'
-              : 'Master Rwanda road rules with structured courses designed by Moto Sensei. From beginner to advanced.'}
+            {t('courses.description', 'Master Rwanda road rules with structured courses designed by Moto Sensei. From beginner to advanced.')}
           </p>
         </motion.div>
 
@@ -65,7 +63,7 @@ export default function Courses() {
               }`}
             >
               <Filter className="w-4 h-4" />
-              {level === 'All' ? (lang === 'rw' ? 'Byose' : 'All') : level}
+              {level === 'All' ? t('courses.filter_all', 'All') : level}
             </motion.button>
           ))}
         </motion.div>
@@ -176,9 +174,9 @@ function CourseCard({ course, index, lang, userId }: { course: Course; index: nu
               {isComplete ? (
                 <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Completed</span>
               ) : completed > 0 ? (
-                <span>{lang === 'rw' ? 'Komeza' : 'Continue'}</span>
+                <span>{t('courses.continue', 'Continue')}</span>
               ) : (
-                <span>{lang === 'rw' ? 'Tangira Isomoro' : 'Start Course'}</span>
+                <span>{t('courses.start_course', 'Start Course')}</span>
               )}
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>

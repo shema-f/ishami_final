@@ -5,7 +5,7 @@ import { useReadingMode, type ReadingMode } from '../contexts/ReadingModeContext
 import { useTranslation } from '../contexts/I18nContext';
 
 export default function ReadingModeToggle() {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const { readingMode, setReadingMode } = useReadingMode();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +23,7 @@ export default function ReadingModeToggle() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:text-white transition-all text-sm"
-        title={lang === 'rw' ? 'Hindura uburyo bwo gusoma' : 'Change reading mode'}
+        title={t('reader.change_mode', 'Change reading mode')}
       >
         <Palette className="w-4 h-4" />
         <span className="hidden sm:inline">{lang === 'rw' ? currentMode.labelRw : currentMode.label}</span>

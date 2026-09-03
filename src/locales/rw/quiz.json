@@ -10,7 +10,7 @@
     "time_left": "Igihe Gisigaye",
     "submit": "Ohereza",
     "next": "Gikurikira",
-    "previous": "Kibanza",
+    "previous": "Ibyabanje",
     "finish": "Soza Ikizamini",
     "score": "Amanota",
     "correct": "Nibyo",
@@ -35,12 +35,12 @@
       "time_left": "Igihe Gisigaye",
       "progress": "Intambwe Umaze Gutera",
       "score": "Amanota",
-      "previous": "Ibibazo Byabanje",
+      "previous": "Ibyabanje",
       "next_question": "Ikibazo Gikurikira",
       "finish_quiz": "Soza Ikizamini"
     },
     "results": {
-      "congratulations": "Urakoze cyane! 🎉",
+      "congratulations": "Watsinze! 🎉",
       "keep_practicing": "Komeza Witoze! 💪",
       "your_score": "Amanota Yawe:",
       "excellent_work": "Wakoze neza cyane! Witeguye gukora ikizamini nyacyo cyo gutwara ibinyabiziga. Komeza uwo murava!",
@@ -79,5 +79,23 @@
       "switch_to_english": "Hindura mu Cyongereza",
       "switch_to_kinyarwanda": "Hindura mu Kinyarwanda"
     }
+  },
+  "quizpage": {
+    "signin_title": "Injira kugira ngo utangire ikizamini",
+    "signin_desc": "Ukeneye konti kugira utangire ikizamini. Injira cyangwa iyandikishe.",
+    "upgrade_desc": "Wakoresheje ibibazo 5 byawe by'ubuntu by'ikizamini! Hitamo umwanya kugira ngo ukomeze.",
+    "tier_access": "Umwanya w'Ibibazo",
+    "tier_unlock": "Fungura ibibazo byose by'ikizamini",
+    "unlimited": "Ibibazo bitagira ingano",
+    "certificates": "Ibyemezo by'ikizamini",
+    "best_value": "IGICIRO GIKWIRIYE",
+    "vip": "VIP Premium",
+    "vip_desc": "Fungura byose: ibibazo, amasomo, AI, na simulation ya 3D",
+    "all_courses": "Amasomo yose",
+    "ai_access": "AI Assistant",
+    "sim3d": "3D Simulation",
+    "certificate": "Ibyemezo",
+    "access_btn": "Umwanya w'Ibibazo — 100 RWF",
+    "vip_btn": "VIP Premium — 3,000 RWF"
   }
 }

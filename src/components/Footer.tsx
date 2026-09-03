@@ -148,7 +148,7 @@ export default function Footer() {
                 { path: '/quiz', label: t('nav.quiz') },
                 { path: '/resources', label: t('nav.resources') },
                 { path: '/leaderboard', label: t('nav.leaderboard') },
-                { path: '/developers', label: lang === 'rw' ? 'ISHAMI kwa Abakoresha' : 'ISHAMI for Developers', icon: <Code className="w-3 h-3" /> },
+                { path: '/developers', label: t('footer.developers'), icon: <Code className="w-3 h-3" /> },
               ].map((item) => (
                 <li key={item.path}>
                   <Link 

@@ -99,6 +99,27 @@
       "processing": "Processing...",
       "success": "Payment successful! You now have full access.",
       "failed": "Payment failed. Please try again."
+    },
+    "assistant": {
+      "welcome_short": "Welcome!",
+      "choose_topic": "Choose a topic to start learning:",
+      "type_message": "Type your message...",
+      "exam_placeholder": "Exam question... (e.g. What should you do if a child runs onto the road?)",
+      "learn_placeholder": "Request a lesson... (e.g. Teach me about roundabouts)",
+      "practice_placeholder": "Practice scenario... (e.g. I'm approaching a stop sign in the rain, what should I do?)",
+      "ask_placeholder": "Ask about traffic rules, signs, exams, safety...",
+      "signin_title": "Sign In to Continue",
+      "signin_desc": "You need an account to use Moto-Sensei AI. Sign in or create a free account to get started.",
+      "upgrade_title": "Upgrade to Continue",
+      "upgrade_desc": "You've used your 2 free AI questions! Get full premium access to continue.",
+      "payment_success": "Payment Successful! 🎉",
+      "access_upgraded": "Your access has been upgraded.",
+      "full_desc": "Unlock everything: AI, quizzes, courses, 3D simulation",
+      "full_button": "Full Access — 3,000 RWF",
+      "ussd_check": "Check your phone for USSD prompt...",
+      "ussd_confirm": "Confirm the payment on your phone",
+      "delete_title": "Delete Conversation?",
+      "delete_desc": "\"{title}\" will be permanently deleted."
     }
   }
 }

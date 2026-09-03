@@ -4,7 +4,7 @@ import { useTranslation } from '../contexts/I18nContext';
 import { Link } from 'react-router';
 
 export default function BlogSidebar() {
-  const { lang } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <aside className="space-y-6">
@@ -19,21 +19,17 @@ export default function BlogSidebar() {
           <div className="flex items-center gap-2 mb-3">
             <Star className="w-4 h-4 text-yellow-400" />
             <span className="text-xs text-yellow-400 font-semibold uppercase tracking-wider">
-              {lang === 'rw' ? 'Ikanjyamo' : 'Sponsored'}
+              {t('sidebar.sponsored', 'Sponsored')}
             </span>
           </div>
           <h3 className="text-lg font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
             Ferrivox Ltd
           </h3>
           <p className="text-gray-400 text-sm mb-4">
-            {lang === 'rw' 
-              ? 'Ishirahamwe ry\'Ikoranabuhanga n\'Ubufasha bw\'Amakuru'
-              : 'Software Development & Data Engineering Company'}
+            {t('sidebar.company', 'Software Development & Data Engineering Company')}
           </p>
           <p className="text-gray-500 text-xs mb-4">
-            {lang === 'rw'
-              ? 'Dukora uburyo bw\'ikoranabuhanga bushya, harimo urubuga rwa ISHAMI.'
-              : 'Building innovative digital solutions including the ISHAMI platform.'}
+            {t('sidebar.company_desc', 'Building innovative digital solutions including the ISHAMI platform.')}
           </p>
           <a
             href="https://ferrivox.com"
@@ -41,7 +37,7 @@ export default function BlogSidebar() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-sm font-medium hover:bg-blue-500/30 transition-all"
           >
-            {lang === 'rw' ? 'Sura Ferrivox' : 'Visit Ferrivox'}
+            {t('sidebar.visit', 'Visit Ferrivox')}
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -57,27 +53,23 @@ export default function BlogSidebar() {
         <div className="flex items-center gap-2 mb-3">
           <Shield className="w-4 h-4 text-purple-400" />
           <span className="text-xs text-purple-400 font-semibold uppercase tracking-wider">
-            {lang === 'rw' ? 'Serivisi' : 'Service'}
+            {t('sidebar.service', 'Service')}
           </span>
         </div>
         <h3 className="text-lg font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-          {lang === 'rw' ? 'Irembo Registration' : 'Irembo Registration'}
+          {t('sidebar.irembo_title', 'Irembo Registration')}
         </h3>
         <p className="text-gray-400 text-sm mb-4">
-          {lang === 'rw'
-            ? 'Twagufasha kubona kode yo gukorera ikizamini binyuze muri serivisi za Irembo.'
-            : 'Get help registering for your driving test through Irembo services.'}
+          {t('sidebar.irembo_desc', 'Get help registering for your driving test through Irembo services.')}
         </p>
         <div className="text-xs text-purple-300 mb-4">
-          {lang === 'rw'
-            ? 'Igiciro cya Serivisi: 5,500 RWF'
-            : 'Service Fee: 5,500 RWF'}
+          {t('sidebar.irembo_fee', 'Service Fee: 5,500 RWF')}
         </div>
         <Link
           to="/irembo"
           className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg text-sm font-medium hover:bg-purple-500/30 transition-all"
         >
-          {lang === 'rw' ? 'Bona Ubufasha' : 'Get Help'}
+          {t('sidebar.get_help', 'Get Help')}
           <ExternalLink className="w-3 h-3" />
         </Link>
       </motion.div>
@@ -92,25 +84,23 @@ export default function BlogSidebar() {
         <div className="flex items-center gap-2 mb-3">
           <Award className="w-4 h-4 text-yellow-400" />
           <span className="text-xs text-yellow-400 font-semibold uppercase tracking-wider">
-            {lang === 'rw' ? 'Kwiyongera' : 'Upgrade'}
+            {t('sidebar.upgrade', 'Upgrade')}
           </span>
         </div>
         <h3 className="text-lg font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-          {lang === 'rw' ? 'Fungura Byose nka Pro' : 'Unlock Pro Access'}
+          {t('sidebar.pro_title', 'Unlock Pro Access')}
         </h3>
         <p className="text-gray-400 text-sm mb-4">
-          {lang === 'rw'
-            ? 'Fungura ibibazo byose, imyitozo ya 3D, n\'ubufasha bwa AI.'
-            : 'Get unlimited quizzes, 3D simulations, and AI assistant.'}
+          {t('sidebar.pro_desc', 'Get unlimited quizzes, 3D simulations, and AI assistant.')}
         </p>
         <div className="text-xs text-yellow-300 mb-4">
-          {lang === 'rw' ? 'Kuri 100 RWF gusa' : 'For only 100 RWF'}
+          {t('sidebar.pro_price', 'For only 100 RWF')}
         </div>
         <Link
           to="/quiz"
           className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 rounded-lg text-sm font-medium hover:bg-yellow-500/30 transition-all"
         >
-          {lang === 'rw' ? 'Tangira Kwiga' : 'Start Learning'}
+          {t('sidebar.start_learning', 'Start Learning')}
           <ExternalLink className="w-3 h-3" />
         </Link>
       </motion.div>
@@ -123,24 +113,24 @@ export default function BlogSidebar() {
         className="bg-white/5 rounded-2xl border border-white/10 p-6"
       >
         <h3 className="text-lg font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-          {lang === 'rw' ? 'Ibintu Bih快速' : 'Quick Links'}
+          {t('footer.quickLinks')}
         </h3>
         <div className="space-y-2">
           <Link to="/quiz" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
             <BookOpen className="w-4 h-4" />
-            {lang === 'rw' ? 'Kora Ikizamini' : 'Take a Quiz'}
+            {t('home.certificate_section.take_quiz')}
           </Link>
           <Link to="/ai-assistant" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
             <Shield className="w-4 h-4" />
-            {lang === 'rw' ? 'AI Assistant' : 'AI Assistant'}
+            {t('nav.aiAssistant')}
           </Link>
           <Link to="/simulation" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
             <Award className="w-4 h-4" />
-            {lang === 'rw' ? '3D Simulation' : '3D Simulation'}
+            {t('nav.simulation')}
           </Link>
           <Link to="/resources" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
             <Star className="w-4 h-4" />
-            {lang === 'rw' ? 'Imfashanyigisho' : 'Resources'}
+            {t('nav.resources')}
           </Link>
         </div>
       </motion.div>
