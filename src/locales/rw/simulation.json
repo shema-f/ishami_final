@@ -97,5 +97,36 @@
       "select_scenario": "Hitamo Uruhare",
       "no_scenarios": "Nta ruhare ruhari"
     }
+  },
+  "scen": {
+    "1": {
+      "title": "Gutangira Gutwara",
+      "desc": "Kumenya gutangira neza imodoka"
+    },
+    "2": {
+      "title": "Kugendagenda",
+      "desc": "Kugendagenda mu muhanda ukurikiza amategeko"
+    },
+    "3": {
+      "title": "Imfuruka",
+      "desc": "Kumenya gukata imfuruka neza"
+    },
+    "4": {
+      "title": "Gupaka",
+      "desc": "Gupaka imodoka uburiri (parallel) cyangwa ukayishyira ku gice (perpendicular)"
+    },
+    "5": {
+      "title": "Gutwara kuri Highway",
+      "desc": "Gutwara cyihuse no kunyuranaho"
+    },
+    "6": {
+      "title": "Ihuriro ry'Umuhanda T",
+      "desc": "Amategeko y'uburenganzira bw'ibanze ku ihuriro rya T"
+    }
+  },
+  "diff": {
+    "beginner": "Umutangira",
+    "intermediate": "Urwego rwo Hagati",
+    "advanced": "Urwego rwo Hejuru"
   }
 }

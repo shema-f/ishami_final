@@ -97,5 +97,36 @@
       "select_scenario": "Select Scenario",
       "no_scenarios": "No scenarios available"
     }
+  },
+  "scen": {
+    "1": {
+      "title": "Guided Start",
+      "desc": "Learn proper vehicle starting procedures"
+    },
+    "2": {
+      "title": "Traffic Flow",
+      "desc": "Navigate traffic and follow rules"
+    },
+    "3": {
+      "title": "Corners & Turns",
+      "desc": "Master turning techniques"
+    },
+    "4": {
+      "title": "Parking",
+      "desc": "Parallel and perpendicular parking"
+    },
+    "5": {
+      "title": "Highway Driving",
+      "desc": "High-speed driving and overtaking"
+    },
+    "6": {
+      "title": "T-Cross Scenario",
+      "desc": "Priority rules at T-intersections"
+    }
+  },
+  "diff": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
   }
 }
