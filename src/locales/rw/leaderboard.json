@@ -3,6 +3,19 @@
     "title": "Urutonde rw'Indashyikirwa",
     "subtitle": "Abatsinze neza mu kumenya amategeko y'umuhanda mu Rwanda",
     "loading": "Urutonde rurimo gushakishwa...",
+    "error": "Urutonde ntirwashoboye gushakishwa",
+    "retry": "Ongera Ugerageze",
+    "marks": "amanota",
+    "empty": {
+      "title": "Nta Manota Arimo",
+      "description": "Kora ikizamini kugira ngo ubone amanota maze ubone umwanya wawe ku rutonde!"
+    },
+    "my_rank": {
+      "title": "Umwanya Wawe",
+      "not_ranked": "Ntarakora ikizamini",
+      "take_quiz": "Kora Ikizamini"
+    },
+    "you": "Wowe",
     "motivation": {
       "title": "Zamuka mu Ntera!",
       "description": "Kora ibizamini buri munsi kugira ngo ugumane umuvuduko kandi wegukane imidari",
@@ -20,7 +33,6 @@
       "rank": "Umwanya",
       "user": "Umukoresha",
       "best_score": "Amanota Meza Cyane",
-      "best_score_label": "amanota meza cyane",
       "quizzes": "ibizamini",
       "total_marks": "Amanota Yose Hamwe",
       "average": "Impuzandengo"

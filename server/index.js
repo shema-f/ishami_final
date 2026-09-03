@@ -2391,34 +2391,47 @@ app.get('/api/resources/download/:resourceId', authMiddleware, async (req, res) 
 app.get('/api/leaderboard', optionalAuthMiddleware, async (req, res) => {
   const { limit = 100 } = req.query;
   const users = await User.find({}).lean();
-  const scored = users.map(u => {
-    const total_score =
-      (u.stats?.bestScore || 0) +
-      (u.stats?.totalMarks || 0) +
-      (u.loginStreak || 0) * 5;
-    return { user: u, total_score };
+  const scored = users.map(u => ({ user: u }));
+  // Rank by total marks earned, then best score, then number of quizzes, then streak
+  scored.sort((a, b) => {
+    const A = a.user.stats || {};
+    const B = b.user.stats || {};
+    return (B.totalMarks || 0) - (A.totalMarks || 0)
+      || (B.bestScore || 0) - (A.bestScore || 0)
+      || (B.totalQuizzes || 0) - (A.totalQuizzes || 0)
+      || (b.user.loginStreak || 0) - (a.user.loginStreak || 0);
   });
-  scored.sort((a, b) => b.total_score - a.total_score);
-  const limited = scored.slice(0, Number(limit));
-  const leaderboard = limited.map((entry, idx) => {
-    const rank = idx + 1;
+  const toEntry = (entry, rank) => {
     let medal = null;
     if (rank === 1) medal = 'GOLD';
     else if (rank === 2) medal = 'SILVER';
     else if (rank === 3) medal = 'BRONZE';
     const u = entry.user;
+    const stats = u.stats || {};
     return {
       rank,
       userId: String(u._id),
       username: u.username || 'Unknown',
-      score: entry.total_score,
+      score: stats.totalMarks || 0,
+      bestScore: stats.bestScore || 0,
+      quizCount: stats.totalQuizzes || 0,
+      totalMarks: stats.totalMarks || 0,
+      totalQuestions: stats.totalQuestions || 0,
       isPro: !!u.isPro,
       badges: u.badges || [],
       medal,
       loginStreak: u.loginStreak || 0
     };
-  });
-  res.json({ leaderboard, updatedAt: new Date().toISOString() });
+  };
+  const limited = scored.slice(0, Number(limit));
+  const leaderboard = limited.map((entry, idx) => toEntry(entry, idx + 1));
+  // Include the current user's own rank + stats (may be beyond the visible limit)
+  let myEntry = null;
+  if (req.user) {
+    const myIdx = scored.findIndex(s => String(s.user._id) === String(req.user._id));
+    if (myIdx !== -1) myEntry = toEntry(scored[myIdx], myIdx + 1);
+  }
+  res.json({ leaderboard, myEntry, updatedAt: new Date().toISOString() });
 });
 
 // CERTIFICATES

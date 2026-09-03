@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI } from '../services/api';
+import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI, flushPendingQuizSubmissions } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
@@ -77,6 +77,11 @@ export default function Quiz() {
       }
     })();
   }, [user?.id]);
+
+  // Retry any quiz marks that failed to upload on a previous session
+  useEffect(() => {
+    flushPendingQuizSubmissions().catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (timeLeft > 0 && !quizCompleted) {
@@ -248,7 +253,21 @@ export default function Quiz() {
             timeTakenSeconds: 1200 - timeLeft,
           });
         } catch (e) {
+          // Keep the marks safe: queue them locally and retry on the next visit
+          // to the quiz or leaderboard pages.
           console.error('Failed to submit quiz:', e);
+          try {
+            const payload = {
+              userId: user.id,
+              answers,
+              score,
+              totalQuestions: questions.length,
+              timeTakenSeconds: 1200 - timeLeft,
+            };
+            const pending = JSON.parse(localStorage.getItem('ishami_pending_quiz_submissions') || '[]');
+            pending.push(payload);
+            localStorage.setItem('ishami_pending_quiz_submissions', JSON.stringify(pending.slice(-10)));
+          } catch {}
         }
         const percentage = Math.round((score / questions.length) * 100);
         const passed = percentage >= 70;

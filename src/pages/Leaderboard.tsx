@@ -1,35 +1,73 @@
 import { motion } from 'motion/react';
-import { Trophy, Medal, TrendingUp, Crown, Zap, Share2, Link as LinkIcon, Copy, Facebook, ArrowRight, Award, Shield, CheckCircle2 } from 'lucide-react';
+import { Trophy, Medal, TrendingUp, Crown, Zap, Share2, Copy, Facebook, ArrowRight, Award, Shield, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { leaderboardAPI } from '../services/api';
+import { leaderboardAPI, flushPendingQuizSubmissions } from '../services/api';
 import { Link } from 'react-router';
 import { useTranslation } from '../contexts/I18nContext';
+import { useAuth } from '../contexts/AuthContext';
 
-type LeaderboardEntry = { userId: string; username: string; bestScore: number; quizCount: number; totalMarks: number; totalQuestions: number };
-const formatName = (name: string) => name || 'Unknown';
+type LeaderboardEntry = {
+  rank: number;
+  userId: string;
+  username: string;
+  score?: number;
+  bestScore: number;
+  quizCount: number;
+  totalMarks: number;
+  totalQuestions: number;
+  isPro?: boolean;
+  medal?: string | null;
+  loginStreak?: number;
+};
 
 export default function Leaderboard() {
-  const { t, lang } = useTranslation();
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
 
+  const formatName = (name: string) => name || t('lb.unknown', 'Unknown');
+  const isCurrentUser = (entry: LeaderboardEntry) => !!user && !!myEntry && entry.userId === myEntry.userId;
+
+  // Load the leaderboard once; flush any quiz marks that failed to upload earlier first,
+  // so scores that were recorded offline still show up here.
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
+        await flushPendingQuizSubmissions();
         const res = await leaderboardAPI.getLeaderboard(100);
-        if (mounted) setEntries(res.leaderboard || []);
-      } catch (e) {
-        setError('Failed to load leaderboard');
+        if (!mounted) return;
+        setEntries(res.leaderboard || []);
+        setMyEntry(res.myEntry || null);
+      } catch {
+        if (mounted) setError(t('lb.error', 'Failed to load the leaderboard'));
       } finally {
         if (mounted) setLoading(false);
       }
     })();
     return () => { mounted = false; };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const retry = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await flushPendingQuizSubmissions();
+      const res = await leaderboardAPI.getLeaderboard(100);
+      setEntries(res.leaderboard || []);
+      setMyEntry(res.myEntry || null);
+    } catch {
+      setError(t('lb.error', 'Failed to load the leaderboard'));
+    } finally {
+      setLoading(false);
+    }
+  };
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -82,8 +120,15 @@ export default function Leaderboard() {
         </motion.div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-            {error}
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-red-400 text-sm">{error}</p>
+            <button
+              onClick={retry}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              {t('lb.retry', 'Retry')}
+            </button>
           </div>
         )}
 
@@ -110,6 +155,46 @@ export default function Leaderboard() {
             </div>
           </div>
         </motion.div>
+
+        {/* Your Rank */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-white/10 mb-8"
+          >
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-amber-500/15">
+                  <Crown className="w-6 h-6 text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">{t('lb.my_rank.title', 'Your Rank')}</h3>
+                  {myEntry ? (
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      <span className="text-2xl font-bold text-amber-400 font-[family-name:var(--font-mono)]">#{myEntry.rank}</span>
+                      <span className="text-xs text-gray-400">
+                        {myEntry.totalMarks} {t('lb.marks', 'marks')} · {myEntry.quizCount} {t('lb.table.quizzes', 'quizzes')} · {t('lb.table.best_score', 'Best Score')} {myEntry.bestScore}
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm mt-1">{t('lb.my_rank.not_ranked', "You haven't taken a quiz yet")}</p>
+                  )}
+                </div>
+              </div>
+              {!myEntry && (
+                <Link
+                  to="/quiz"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+                >
+                  <Trophy className="w-4 h-4" />
+                  {t('lb.my_rank.take_quiz', 'Take a Quiz')}
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Share Buttons */}
         <motion.div
@@ -152,6 +237,8 @@ export default function Leaderboard() {
           </div>
         </motion.div>
 
+        {entries.length > 0 ? (
+        <>
         {/* Top 3 Podium */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -171,8 +258,8 @@ export default function Leaderboard() {
               <h3 className="text-white font-semibold mb-1">
                 {formatName(top3[1]?.username || '')}
               </h3>
-              <p className="text-2xl font-bold text-blue-400 font-[family-name:var(--font-mono)]">{top3[1]?.bestScore ?? '-'}</p>
-              <p className="text-xs text-gray-500">{t('lb.table.best_score_label', 'best score')}</p>
+              <p className="text-2xl font-bold text-blue-400 font-[family-name:var(--font-mono)]">{top3[1]?.totalMarks ?? '-'}</p>
+              <p className="text-xs text-gray-500">{t('lb.marks', 'marks')}</p>
             </motion.div>
           </div>
 
@@ -188,8 +275,8 @@ export default function Leaderboard() {
               <h3 className="text-white font-bold mb-1 mt-2">
                 {formatName(top3[0]?.username || '')}
               </h3>
-              <p className="text-3xl font-bold text-white font-[family-name:var(--font-mono)]">{top3[0]?.bestScore ?? '-'}</p>
-              <p className="text-sm text-yellow-100">{t('lb.table.best_score_label', 'best score')}</p>
+              <p className="text-3xl font-bold text-white font-[family-name:var(--font-mono)]">{top3[0]?.totalMarks ?? '-'}</p>
+              <p className="text-sm text-yellow-100">{t('lb.marks', 'marks')}</p>
             </motion.div>
           </div>
 
@@ -205,8 +292,8 @@ export default function Leaderboard() {
               <h3 className="text-white font-semibold mb-1">
                 {formatName(top3[2]?.username || '')}
               </h3>
-              <p className="text-2xl font-bold text-orange-400 font-[family-name:var(--font-mono)]">{top3[2]?.bestScore ?? '-'}</p>
-              <p className="text-xs text-gray-500">{t('lb.table.best_score_label', 'best score')}</p>
+              <p className="text-2xl font-bold text-orange-400 font-[family-name:var(--font-mono)]">{top3[2]?.totalMarks ?? '-'}</p>
+              <p className="text-xs text-gray-500">{t('lb.marks', 'marks')}</p>
             </motion.div>
           </div>
         </motion.div>
@@ -237,17 +324,19 @@ export default function Leaderboard() {
                 <div className="flex-1 min-w-0">
                   <span className={`font-medium text-sm ${index < 3 ? 'text-white' : 'text-gray-300'} truncate block`}>
                     {formatName(entry.username)}
+                    {isCurrentUser(entry) && <span className="ml-2 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold align-middle">{t('lb.you', 'You')}</span>}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {entry.quizCount} {t('lb.table.quizzes', 'quizzes')} · {entry.totalMarks} {t('lb.table.total_marks', 'marks')}
+                    {entry.totalMarks} {t('lb.marks', 'marks')} · {entry.quizCount} {t('lb.table.quizzes', 'quizzes')}
                   </span>
                 </div>
                 <span className={`text-lg font-bold font-[family-name:var(--font-mono)] shrink-0 ${
+                  isCurrentUser(entry) ? 'text-amber-300' :
                   index === 0 ? 'text-yellow-400' :
                   index === 1 ? 'text-gray-300' :
                   index === 2 ? 'text-orange-400' : 'text-blue-400'
                 }`}>
-                  {entry.bestScore}
+                  {entry.totalMarks}
                 </span>
               </motion.div>
             ))}
@@ -260,9 +349,9 @@ export default function Leaderboard() {
                 <tr className="border-b border-white/10">
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.rank', 'Rank')}</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-400">{t('lb.table.user', 'User')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400">{t('lb.table.best_score', 'Best Score')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">{t('lb.table.quizzes', 'Quizzes')}</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">{t('lb.table.total_marks', 'Total Marks')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-amber-400">{t('lb.table.total_marks', 'Total Marks')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden md:table-cell">{t('lb.table.best_score', 'Best Score')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden lg:table-cell">{t('lb.table.quizzes', 'Quizzes')}</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-gray-400 hidden xl:table-cell">{t('lb.table.average', 'Average')}</th>
                 </tr>
               </thead>
@@ -274,7 +363,7 @@ export default function Leaderboard() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6 + index * 0.03 }}
                     className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
-                      index < 3 ? 'bg-white/5' : ''
+                      isCurrentUser(entry) ? 'bg-amber-500/10' : index < 3 ? 'bg-white/5' : ''
                     }`}
                   >
                     <td className="px-6 py-4">
@@ -286,24 +375,32 @@ export default function Leaderboard() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`font-medium ${index < 3 ? 'text-white' : 'text-gray-300'}`}>
-                        {formatName(entry.username)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`font-medium ${index < 3 ? 'text-white' : 'text-gray-300'}`}>
+                          {formatName(entry.username)}
+                        </span>
+                        {isCurrentUser(entry) && (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+                            {t('lb.you', 'You')}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`text-lg font-bold font-[family-name:var(--font-mono)] ${
+                        isCurrentUser(entry) ? 'text-amber-300' :
                         index === 0 ? 'text-yellow-400' :
                         index === 1 ? 'text-gray-300' :
-                        index === 2 ? 'text-orange-400' : 'text-blue-400'
+                        index === 2 ? 'text-orange-400' : 'text-white'
                       }`}>
-                        {entry.bestScore}
+                        {entry.totalMarks}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center hidden md:table-cell">
-                      <span className="text-gray-400">{entry.quizCount}</span>
+                      <span className={`font-semibold ${index === 0 ? 'text-yellow-400' : 'text-blue-400'}`}>{entry.bestScore}</span>
                     </td>
                     <td className="px-6 py-4 text-center hidden lg:table-cell">
-                      <span className="text-gray-400">{entry.totalMarks}</span>
+                      <span className="text-gray-400">{entry.quizCount}</span>
                     </td>
                     <td className="px-6 py-4 text-center hidden xl:table-cell">
                       <span className="text-gray-400">
@@ -316,6 +413,30 @@ export default function Leaderboard() {
             </table>
           </div>
         </motion.div>
+        </>) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-12 text-center"
+          >
+            <div className="inline-flex p-4 bg-amber-500/10 rounded-3xl mb-4">
+              <Trophy className="w-10 h-10 text-amber-400" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
+              {t('lb.empty.title', 'No scores yet')}
+            </h3>
+            <p className="text-gray-400 max-w-md mx-auto mb-6">
+              {t('lb.empty.description', 'Take a quiz to earn marks and claim your spot on the leaderboard!')}
+            </p>
+            <Link
+              to="/quiz"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300"
+            >
+              <Trophy className="w-5 h-5" />
+              {t('lb.my_rank.take_quiz', 'Take a Quiz')}
+            </Link>
+          </motion.div>
+        )}
 
         {/* Certification CTA */}
         <motion.div

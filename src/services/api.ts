@@ -165,6 +165,31 @@ export const quizAPI = {
   },
 };
 
+/**
+ * Retry quiz submissions that failed to reach the backend (offline / network hiccup).
+ * Marks are queued in localStorage by Quiz.tsx when submitQuiz fails, then flushed
+ * here so scores still land on the leaderboard. Safe to call on any page load.
+ */
+export async function flushPendingQuizSubmissions(): Promise<void> {
+  if (typeof localStorage === 'undefined') return;
+  let pending: any[] = [];
+  try {
+    pending = JSON.parse(localStorage.getItem('ishami_pending_quiz_submissions') || '[]');
+  } catch {}
+  if (!Array.isArray(pending) || pending.length === 0) return;
+  const remaining: any[] = [];
+  for (const submission of pending) {
+    try {
+      await quizAPI.submitQuiz(submission);
+    } catch {
+      remaining.push(submission);
+    }
+  }
+  try {
+    localStorage.setItem('ishami_pending_quiz_submissions', JSON.stringify(remaining));
+  } catch {}
+}
+
 export const newsletterAPI = {
   subscribe: async (email: string) => {
     return apiCall('/api/newsletter/subscribe', {

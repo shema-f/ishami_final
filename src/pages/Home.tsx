@@ -1,8 +1,8 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
 import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket, Clock } from 'lucide-react';
-import { useState, lazy, Suspense, useMemo } from 'react';
-import { newsletterAPI } from '../services/api';
+import { useState, lazy, Suspense, useEffect } from 'react';
+import { newsletterAPI, leaderboardAPI } from '../services/api';
 import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,6 +24,24 @@ export default function Home() {
   const progressSummary = getProgressSummary(userId);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [topLearners, setTopLearners] = useState<Array<{ rank: number; username: string; totalMarks: number }>>([]);
+
+  // Real top performers for the leaderboard section
+  useEffect(() => {
+    let mounted = true;
+    leaderboardAPI
+      .getLeaderboard(5)
+      .then((res) => {
+        if (!mounted) return;
+        setTopLearners((res.leaderboard || []).map((e: any) => ({
+          rank: e.rank,
+          username: e.username || '',
+          totalMarks: e.totalMarks || e.score || 0,
+        })));
+      })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -697,22 +715,22 @@ export default function Home() {
               <div className="w-full lg:w-72">
                 <div className="bg-[#0a0e14]/70 rounded-2xl p-5 border border-white/10">
                   <div className="space-y-3">
-                    {[
-                      { rank: 1, name: 'Jean P.', score: '95%', medal: '🥇' },
-                      { rank: 2, name: 'Marie U.', score: '92%', medal: '🥈' },
-                      { rank: 3, name: 'David K.', score: '89%', medal: '🥉' },
-                      { rank: 4, name: 'Grace N.', score: '87%', medal: '4️⃣' },
-                      { rank: 5, name: 'Patrick M.', score: '85%', medal: '5️⃣' },
-                    ].map((entry) => (
-                      <div key={entry.rank} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-lg w-7 text-center">{entry.medal}</span>
-                        <div className="flex-1">
-                          <span className="text-xs font-semibold text-white block">{entry.name}</span>
-                          <span className="text-[10px] text-slate-500">{t('home.leaderboard_section.rank', 'Rank')} #{entry.rank}</span>
+                    {topLearners.length > 0 ? (
+                      topLearners.map((entry) => (
+                        <div key={entry.rank} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/5">
+                          <span className="text-lg w-7 text-center">{['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][entry.rank - 1] || '🏅'}</span>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-xs font-semibold text-white block truncate">{entry.username || t('lb.unknown', 'Unknown')}</span>
+                            <span className="text-[10px] text-slate-500">{t('home.leaderboard_section.rank', 'Rank')} #{entry.rank}</span>
+                          </div>
+                          <span className="text-sm font-bold text-amber-400">{entry.totalMarks} <span className="text-[10px] font-medium text-slate-500">{t('lb.marks', 'marks')}</span></span>
                         </div>
-                        <span className="text-sm font-bold text-amber-400">{entry.score}</span>
+                      ))
+                    ) : (
+                      <div className="text-center py-6 text-slate-500 text-xs">
+                        {t('lb.empty.title', 'No scores yet')}
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
