@@ -1012,6 +1012,7 @@ function SceneContents({
   aiVehicles?: { position: [number, number, number]; color: number; speed: number; path: [number, number, number][] }[];
   pedestrians?: { position: [number, number, number]; path: [number, number, number][]; speed: number }[];
 }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const physics = useMemo(() => new VehiclePhysics(), []);
   const collisionSystem = useMemo(() => new CollisionSystem(), []);
   const roadBoundarySystem = useMemo(() => {
