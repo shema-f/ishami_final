@@ -1,0 +1,28 @@
+{
+  "notifications": {
+    "title": "Imenyesha",
+    "description": "Komeza umenye ibisubizo n'ibikorwa byakozwe ku bitekerezo byawe.",
+    "unread": "bitarasomwa",
+    "mark_all_read": "Bishyiremo ko byose byasomwe",
+    "clear_all": "Siba byose",
+    "no_notifications": "Nta menyesha rirahari",
+    "no_notifications_desc": "Uzakira imenyesha igihe abandi basubije ibitekerezo byawe.",
+    "browse_articles": "Shakisha Inyandiko",
+    "view_article": "Reba inyandiko",
+    "mark_as_read": "Shyiramo ko byasomwe",
+    "delete": "Siba"
+  },
+  "bookmarks": {
+    "title": "Ibyabitswe n'Ibyasomwe",
+    "description": "Reba inyandiko wabitse n'amateka y'izo wasomye.",
+    "bookmarks_tab": "Ibyabitswe",
+    "history_tab": "Ibyasomwe",
+    "no_bookmarks": "Nta byabitswe birahari",
+    "no_bookmarks_desc": "Bika inyandiko ukunda kugira ngo uzibone byoroshye mu gihe kiri imbere.",
+    "no_history": "Nta mateka y'ibyasomwe arahari",
+    "no_history_desc": "Soma inyandiko zitandukanye kugira ngo ziboneke mu mateka yawe.",
+    "browse_articles": "Shakisha Inyandiko",
+    "clear_all_history": "Siba Amateka Yose",
+    "read": "byasomwe"
+  }
+}

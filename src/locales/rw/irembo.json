@@ -1,72 +1,81 @@
 {
-  "title": "Kwiyandikisha ku Kizamini cyo Gutwara Ibinyabiziga binyuze kuri Irembo",
-  "subtitle": "Tuzagufasha kwiyandikisha ku kizamini cy'amategeko y'umuhanda binyuze kuri Irembo",
-  "service_fee": "Ikiguzi cya Serivisi: 5,500 RWF",
-  "info_banner": {
-    "title": "Mbere yo Gutangira:",
-    "items": {
-      "age": "Ugomba kuba ufite byibuze imyaka 16 y'amavuko",
-      "national_id": "Indangamuntu irakenewe (pasiporo ntizemewe)",
-      "phone": "Reba neza ko nimero yawe ya telefoni ikora kugira ngo ubone ubutumwa bugufi (SMS)",
-      "processing": "Igihe byishyurirwa: Mu masaha 8 umaze kwishyura"
-    }
-  },
-  "form": {
-    "full_name": "Amazina Yose Yemewe n'Amategeko *",
-    "full_name_placeholder": "Andika amazina yawe yose nk'uko ari ku ndangamuntu",
-    "national_id": "Nimero y'Indangamuntu *",
-    "national_id_placeholder": "Imibare 16 y'indangamuntu",
-    "phone": "Nimero ya Telefoni *",
-    "phone_placeholder": "+250 78X XXX XXX",
-    "email": "Aderesi ya Imeri *",
-    "email_placeholder": "imeri.yawe@urugero.com",
-    "language": "Ururimi Wifuza Gukoresha *",
-    "test_mode": "Uburyo bw'Ikizamini *",
-    "district": "Aho Ikizamini Kizakorerwa (Akarere) *",
-    "district_placeholder": "Hitamo akarere kawe",
-    "test_date": "Itariki Wifuza Gukoreraho Ikizamini *",
-    "terms": "Ndemeza ko amakuru yose natanze ari ukuri kandi nzi neza ko pasiporo cyangwa icyemezo cy'agateganyo cy'indangamuntu bitari bwakirwe. Nemeye",
-    "terms_link": "amategeko n'amabwiriza",
-    "submit_button": "Ohereza Kwiyandikisha - 5,500 RWF",
-    "processing": "Biratunganywa…"
-  },
-  "validation": {
-    "national_id_digits": "Indangamuntu igomba kuba igizwe n'imibare 16 neza",
-    "age_requirement": "Ugomba kuba ufite byibuze imyaka 16",
-    "phone_invalid": "Nyamuneka injiza nimero nyayo ya telefoni yo mu Rwanda",
-    "email_invalid": "Nyamuneka injiza aderesi nyayo ya imeri",
-    "terms_required": "Ugomba kwemera amategeko n'amabwiriza"
-  },
-  "success": {
-    "title": "Ubusabe bwo Kwiyandikisha Bwoherejwe Neza!",
-    "description": "Ubusabe bwawe bwo kwiyandikisha ku kizamini binyuze kuri Irembo bwakiriwe.",
-    "details_title": "Ibisobanuro byo Kwiyandikisha",
-    "transaction": "Ihererekanya:",
-    "amount": "Amafaranga:",
-    "application_id": "Nimero y'Ubusabe (ID):",
-    "valid_until": "Bizageza Ku Cyatangiweho:",
-    "check_phone": "📱 Reba kuri telefoni yawe ubutumwa bwa USSD bwo kwemeza ubwishyu...",
-    "important_title": "Icyitonderwa:",
-    "important_items": {
-      "approve": "Emeza ubwishyu mu masaha 8",
-      "slot_release": "Iyo wishyuye utinze, umwanya wawe wo gukora urarekurwa",
-      "sms_confirmation": "Uzakira ubutumwa bugufi (SMS) bwemeza ko wishyuye",
-      "no_sms": "Niba utabonye SMS mu masaha 2, twandikire kuri support@ishami.rw"
+  "irembo": {
+    "title": "Kwiyandikisha ku Kizamini cyo Gutwara Ibinyabiziga binyuze kuri Irembo",
+    "subtitle": "Tuzagufasha kwiyandikisha ku kizamini cy'amategeko y'umuhanda binyuze kuri Irembo",
+    "pricing": {
+      "provisional": "Licence y'Agateganyo (Provisional)",
+      "permanent": "Licence Yuzuye (Permanent)",
+      "pro_features": "Ibyiza bya Pro"
     },
-    "submit_another": "Ohereza Ubundi Busabe"
-  },
-  "contact": {
-    "need_help": "Ukeneye ubufasha? Twandikire kuri",
-    "or_call": "cyangwa utubwire kuri"
-  },
-  "payment_dialog": {
-    "title": "Emeza Ubwishyu",
-    "description": "Kugira ngo usoze kwiyandikisha kuri Irembo, hakenewe ubwishyu bwa 5,500 RWF.",
-    "registration_fee": "Amafaranga y'Ikizamini cyo Kwiyandikisha:",
-    "service_fee": "Ikiguzi cya Serivisi:",
-    "total": "Yose Hamwe:",
-    "momo_number": "Nimero ya MoMo",
-    "cancel": "Kureka",
-    "pay_now": "Ishyura Ubu"
+    "info_banner": {
+      "title": "Mbere yo Gutangira:",
+      "items": {
+        "age": "Ugomba kuba ufite byibuze imyaka 16 y'amavuko",
+        "national_id": "Indangamuntu irakenewe (pasiporo ntizemewe)",
+        "phone": "Reba neza ko nimero yawe ya telefone ikora kugira ngo ubone ubutumwa bugufi (SMS)",
+        "processing": "Igihe byujujwa: Mu masaha 8 umaze kwishyura"
+      }
+    },
+    "form": {
+      "full_name": "Amazina Yose Yemewe n'Amategeko *",
+      "full_name_placeholder": "Andika amazina yawe yose nk'uko ari ku ndangamuntu",
+      "national_id": "Nimero y'Indangamuntu *",
+      "national_id_placeholder": "Imibare 16 y'indangamuntu",
+      "phone": "Nimero ya Telefone *",
+      "phone_placeholder": "+250 78X XXX XXX",
+      "email": "Aderesi ya Imeri *",
+      "email_placeholder": "imeri.yawe@urugero.com",
+      "language": "Ururimi Wifuza Gukoresha *",
+      "license_type": "Ubwoko bw'Icyemezo (Licence) *",
+      "test_mode": "Uburyo bw'Ikizamini *",
+      "district": "Aho Ikizamini Kizakorerwa (Akarere) *",
+      "district_placeholder": "Hitamo akarere kawe",
+      "test_date": "Itariki Wifuza Gukoreraho Ikizamini *",
+      "terms": "Ndemezako amakuru yose natanze ari ukuri kandi nkaba nemera ko pasiporo cyangwa icyemezo cy'agateganyo cy'indangamuntu bitazakirwa. Nemeye",
+      "terms_link": "amategeko n'amabwiriza",
+      "processing": "Biratunganywa…",
+      "submit_provisional": "Ohereza Kwiyandikisha - 5,500 RWF",
+      "submit_permanent": "Ohereza Kwiyandikisha - 10,500 RWF"
+    },
+    "validation": {
+      "national_id_digits": "Indangamuntu igomba kuba igizwe n'imibare 16 neza",
+      "age_requirement": "Ugomba kuba ufite byibuze imyaka 16",
+      "phone_invalid": "Nyamuneka andika nimero nyayo ya telefone yo mu Rwanda",
+      "email_invalid": "Nyamuneka andika aderesi nyayo ya imeri",
+      "terms_required": "Ugomba kwemera amategeko n'amabwiriza"
+    },
+    "success": {
+      "title": "Ubusabe bwo Kwiyandikisha Bwoherejwe Neza!",
+      "description": "Ubusabe bwawe bwo kwiyandikisha ku kizamini binyuze kuri Irembo bwakiriwe.",
+      "details_title": "Ibisobanuro byo Kwiyandikisha",
+      "transaction": "Ihererekanya:",
+      "amount": "Amafaranga:",
+      "application_id": "Nimero y'Ubusabe (ID):",
+      "valid_until": "Bizakomeza Kugeza:",
+      "check_phone": "📱 Reba kuri telefone yawe ubutumwa bwa USSD bwo kwemeza ubwishyu...",
+      "important_title": "Icyitonderwa:",
+      "important_items": {
+        "approve": "Emeza ubwishyu mu masaha 8",
+        "slot_release": "Iyo utisoje ubwishyu, umwanya wawe uzarekurekwa",
+        "sms_confirmation": "Uzakira ubutumwa bugufi (SMS) bwemeza ko wishyuye",
+        "no_sms": "Niba utabonye SMS mu masaha 2, twandikire kuri support@ishami.rw"
+      },
+      "submit_another": "Ohereza Ubundi Busabe"
+    },
+    "payment_dialog": {
+      "title": "Emeza Ubwishyu",
+      "description": "Kugira ngo urangize kwiyandikisha kuri Irembo, hakenewe ubwishyu.",
+      "registration_fee": "Amafaranga y'Ikizamini cyo Kwiyandikisha:",
+      "service_fee": "Ikiguzi cya Serivisi:",
+      "permanent_fee": "Amafaranga ya Licence Yuzuye:",
+      "total": "Yose Hamwe:",
+      "momo_number": "Nimero ya MoMo",
+      "pay_now": "Ishyura Ubu",
+      "cancel": "Kureka"
+    },
+    "contact": {
+      "need_help": "Ukeneye ubufasha? Twandikire kuri",
+      "or_call": "cyangwa ukaduhamagara kuri"
+    }
   }
 }

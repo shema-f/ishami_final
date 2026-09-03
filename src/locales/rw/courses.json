@@ -1,0 +1,38 @@
+{
+  "courses": {
+    "title": "Amasomo",
+    "description": "Menya neza amategeko y'umuhanda mu Rwanda unyuze mu masomo ateguye neza yateguwe na Moto Sensei. Kuva ku rwego rw'abatangiye kugeza ku rwego rwo hejuru.",
+    "filter_all": "Byose",
+    "filter_beginner": "Abatangiye",
+    "filter_intermediate": "Abisumbuyeho",
+    "filter_advanced": "Urwego rwo Hejuru",
+    "progress": "Intambwe Ugezeho",
+    "complete": "Rangiza",
+    "completed": "✓ Warangiye",
+    "continue": "Komeza",
+    "start_course": "Tangira Isomo",
+    "lessons": "amasomo",
+    "no_courses_found": "Nta masomo abonetse muri iki cyiciro.",
+    "require_quiz_access": "Amasomo Asaba Uburenganzira bwa Quiz",
+    "require_quiz_access_desc": "Gura Uburenganzira bwa Quiz (1,000 RWF) kugira ngo ufungure amasomo n'inyigisho zose."
+  },
+  "course_detail": {
+    "back_to_courses": "Amasomo Yose",
+    "not_found_title": "Isomo Ntiryabonetse",
+    "not_found_desc": "Isomo urimo gushaka ntiribaho.",
+    "back_button": "Subira ku Masomo",
+    "continue_course": "Komeza Isomo",
+    "start_course": "Tangira Isomo",
+    "curriculum": "Integanyanyigisho",
+    "instructor_section": "Umwarimu",
+    "instructor_expertise": "Inzobere mu mategeko y'umuhanda no kwigisha umutekano wo mu muhanda mu Rwanda",
+    "lessons_completed": "Amasomo {completed} kuri {total} yarangiye",
+    "types": {
+      "reading": "Gusoma",
+      "video": "Amashusho",
+      "interactive": "Imyitozo Nkoranyambaga",
+      "quiz": "Ibibazo by'Imyitozo",
+      "assessment": "Isuzuma"
+    }
+  }
+}

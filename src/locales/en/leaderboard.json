@@ -1,39 +1,41 @@
 {
-  "title": "Leaderboard",
-  "subtitle": "Top performers in Rwanda Traffic Rules mastery",
-  "loading": "Loading leaderboard...",
-  "motivation": {
-    "title": "Climb the Rankings!",
-    "description": "Complete quizzes daily to maintain your streak and earn badges",
-    "real_time": "Updated in real-time"
-  },
-  "share": {
-    "title": "Share this leaderboard",
-    "facebook": "Facebook",
-    "whatsapp": "WhatsApp",
-    "copy_link": "Copy Link",
-    "copied": "Copied!",
-    "share_text": "ISHAMI App Leaderboard — Can you beat me?"
-  },
-  "table": {
-    "rank": "Rank",
-    "user": "User",
-    "best_score": "Best Score",
-    "quizzes": "Quizzes",
-    "total_marks": "Total Marks",
-    "average": "Average",
-    "best_score_label": "best score"
-  },
-  "certification_cta": {
-    "badge": "Earn Your Certificate",
-    "title": "Ready to Get Certified?",
-    "description": "Top the leaderboard and earn your official ISHAMI Certificate of Completion. Share it with employers or verify it online.",
-    "take_quiz": "Take a Quiz",
-    "view_certificate": "View Certificate"
-  },
-  "cta": {
-    "description": "Think you can make it to the top?",
-    "button": "Start Climbing"
-  },
-  "unknown": "Unknown"
+  "lb": {
+    "title": "Leaderboard",
+    "subtitle": "Top performers in Rwanda Traffic Rules mastery",
+    "loading": "Loading leaderboard...",
+    "motivation": {
+      "title": "Climb the Rankings!",
+      "description": "Complete quizzes daily to maintain your streak and earn badges",
+      "real_time": "Updated in real-time"
+    },
+    "share": {
+      "title": "Share this leaderboard",
+      "share_text": "ISHAMI App Leaderboard — Can you beat me?",
+      "facebook": "Facebook",
+      "whatsapp": "WhatsApp",
+      "copy_link": "Copy Link",
+      "copied": "Copied!"
+    },
+    "table": {
+      "rank": "Rank",
+      "user": "User",
+      "best_score": "Best Score",
+      "best_score_label": "best score",
+      "quizzes": "quizzes",
+      "total_marks": "Total Marks",
+      "average": "Average"
+    },
+    "certification_cta": {
+      "badge": "Earn Your Certificate",
+      "title": "Ready to Get Certified?",
+      "description": "Top the leaderboard and earn your official ISHAMI Certificate of Completion. Share it with employers or verify it online.",
+      "take_quiz": "Take a Quiz",
+      "view_certificate": "View Certificate"
+    },
+    "cta": {
+      "description": "Think you can make it to the top?",
+      "button": "Start Climbing"
+    },
+    "unknown": "Unknown"
+  }
 }

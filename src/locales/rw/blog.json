@@ -1,0 +1,38 @@
+{
+  "blog": {
+    "title": "Urubuga rw'Inyandiko n'Inkuru",
+    "subtitle": "Komeza umenye inama zo gutwara, ubuyobozi ku mategeko y'umuhanda, n'amakuru y'impushya zo gutwara",
+    "read_time": "iminota yo gusoma",
+    "views": "ababirebye",
+    "share": "Sangiza:",
+    "read_more": "Soma ibindi",
+    "back_to_blog": "Subira ku Nyandiko",
+    "no_articles": "Nta nkuru zabonetse.",
+    "search_placeholder": "Shakisha inyandiko...",
+    "filter_all": "Byose",
+    "comments_title": "Ibitekerezo",
+    "leave_comment": "Tanga igitekerezo...",
+    "post_comment": "Ohereza Igitekerezo",
+    "reply": "Subiza",
+    "delete": "Siba",
+    "edit": "Vugurura",
+    "save": "Bika",
+    "cancel": "Kureka",
+    "sign_in_to_comment": "Injira kugira ngo utange igitekerezo",
+    "reading_mode": "Uburyo bwo Gusoma",
+    "reading_mode_on": "Uburyo bwo gusoma burakora",
+    "reading_mode_off": "Uburyo bwo gusoma buhagaritswe",
+    "related_articles": "Izindi Nkuru Zifitanye Isano",
+    "table_of_contents": "Ibirimo",
+    "share_article": "Sangiza iyi nyandiko",
+    "bookmark_added": "Yabitswe",
+    "bookmark_removed": "Yakuwe mu byabitswe",
+    "copied": "Byakoporowe!",
+    "copy_link": "Koporora ihuza"
+  },
+  "share": {
+    "share": "Sangiza:",
+    "copied": "Byakoporowe!",
+    "copy_link": "Koporora Ihuza"
+  }
+}

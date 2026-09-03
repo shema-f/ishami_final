@@ -1,0 +1,28 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "description": "Stay updated with replies and activity on your comments.",
+    "unread": "unread",
+    "mark_all_read": "Mark all read",
+    "clear_all": "Clear all",
+    "no_notifications": "No notifications yet",
+    "no_notifications_desc": "You'll receive notifications when others reply to your comments.",
+    "browse_articles": "Browse Articles",
+    "view_article": "View article",
+    "mark_as_read": "Mark as read",
+    "delete": "Delete"
+  },
+  "bookmarks": {
+    "title": "Bookmarks & History",
+    "description": "View your saved articles and reading history.",
+    "bookmarks_tab": "Bookmarks",
+    "history_tab": "History",
+    "no_bookmarks": "No bookmarks yet",
+    "no_bookmarks_desc": "Save articles you love to find them easily later.",
+    "no_history": "No reading history",
+    "no_history_desc": "Read articles to build your reading history.",
+    "browse_articles": "Browse Articles",
+    "clear_all_history": "Clear All History",
+    "read": "read"
+  }
+}

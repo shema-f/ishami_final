@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle, Brain } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth as firebaseAuth } from '../lib/firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { authAPI } from '../services/api';
 import { useNavigate } from 'react-router';
 import { useTranslation } from '../contexts/I18nContext';
@@ -30,56 +30,14 @@ export default function Auth() {
   const [newPassword2, setNewPassword2] = useState('');
   const [forgotStatus, setForgotStatus] = useState('');
   
-  const { login, signup, updateUser, socialLogin, googleIdTokenLogin, firebaseLogin, user } = useAuth();
+  const { login, signup, firebaseLogin, user } = useAuth();
   const navigate = useNavigate();
-  const API_BASE = (import.meta as any).env?.VITE_API_URL || 'https://ishami-final.onrender.com';
-  const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '921766633773-ggb4nlq294cvaetc8gpa5cadh6sokecu.apps.googleusercontent.com';
 
   useEffect(() => {
     if (user) {
       navigate('/quiz');
     }
   }, [user, navigate]);
-
-  const handleSocial = (provider: 'google' | 'facebook') => {
-    setError('');
-    setLoading(true);
-    const startUrl = `${API_BASE}/api/auth/${provider}/start`;
-    const popup = window.open(startUrl, 'oauth', 'width=520,height=640');
-    const onMessage = (e: MessageEvent) => {
-      if (typeof e.origin === 'string') {
-        const expectedOrigin = new URL(API_BASE).origin;
-        if (e.origin !== expectedOrigin) return;
-      }
-      try {
-        const data: any = e.data;
-        if (data && data.type === 'oauth_success' && data.token && data.user) {
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          updateUser(data.user);
-          window.removeEventListener('message', onMessage);
-          clearTimeout(fallbackTimer);
-          popup && popup.close();
-          navigate('/');
-        }
-      } catch {}
-      setLoading(false);
-    };
-    window.addEventListener('message', onMessage);
-
-    const fallbackTimer = setTimeout(async () => {
-      try {
-        await socialLogin(provider);
-        navigate('/');
-      } catch (e: any) {
-        setError(e?.message || `${provider} sign-in failed`);
-      } finally {
-        setLoading(false);
-        window.removeEventListener('message', onMessage);
-        popup && popup.close();
-      }
-    }, 8000);
-  };
 
   const handleGoogleFirebaseSignIn = async () => {
     try {
@@ -106,37 +64,6 @@ export default function Auth() {
         setError(t('auth.errors.sign_in_cancelled', 'Sign-in cancelled.'));
       } else {
         setError(e?.message || t('auth.errors.google_sign_in_failed', 'Google sign-in failed'));
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFacebookFirebaseSignIn = async () => {
-    try {
-      setError('');
-      setLoading(true);
-      const provider = new FacebookAuthProvider();
-      const cred = await signInWithPopup(firebaseAuth, provider);
-      const oauthCred = FacebookAuthProvider.credentialFromResult(cred);
-      const accessToken = oauthCred?.accessToken;
-      
-      if (!accessToken) {
-        setError(t('auth.errors.facebook_sign_in_token', 'Facebook sign-in did not return an Access token'));
-        setLoading(false);
-        return;
-      }
-      
-      const idToken = await cred.user.getIdToken();
-      await firebaseLogin(idToken);
-      navigate('/');
-    } catch (e: any) {
-      if (e?.code === 'auth/popup-blocked') {
-        setError(t('auth.errors.popup_blocked', 'Popup was blocked. Please allow popups for this site.'));
-      } else if (e?.code === 'auth/popup-closed-by-user') {
-        setError(t('auth.errors.sign_in_cancelled', 'Sign-in cancelled.'));
-      } else {
-        setError(e?.message || t('auth.errors.facebook_sign_in_failed', 'Facebook sign-in failed'));
       }
     } finally {
       setLoading(false);
@@ -462,10 +389,10 @@ export default function Auth() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex justify-center">
               <button
                 onClick={() => handleGoogleFirebaseSignIn()}
-                className="flex items-center justify-center space-x-2 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
+                className="flex items-center justify-center space-x-2 py-3 px-8 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5">
                   <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.6 32.4 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c10.7 0 19.6-8.3 20-19v-4.5z"/>
@@ -474,15 +401,6 @@ export default function Auth() {
                   <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.1-3.5 5.7-6.5 7.2l6.2 5.1C37.8 37.7 44 32.9 44 24c0-1.2-.1-2.3-.4-3.5z"/>
                 </svg>
                 <span className="text-gray-300">{t('auth.social.google', 'Google')}</span>
-              </button>
-              <button
-                onClick={() => handleFacebookFirebaseSignIn()}
-                className="flex items-center justify-center space-x-2 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2">
-                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.093 10.125 24v-8.437H7.078V12.07h3.047V9.41c0-3.008 1.792-4.668 4.533-4.668 1.313 0 2.686.235 2.686.235v2.953h-1.513c-1.49 0-1.953.93-1.953 1.887v2.253h3.328l-.532 3.493h-2.796V24C19.612 23.093 24 18.1 24 12.073z"/>
-                </svg>
-                <span className="text-gray-300">{t('auth.social.facebook', 'Facebook')}</span>
               </button>
             </div>
           </div>

@@ -1,55 +1,116 @@
 {
-  "features": {
-    "quizzes_title": "Interactive Quizzes",
-    "quizzes_desc": "Test your knowledge with timed quizzes based on real Rwanda traffic rules.",
-    "simulation_title": "3D Driving Simulation",
-    "simulation_desc": "Practice real-world scenarios in immersive 3D environments.",
-    "ai_title": "AI Assistant - Moto-Sensei",
-    "ai_desc": "Get instant answers from your friendly Rwandan driving instructor.",
-    "resources_title": "Download Resources",
-    "resources_desc": "Access PDFs, videos, and images of traffic signs and rules."
-  },
-  "stats": {
-    "students": "Students",
-    "questions": "Questions",
-    "pass_rate": "Pass Rate"
-  },
-  "loading": "Loading...",
-  "learn_more": "Learn more",
-  "ai_section": {
-    "badge": "AI-Powered Learning",
-    "title": "Meet Moto-Sensei",
-    "description": "Your friendly AI driving instructor. Ask questions in Kinyarwanda, get instant explanations, and master traffic rules faster.",
-    "cta": "Chat with Moto-Sensei",
-    "preview_greeting": "Muraho! I'm Moto-Sensei. What would you like to learn today?",
-    "preview_question": "What does a red triangle sign mean?"
-  },
-  "certificate_section": {
-    "badge": "Earn Your Certificate",
-    "title": "Get Your Official ISHAMI Certificate",
-    "description": "Complete the Traffic Rules & Road Safety quiz and earn an official certificate. Share it with employers, print it, or verify it online. Prove your driving knowledge!",
-    "take_quiz": "Take a Quiz",
-    "view_certificate": "View Certificate",
-    "certificate_title": "Certificate of Completion",
-    "final_score": "Final Score",
-    "electronically_verifiable": "Electronically verifiable"
-  },
-  "testimonials": {
-    "subtitle": "Join thousands of successful learners"
-  },
-  "irembo_section": {
-    "title": "Need Help with Irembo Registration?",
-    "description": "We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.",
-    "cta": "Get Irembo Help",
-    "fee": "Service Fee: 5,500 RWF | Processing Time: Within 8 hours"
-  },
-  "newsletter": {
-    "enter_email": "Enter your email",
-    "subscribe": "Subscribe",
-    "success": "✓ Thank you for subscribing! Check your email for confirmation.",
-    "error": "Subscription failed. Please try again."
-  },
-  "cta": {
-    "start_button": "Start Learning"
+  "home": {
+    "loading": "Loading...",
+    "hero": {
+      "title": "Master Rwanda Traffic Rules",
+      "subtitle": "Interactive quizzes, AI instructor, 3D simulations, and official certificates",
+      "cta": "Start Learning Free"
+    },
+    "features": {
+      "title": "Everything You Need to Pass",
+      "sub": "Comprehensive tools designed to help you master Rwanda's traffic regulations",
+      "quizzes_title": "Interactive Quizzes",
+      "quizzes_desc": "Test your knowledge with timed quizzes based on real Rwanda traffic rules.",
+      "simulation_title": "3D Driving Simulation",
+      "simulation_desc": "Practice real-world scenarios in immersive 3D environments.",
+      "ai_title": "AI Instructor - Moto-Sensei",
+      "ai_desc": "Get instant answers from your friendly Rwandan driving instructor.",
+      "resources_title": "Download Resources",
+      "resources_desc": "Access PDFs, videos, and images of traffic signs and rules."
+    },
+    "stats": {
+      "students": "Students",
+      "questions": "Questions",
+      "pass_rate": "Pass Rate",
+      "leaderboard": "Leaderboard"
+    },
+    "learn_more": "Learn more",
+    "courses_section": {
+      "badge": "Structured Learning",
+      "title": "Our Courses",
+      "description": "Structured courses designed by Moto Sensei. From traffic fundamentals to advanced driving skills.",
+      "view_all": "View All Courses"
+    },
+    "continue_learning": {
+      "badge": "Continue Learning",
+      "title": "Pick Up Where You Left Off",
+      "next_lesson": "Next: Lesson",
+      "progress": "Progress",
+      "continue": "Continue"
+    },
+    "ai_section": {
+      "badge": "AI-Powered Learning",
+      "title": "Meet Moto-Sensei",
+      "description": "Your friendly AI driving instructor. Ask questions in Kinyarwanda, get instant explanations, and master traffic rules faster.",
+      "cta": "Chat with Moto-Sensei",
+      "preview_greeting": "Muraho! I'm Moto-Sensei. What would you like to learn today?",
+      "preview_question": "What does a red triangle sign mean?"
+    },
+    "flip": {
+      "title": "Daily Flash Cards",
+      "subtitle": "Quick review of essential traffic rules and signs"
+    },
+    "blog_section": {
+      "badge": "Articles & Blog",
+      "title": "Read Our Latest Articles",
+      "desc": "Stay updated with driving tips, traffic rules guides, and licensing information — in English and Kinyarwanda.",
+      "view_all": "View All Articles",
+      "driving_guide": "Driving Guide",
+      "guide_title": "Complete Guide to Driving in Rwanda: Rules, Licensing, and Safety",
+      "guide_desc": "Driving in Rwanda requires a firm grasp of traffic regulations, digital enforcement systems, and terrain-specific driving techniques.",
+      "read_full_guide": "Read the full guide",
+      "read_more": "Read more"
+    },
+    "certificate_section": {
+      "badge": "Earn Your Certificate",
+      "title": "Get Your Official ISHAMI Certificate",
+      "description": "Complete the Traffic Rules & Road Safety quiz and earn an official certificate. Share it with employers, print it, or verify it online. Prove your driving knowledge!",
+      "take_quiz": "Take a Quiz",
+      "view_certificate": "View Certificate",
+      "certificate_title": "Certificate of Completion",
+      "final_score": "Final Score",
+      "electronically_verifiable": "Electronically verifiable"
+    },
+    "testimonials": {
+      "title": "What Our Students Say",
+      "subtitle": "Join thousands of successful learners"
+    },
+    "irembo_section": {
+      "title": "Need Help with Irembo Registration?",
+      "description": "We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.",
+      "cta": "Get Irembo Help",
+      "fee": "Service Fee: 5,500 RWF | Processing Time: Within 8 hours"
+    },
+    "leaderboard_section": {
+      "badge": "Leaderboard",
+      "title": "See Who's Leading the Pack",
+      "description": "See top performers in Rwanda traffic rules quizzes. Compete, climb the ranks, and prove your knowledge!",
+      "view_leaderboard": "View Leaderboard",
+      "rank": "Rank"
+    },
+    "newsletter": {
+      "title": "Stay in the Loop",
+      "desc": "Get the latest driving tips and traffic updates delivered to your inbox.",
+      "enter_email": "Enter your email",
+      "subscribe": "Subscribe",
+      "success": "✓ Thank you for subscribing! Check your email for confirmation.",
+      "error": "Subscription failed. Please try again."
+    },
+    "developers_section": {
+      "badge": "ISHAMI for Developers",
+      "title": "Build with ISHAMI API",
+      "description": "Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.",
+      "get_started_free": "Get Started Free",
+      "documentation": "Documentation",
+      "quiz_questions": "Quiz Questions",
+      "road_signs": "Road Signs",
+      "flip_cards": "Flip Cards",
+      "powered_by": "Powered by Ferrivox Ltd"
+    },
+    "cta": {
+      "title": "Ready to Start?",
+      "subtitle": "Join thousands of Rwandans mastering traffic rules with ISHAMI",
+      "start": "Get Started Free"
+    }
   }
 }

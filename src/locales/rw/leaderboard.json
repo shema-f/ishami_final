@@ -1,39 +1,41 @@
 {
-  "title": "Urutonde rw'Abatsinze Neza",
-  "subtitle": "Abatsinze neza cyane mu kumenya amategeko y'umuhanda mu Rwanda",
-  "loading": "Urutonde rurimo gutunganywa...",
-  "motivation": {
-    "title": "Zamuka mu Ntera!",
-    "description": "Kora ibizamini buri munsi kugira ngo ugumane umuvuduko kandi wegukane imidari",
-    "real_time": "Bivugururwa ako kanya"
-  },
-  "share": {
-    "title": "Sangiza abandi uru rutonde",
-    "facebook": "Facebook",
-    "whatsapp": "WhatsApp",
-    "copy_link": "Koporora Ihuza",
-    "copied": "Byakoporowe!",
-    "share_text": "Urutonde rw'Abatsinze kuri Porogaramu ya ISHAMI — Ushobora kundusha?"
-  },
-  "table": {
-    "rank": "Umwanya",
-    "user": "Umukoresha",
-    "best_score": "Amanota Meza Cyane",
-    "quizzes": "Ibizamini",
-    "total_marks": "Amanota Yose Hamwe",
-    "average": "Impuzandengo",
-    "best_score_label": "amanota meza cyane"
-  },
-  "certification_cta": {
-    "badge": "Bona Icyangombwa Cyawe",
-    "title": "Witeguye Guhabwa Icyangombwa?",
-    "description": "Za ku isonga ku rutonde maze wegukane Icyangombwa Cyemewe cya ISHAMI cy'Usoje Amasomo. Gisangize abakoresha cyangwa ugenzure ukuri kwacyo kuri interineti.",
-    "take_quiz": "Kora Ikizamini",
-    "view_certificate": "Reba Icyangombwa"
-  },
-  "cta": {
-    "description": "Utekereza ko ushobora kugera ku isonga?",
-    "button": "Tangira Kuza mu bimbere"
-  },
-  "unknown": "Ntibizwi"
+  "lb": {
+    "title": "Urutonde rw'Indashyikirwa",
+    "subtitle": "Abatsinze neza mu kumenya amategeko y'umuhanda mu Rwanda",
+    "loading": "Urutonde rurimo gushakishwa...",
+    "motivation": {
+      "title": "Zamuka mu Ntera!",
+      "description": "Kora ibizamini buri munsi kugira ngo ugumane umuvuduko kandi wegukane imidari",
+      "real_time": "Bivugururwa ako kanya"
+    },
+    "share": {
+      "title": "Sangiza uru rutonde",
+      "share_text": "Urutonde rw'Indashyikirwa kuri Porogaramu ya ISHAMI — Ushobora kundusha?",
+      "facebook": "Facebook",
+      "whatsapp": "WhatsApp",
+      "copy_link": "Koporora Ihuza",
+      "copied": "Byakoporowe!"
+    },
+    "table": {
+      "rank": "Umwanya",
+      "user": "Umukoresha",
+      "best_score": "Amanota Meza Cyane",
+      "best_score_label": "amanota meza cyane",
+      "quizzes": "ibizamini",
+      "total_marks": "Amanota Yose Hamwe",
+      "average": "Impuzandengo"
+    },
+    "certification_cta": {
+      "badge": "Bona Icyemezo Cyawe",
+      "title": "Witeguye Guhabwa Icyemezo?",
+      "description": "Za ku isonga ry'urutonde maze wegukane Icyemezo Cyemewe cy'Uburangize cya ISHAMI. Gisangize abakoresha cyangwa ugenzure ukuri kwacyo kuri interineti.",
+      "take_quiz": "Kora Ikizamini",
+      "view_certificate": "Reba Icyemezo"
+    },
+    "cta": {
+      "description": "Utekereza ko ushobora kugera ku isonga?",
+      "button": "Tangira Kuzamuka"
+    },
+    "unknown": "Ntibizwi"
+  }
 }

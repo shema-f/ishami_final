@@ -1,0 +1,38 @@
+{
+  "courses": {
+    "title": "Courses",
+    "description": "Master Rwanda road rules with structured courses designed by Moto Sensei. From beginner to advanced.",
+    "filter_all": "All",
+    "filter_beginner": "Beginner",
+    "filter_intermediate": "Intermediate",
+    "filter_advanced": "Advanced",
+    "progress": "Progress",
+    "complete": "Complete",
+    "completed": "✓ Completed",
+    "continue": "Continue",
+    "start_course": "Start Course",
+    "lessons": "lessons",
+    "no_courses_found": "No courses found for this filter.",
+    "require_quiz_access": "Courses Require Quiz Access",
+    "require_quiz_access_desc": "Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons."
+  },
+  "course_detail": {
+    "back_to_courses": "All Courses",
+    "not_found_title": "Course Not Found",
+    "not_found_desc": "The course you're looking for doesn't exist.",
+    "back_button": "Back to Courses",
+    "continue_course": "Continue Course",
+    "start_course": "Start Course",
+    "curriculum": "Curriculum",
+    "instructor_section": "Instructor",
+    "instructor_expertise": "Expert in Rwanda traffic rules and road safety education",
+    "lessons_completed": "{completed} of {total} lessons completed",
+    "types": {
+      "reading": "Reading",
+      "video": "Video",
+      "interactive": "Interactive",
+      "quiz": "Quiz",
+      "assessment": "Assessment"
+    }
+  }
+}

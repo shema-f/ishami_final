@@ -1,69 +1,72 @@
 {
-  "auth_required": {
-    "message": "Please log in to view your profile.",
-    "button": "Log In"
-  },
-  "stats": {
-    "quizzes_taken": "Quizzes Taken",
-    "best_score": "Best Score",
-    "average_score": "Average Score",
-    "quizzes_passed": "Quizzes Passed"
-  },
-  "settings": {
-    "title": "Profile Settings",
-    "username_label": "Username",
-    "username_placeholder": "Enter new username",
-    "email_label": "Email",
-    "change_password_label": "Change Password",
-    "current_password_placeholder": "Current password",
-    "new_password_placeholder": "New password",
-    "confirm_password_placeholder": "Confirm new password",
-    "update_password": "Update Password",
-    "saving": "Saving...",
-    "cancel": "Cancel"
-  },
-  "quiz_history": {
-    "title": "Quiz History",
-    "no_history": "No quizzes taken yet",
-    "start_quiz": "Start a Quiz"
-  },
-  "achievements": {
-    "title": "Achievements",
-    "badges": {
-      "first_quiz": {
-        "title": "First Quiz",
-        "desc": "Complete your first quiz"
-      },
-      "hot_streak": {
-        "title": "Hot Streak",
-        "desc": "Pass 3 quizzes in a row"
-      },
-      "perfect_score": {
-        "title": "Perfect Score",
-        "desc": "Score 100% on a quiz"
-      },
-      "champion": {
-        "title": "Champion",
-        "desc": "Score above 90%"
-      },
-      "scholar": {
-        "title": "Scholar",
-        "desc": "Take 10 quizzes"
-      },
-      "pro_member": {
-        "title": "Pro Member",
-        "desc": "Upgrade to Pro"
+  "profile": {
+    "auth_required": {
+      "message": "Please log in to view your profile.",
+      "button": "Log In"
+    },
+    "stats": {
+      "quizzes_taken": "Quizzes Taken",
+      "best_score": "Best Score",
+      "average_score": "Average Score",
+      "quizzes_passed": "Quizzes Passed"
+    },
+    "toast": {
+      "username_empty": "Username cannot be empty",
+      "username_updated": "Username updated successfully!",
+      "password_fill_all": "Please fill in all password fields",
+      "passwords_no_match": "New passwords do not match",
+      "password_too_short": "Password must be at least 6 characters",
+      "password_updated": "Password updated successfully!"
+    },
+    "settings": {
+      "title": "Profile Settings",
+      "username_label": "Username",
+      "username_placeholder": "Enter new username",
+      "email_label": "Email",
+      "change_password_label": "Change Password",
+      "current_password_placeholder": "Current password",
+      "new_password_placeholder": "New password",
+      "confirm_password_placeholder": "Confirm new password",
+      "update_password": "Update Password",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "quiz_history": {
+      "title": "Quiz History",
+      "no_history": "No quizzes taken yet",
+      "start_quiz": "Start a Quiz"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "badges": {
+        "first_quiz": {
+          "title": "First Quiz",
+          "desc": "Complete your first quiz"
+        },
+        "hot_streak": {
+          "title": "Hot Streak",
+          "desc": "Pass 3 quizzes in a row"
+        },
+        "perfect_score": {
+          "title": "Perfect Score",
+          "desc": "Score 100% on a quiz"
+        },
+        "champion": {
+          "title": "Champion",
+          "desc": "Score above 90%"
+        },
+        "scholar": {
+          "title": "Scholar",
+          "desc": "Take 10 quizzes"
+        },
+        "pro_member": {
+          "title": "Pro Member",
+          "desc": "Upgrade to Pro"
+        }
       }
-    }
-  },
-  "pro_badge": "Pro Member",
-  "logout": "Log Out",
-  "toast": {
-    "username_empty": "Username cannot be empty",
-    "username_updated": "Username updated successfully!",
-    "password_fill_all": "Please fill in all password fields",
-    "passwords_no_match": "New passwords do not match",
-    "password_too_short": "Password must be at least 6 characters",
-    "password_updated": "Password updated successfully!"
+    },
+    "pro_badge": "Pro Member",
+    "logout": "Log Out",
+    "upgrade_plan": "Upgrade Plan"
   }
 }

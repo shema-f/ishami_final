@@ -4,11 +4,16 @@
     "aiAssistant": "AI Assistant",
     "quiz": "Quiz",
     "simulation": "3D Simulation",
+    "courses": "Courses",
     "resources": "Resources",
     "leaderboard": "Leaderboard",
+    "blog": "Blog",
+    "bookmarks": "Bookmarks",
+    "notifications": "Notifications",
     "signIn": "Sign In",
     "getStarted": "Get Started",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "signed_in_as": "Signed in as"
   },
   "footer": {
     "subtitle": "Traffic Rules",

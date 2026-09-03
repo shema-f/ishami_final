@@ -1,69 +1,72 @@
 {
-  "auth_required": {
-    "message": "Nyamuneka injira kugira ngo urebe umwirondoro wawe.",
-    "button": "Injira"
-  },
-  "stats": {
-    "quizzes_taken": "Ibizamini Byakozwe",
-    "best_score": "Amanota Meza Cyane",
-    "average_score": "Impuzandengo y'Amanota",
-    "quizzes_passed": "Ibizamini Byatsinzwe"
-  },
-  "settings": {
-    "title": "Igenamiterere ry'Umwirondoro",
-    "username_label": "Izina Ukoresha",
-    "username_placeholder": "Injiza izina rishya ukoresha",
-    "email_label": "Imeri",
-    "change_password_label": "Guhindura Ijambobanga",
-    "current_password_placeholder": "Ijambobanga usanganywe",
-    "new_password_placeholder": "Ijambobanga rishya",
-    "confirm_password_placeholder": "Emeza ijambobanga rishya",
-    "update_password": "Vugurura Ijambobanga",
-    "saving": "Birabikwa...",
-    "cancel": "Kureka"
-  },
-  "quiz_history": {
-    "title": "Amateka y'Ibizamini",
-    "no_history": "Nta kizamini urakora na kimwe",
-    "start_quiz": "Tangira Ikizamini"
-  },
-  "achievements": {
-    "title": "Ibyagezweho",
-    "badges": {
-      "first_quiz": {
-        "title": "Ikizamini cya Mbere",
-        "desc": "Usoje ikizamini cyawe cya mbere"
-      },
-      "hot_streak": {
-        "title": "Umuvuduko Wikurikiranya",
-        "desc": "Gutsinda ibizamini 3 byikurikiranya"
-      },
-      "perfect_score": {
-        "title": "Amanota 100%",
-        "desc": "Gutsindira amanota 100% ku kizamini"
-      },
-      "champion": {
-        "title": "Inshingano y'Indashyikirwa",
-        "desc": "Kurenza amanota 90%"
-      },
-      "scholar": {
-        "title": "Umunyeshuri w'Umwete",
-        "desc": "Gukora ibizamini 10"
-      },
-      "pro_member": {
-        "title": "Umunyamuryango wa Pro",
-        "desc": "Kuzamura kuri konti ya Pro"
+  "profile": {
+    "auth_required": {
+      "message": "Nyamuneka injira kugira ngo urebe umwirondoro wawe.",
+      "button": "Injira"
+    },
+    "stats": {
+      "quizzes_taken": "Ibizamini Byakozwe",
+      "best_score": "Amanota Meza Cyane",
+      "average_score": "Impuzandengo y'Amanota",
+      "quizzes_passed": "Ibizamini Byatsinzwe"
+    },
+    "toast": {
+      "username_empty": "Izina rikoreshwa ntirishobora gusigara ryera",
+      "username_updated": "Izina rikoreshwa ryavuguruwe neza!",
+      "password_fill_all": "Nyamuneka uzuze imyanya yose y'ijambobanga",
+      "passwords_no_match": "Amajambobanga mashya ntabwo ahura",
+      "password_too_short": "Ijambobanga rigomba kuba rigizwe n'inyuguti byibuze 6",
+      "password_updated": "Ijambobanga ryavuguruwe neza!"
+    },
+    "settings": {
+      "title": "Igenamiterere ry'Umwirondoro",
+      "username_label": "Izina Rikoreshwa",
+      "username_placeholder": "Andika izina rishya rikoreshwa",
+      "email_label": "Imeyili",
+      "change_password_label": "Hindura Ijambobanga",
+      "current_password_placeholder": "Ijambobanga usanganywe",
+      "new_password_placeholder": "Ijambobanga rishya",
+      "confirm_password_placeholder": "Emeza ijambobanga rishya",
+      "update_password": "Vugurura Ijambobanga",
+      "saving": "Biribikwa...",
+      "cancel": "Kureka"
+    },
+    "quiz_history": {
+      "title": "Amateka y'Ibizamini",
+      "no_history": "Nta kizamini na kimwe warakoze",
+      "start_quiz": "Tangira Ikizamini"
+    },
+    "achievements": {
+      "title": "Ibyagezweho",
+      "badges": {
+        "first_quiz": {
+          "title": "Ikizamini cya Mbere",
+          "desc": "Kora ikizamini cyawe cya mbere"
+        },
+        "hot_streak": {
+          "title": "Gutsinda Bikurikiranye",
+          "desc": "Tsinda ibizamini 3 bikurikiranye"
+        },
+        "perfect_score": {
+          "title": "Amanota 100%",
+          "desc": "Bona amanota 100% mu kizamini"
+        },
+        "champion": {
+          "title": "Indashyikirwa",
+          "desc": "Bona amanota arenga 90%"
+        },
+        "scholar": {
+          "title": "Umunyeshuri W'Umwete",
+          "desc": "Kora ibizamini 10"
+        },
+        "pro_member": {
+          "title": "Umunyamuryango wa Pro",
+          "desc": "Zamura kuri Pro"
+        }
       }
-    }
-  },
-  "pro_badge": "Umunyamuryango wa Pro",
-  "logout": "Sohoka",
-  "toast": {
-    "username_empty": "Izina ukoresha ntirishobora gusigara ryera",
-    "username_updated": "Izina ukoresha ryavuguruwe neza!",
-    "password_fill_all": "Nyamuneka uzuze imyanya yose y'ijambobanga",
-    "passwords_no_match": "Amagambo banga mashya ntabwo ahuye",
-    "password_too_short": "Ijambobanga rigomba kuba rigizwe n'inyuguti nibura 6",
-    "password_updated": "Ijambobanga ryavuguruwe neza!"
+    },
+    "pro_badge": "Umunyamuryango wa Pro",
+    "logout": "Sohoka",
+    "upgrade_plan": "Gura Ifatabuguzi Risumbuyeho"
   }
 }

@@ -1,52 +1,101 @@
 {
-  "loading": {
-    "title": "Gutegura Imyitozo ya ISHAMI muri 3D",
-    "subtitle": "Hategurwa amashusho y'Umujyi wa Kigali..."
-  },
-  "not_available": {
-    "title": "Imyitozo ya 3D Ntabwo Ishobora Gukora",
-    "description": "Iyi myitozo yo gutwara muri 3D isaba igikoresho gishyigikira amashusho ya 3D. Nyamuneka koresha mudasobwa y'ameza cyangwa mudasobwa igendanwa.",
-    "return_home": "Gusubira Ahabanza"
-  },
-  "back_button": "Gusubira Inyuma",
-  "flyover_labels": {
-    "kigali": "Ahantu ho Kwitoreza Gutwara",
-    "convention_centre": "Akarere k'Imyitozo",
-    "training_route": "Kurikira inzira igaragajwe",
-    "your_vehicle": "Aho Utangirira"
-  },
-  "aerial_view": "KUREBA MU KIRERE",
-  "guided_start": "Gutangira Uyobowe",
-  "route_preview": {
-    "title": "KUREBA INZIRA MBERE",
-    "start": "TANGIRA",
-    "destination": "AHO UJYA",
-    "road": "UMUHANDA",
-    "steps": "Intambwe {count}",
-    "starting_point": "Aho utangirira",
-    "final_destination": "Aho ugomba kugera",
-    "step": "Intambwe {number}"
-  },
-  "mission_criteria": {
-    "title": "Ibisabwa mu Butumwa",
-    "speed_limit": "Umuvuduko Ntarengwa",
-    "time": "Igihe",
-    "follow_route": "Kurikira inzira igaragajwe",
-    "signal_turns": "Tanga ikimenyetso kuri buri ikorosi",
-    "no_collisions": "Kutagonga inyubako",
-    "no_speeding": "Kurenza umuvuduko ntibyemewe"
-  },
-  "cinematic": {
-    "driving_area": "Ahantu ho Kwitoreza Gutwara"
-  },
-  "skip_hint": {
-    "press": "Kanda",
-    "enter": "ENTER",
-    "to_skip": "kugira ngo ukomeze imbere"
-  },
-  "collisions": {
-    "minor": "Wagonze inzitizi. Twarana ubwitonzi bwisumbuyeho!",
-    "warning": "Itondere! Wagonze inyubako. Gabanya umuvuduko wegereye inzu.",
-    "major": "Impanuka ikomeye! Ugomba kwirinda kugonga inyubako na gato."
+  "sim": {
+    "loading": {
+      "title": "Kwinjiza Simulator ya ISHAMI",
+      "subtitle": "Kuri gutegura ahakorerwa imyitozo i Kigali..."
+    },
+    "not_available": {
+      "title": "Igerageza rya 3D Ntirishobora Gukora",
+      "description": "Iki gipimo cyo gutwara gisaba igikoresho gishyigikiye amashusho ya 3D. Nyamuneka koresha mudasobwa y'ameza cyangwa mudasobwa igendanwa.",
+      "return_home": "Subira Ahabanza"
+    },
+    "back_button": "Inyuma",
+    "aerial_view": "KUREBA MU KIRERE",
+    "guided_start": "Gutangira Uyoborwa",
+    "route_preview": {
+      "title": "REBERA INZIRA MBERE",
+      "start": "ITANGIRIRO",
+      "destination": "IHEREZO",
+      "road": "UMUHANDA",
+      "steps": "Intambwe {count}",
+      "loading": "Kwinjiza igerageza ryo gutwara...",
+      "starting_point": "Aho utangirira",
+      "final_destination": "Aho ugomba kugera",
+      "step": "Intambwe ya {number}"
+    },
+    "flyover": {
+      "kigali": "KIGALI",
+      "kigali_sub": "Ahantu ho Kwimenyereza Gutwara",
+      "convention": "CONVENTION CENTRE",
+      "convention_sub": "Agace k'Amahugurwa",
+      "route": "INZIRA Y'AMAHUGURWA",
+      "route_sub": "Kurikira inzira igaragajwe",
+      "vehicle": "IKINYABIZIGA CYAWE",
+      "vehicle_sub": "Aho Utangirira"
+    },
+    "mission_criteria": {
+      "title": "Ibisabwa mu Butumwa",
+      "speed_limit": "Umuvuduko Ntarengwa",
+      "time": "Igihe",
+      "follow_route": "Kurikira inzira igaragajwe",
+      "signal_turns": "Koresha amatara ndangacyerekezo kuri buri kanto",
+      "no_collisions": "Ntukagonge inyubako",
+      "no_speeding": "Ntukarenze umuvuduko"
+    },
+    "cinematic": {
+      "driving_area": "Ahantu ho Kwimenyereza Gutwara"
+    },
+    "skip_hint": {
+      "press": "Kanda",
+      "enter": "ENTER",
+      "to_skip": "kugira ngo urengane"
+    },
+    "collisions": {
+      "minor": "Ugonze inzitizi. Twara witonze birushijeho!",
+      "warning": "Witonde! Ugonze inyubako. Gabanya umuvuduko hafi y'inyubako.",
+      "major": "Impanuka ikomeye! Ugomba kwirinda kugonga inyubako burundu."
+    },
+    "hud": {
+      "speed": "Umuvuduko",
+      "gear": "Vitesi",
+      "score": "Amanota",
+      "time": "Igihe",
+      "objectives": "Intego",
+      "instructor": "Umwarimu",
+      "minimap": "Ikarita Nto",
+      "pause": "Hagarika Gato",
+      "resume": "Komeza",
+      "restart": "Tangira Bushya",
+      "quit": "Sohoka"
+    },
+    "instructor": {
+      "seat_adjustment": "Itegure intebe neza kugira ngo wicare wisanzuye kandi ubone neza",
+      "mirror_check": "Reba mu ndorerwamo zose mbere yo guhaguruka",
+      "seatbelt": "Funga umukandara wo kwirinda",
+      "handbrake": "Kura feri y'amaboko",
+      "gear_check": "Reba aho vitesi iri",
+      "engine_start": "Aka moteri",
+      "first_gear": "Shyira muri vitesi ya mbere",
+      "movement": "Tangira kugenda buhoro buhoro",
+      "steering": "Kata buhoro buhoro",
+      "stop": "Hagarara ahateganyijwe",
+      "completion": "Wakoze neza! Uruhare rwarangije neza!"
+    },
+    "results": {
+      "title": "Wasoje Uruhare!",
+      "score": "Amanota ya Nyuma",
+      "time": "Igihe Wakoresheje",
+      "objectives_completed": "Intego Zagezweho",
+      "xp_earned": "Amanota ya XP Wungutse",
+      "medal": "Umdari",
+      "replay": "Reba Ukuntu Watwaye",
+      "retry": "Ongera Ugerageze",
+      "next_scenario": "Uruhare Rukurikira",
+      "back_to_scenarios": "Imishinga Yose"
+    },
+    "missions": {
+      "select_scenario": "Hitamo Uruhare",
+      "no_scenarios": "Nta ruhare ruhari"
+    }
   }
 }

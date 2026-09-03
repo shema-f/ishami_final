@@ -1,55 +1,116 @@
 {
-  "features": {
-    "quizzes_title": "Ibizamini ",
-    "quizzes_desc": "Suzuma ubumenyi bwawe ukoresheje ibizamini  bishingiye ku mategeko y'umuhanda y'u Rwanda nyayo.",
-    "simulation_title": "Imyitozo yo Gutwara Ibinyabiziga muri 3D",
-    "simulation_desc": "Itoze ibiba mu muhanda nyabyo mu buryo bw'amashusho yimbitse ya 3D.",
-    "ai_title": "Umufasha wa AI - Moto-Sensei",
-    "ai_desc": "Bona ibisubizo ako kanya bitanzwe n'umwarimu wawe ugufasha kwiga gutwara ibinyabiziga mu Rwanda.",
-    "resources_title": "download Inyandiko n'Imfashanyigisho",
-    "resources_desc": "Bona inyandiko za PDF, amashusho, n'amafoto by'ibyapa n'amategeko y'umuhanda."
-  },
-  "stats": {
-    "students": "Abanyeshuri",
-    "questions": "Ibibazo",
-    "pass_rate": "Ijanisha ry'Abatsinda"
-  },
-  "loading": "Birigutunganywa...",
-  "learn_more": "Menya byinshi",
-  "ai_section": {
-    "badge": "Uburyo bwo Kwiga Bwifashisha AI",
-    "title": "Menya Moto-Sensei",
-    "description": "Umwarimu wawe wa AI ugufasha kwiga gutwara. Baza ibibazo mu Kinyarwanda, uhabwe ibisobanuro aka kanya, kandi umenye amategeko y'umuhanda vuba cyane.",
-    "cta": "Ganira na Moto-Sensei",
-    "preview_greeting": "Muraho! Ndi Moto-Sensei. Ni iki mwifuza kwiga uyu munsi?",
-    "preview_question": "Icyapa gifite ishusho ya mpandeshatu itukura gisobanura iki?"
-  },
-  "certificate_section": {
-    "badge": "Bona Icyangombwa Cyawe",
-    "title": "Bona Icyangombwa Cyemewe cya ISHAMI",
-    "description": "Rangiza ikizamini cy'Amategeko y'Umuhanda n'Umutekano wo mu Muhanda uhabwe icyangombwa cyemewe. Gisangize abakoresha, gicapishe, cyangwa ugenzure ukuri kwacyo kuri interineti. Garagaza ubumenyi bwawe!",
-    "take_quiz": "Kora Ikizamini",
-    "view_certificate": "Reba Icyangombwa",
-    "certificate_title": "Icyangombwa cy'Usoje Amasomo",
-    "final_score": "Amanota ya Nyuma",
-    "electronically_verifiable": "Gishobora kugenzurwa hifashishijwe ikoranabuhanga"
-  },
-  "testimonials": {
-    "subtitle": "Fatanya n'ibihumbi by'abanyeshuri batsinze neza"
-  },
-  "irembo_section": {
-    "title": "Ukeneye Ubufasha bwo Kwiyandikisha ku Irembo?",
-    "description": "Twagufasha kubona kode yo gukorera ikizamini binyuze muri serivisi za Irembo. Ubufasha bwihuse, bwizewe, kandi butekanye.",
-    "cta": "Bona Ubufasha bwa Irembo",
-    "fee": "Igiciro cya Serivisi: 5,500 RWF | Igihe Bitwara: Mu masaha 8"
-  },
-  "newsletter": {
-    "enter_email": "Injiza imeri yawe",
-    "subscribe": "Iyandikishe",
-    "success": "✓ Urakoze kwiyandikisha! Reba muri imeri yawe ubutumwa bwo kwemeza.",
-    "error": "Kwiyandikisha byanze. Ongera ugerageze."
-  },
-  "cta": {
-    "start_button": "Tangira Kwiga"
+  "home": {
+    "loading": "Birimo gutegurwa...",
+    "hero": {
+      "title": "Menya Neza Amategeko y'Umuhanda mu Rwanda",
+      "subtitle": "Ibibazo by'imyitozo, umwarimu wa AI, igerageza rya 3D, n'ibyemezo byemewe",
+      "cta": "Tangira Kwiga ku Buntu"
+    },
+    "features": {
+      "title": "Ibintu Byose Ukeneye kugira ngo Utsinde",
+      "sub": "Ibikoresho byizewe byateguwe kugira ngo bigufashe gusobanukirwa neza amategeko y'umuhanda mu Rwanda",
+      "quizzes_title": "Ibibazo By'imyitozo Ngororamutwe",
+      "quizzes_desc": "Suzuma ubumenyi bwawe ukoresheje ibibazo bipimwa igihe bishingiye ku mategeko nyayo y'umuhanda mu Rwanda.",
+      "simulation_title": "Igerageza ryo Gutwara rya 3D",
+      "simulation_desc": "Wimenyereze uko witwara mu muhanda mu buryo bw'amashusho ya 3D agaragaza ibintu nk'aho ari ukuri.",
+      "ai_title": "Umwarimu wa AI - Moto-Sensei",
+      "ai_desc": "Bona ibisubizo ako kanya bitanzwe n'umwarimu wawe ugufasha kwiga gutwara ibinyabiziga mu Rwanda.",
+      "resources_title": "Gukuramo Ibifashishwa",
+      "resources_desc": "Bona inyandiko za PDF, amashusho, n'amafoto by'ibyapa n'amategeko y'umuhanda."
+    },
+    "stats": {
+      "students": "Abanyeshuri",
+      "questions": "Ibibazo",
+      "pass_rate": "Igipimo cy'Abatsinda",
+      "leaderboard": "Urutonde rw'Indashyikirwa"
+    },
+    "learn_more": "Menya byinshi",
+    "courses_section": {
+      "badge": "Kwiga mu Masomo Ateguye Neza",
+      "title": "Amasomo Yacu",
+      "description": "Amasomo ateguye neza yateguwe na Moto Sensei. Kuva ku by'ibanze by'amategeko kugeza ku bumenyi bwo hejuru bwo gutwara.",
+      "view_all": "Reba Amasomo Yose"
+    },
+    "continue_learning": {
+      "badge": "Komeza Kwiga",
+      "title": "Komereza Aho Wari Ugeze",
+      "next_lesson": "Gikurikira: Isomo",
+      "progress": "Intambwe Umaze Gutera",
+      "continue": "Komeza"
+    },
+    "ai_section": {
+      "badge": "Uburyo bwo Kwiga Bukoresha AI",
+      "title": "Menyana na Moto-Sensei",
+      "description": "Umwarimu wawe wa AI ugufasha kwiga gutwara. Baza ibibazo mu Kinyarwanda, uhabwe ibisobanuro ako kanya, kandi umenye amategeko y'umuhanda vuba cyane.",
+      "cta": "Ganira na Moto-Sensei",
+      "preview_greeting": "Muraho! Ndi Moto-Sensei. Ni iki wifuza kwiga uyu munsi?",
+      "preview_question": "Icyapa gifite ishusho ya mpandeshatu itukura gisobanura iki?"
+    },
+    "flip": {
+      "title": "Amakarita y'Imyitozo ya Buri Munsi",
+      "subtitle": "Kwisubiramo byihuse amategeko n'ibyapa by'umuhanda by'ingenzi"
+    },
+    "blog_section": {
+      "badge": "Inyandiko n'Amakuru",
+      "title": "Soma Inyandiko Zacu Ziheruka",
+      "desc": "Komeza umenye inama zo gutwara, ubuyobozi ku mategeko y'umuhanda, n'amakuru y'uruhushya rwo gutwara — mu Cyongereza no mu Kinyarwanda.",
+      "view_all": "Reba Inyandiko Zose",
+      "driving_guide": "Ubuyobozi bwo Gutwara",
+      "guide_title": "Amategeko y'Umuhanda mu Rwanda: Ibyapa, Uruhushya, n'Umutekano",
+      "guide_desc": "Gutwara ikinyabiziga mu Rwanda bisaba gusobanukirwa neza amategeko y'umuhanda, uburyo ikoranabuhanga rikoreshwa mu kubungabunga umutekano.",
+      "read_full_guide": "Soma igitabo cyose cy'ubuyobozi",
+      "read_more": "Soma ibindi"
+    },
+    "certificate_section": {
+      "badge": "Bona Icyemezo Cyawe",
+      "title": "Bona Icyemezo Cyemewe cya ISHAMI",
+      "description": "Rangiza ikizamini cy'Amategeko y'Umuhanda n'Umutekano wo mu Muhanda uhabwe icyemezo cyemewe. Gisangize abakoresha, gicapishe, cyangwa ugenzure ukuri kwacyo kuri interineti. Garagaza ubumenyi bwawe bwo gutwara!",
+      "take_quiz": "Kora Ikizamini",
+      "view_certificate": "Reba Icyemezo",
+      "certificate_title": "Icyemezo cy'Uburangize",
+      "final_score": "Amanota ya Nyuma",
+      "electronically_verifiable": "Gishobora kugenzurwa hakoreshejwe ikoranabuhanga"
+    },
+    "testimonials": {
+      "title": "Icyo Abanyeshuri Bacu Bavuga",
+      "subtitle": "Fatanya n'ibihumbi by'abanyeshuri batsinze"
+    },
+    "irembo_section": {
+      "title": "Ukeneye Ubufasha bwo Kwiyandikisha kuri Irembo?",
+      "description": "Twagufasha kubona kode yo gukora ikizamini binyuze muri serivisi za Irembo. Ubufasha bwihuse, bwizewe, kandi butekanye.",
+      "cta": "Bona Ubufasha bwa Irembo",
+      "fee": "Ikiguzi cya Serivisi: 5,500 RWF | Igihe Bikorerwa: Mu masaha 8"
+    },
+    "leaderboard_section": {
+      "badge": "Urutonde rw'Indashyikirwa",
+      "title": "Reba Abari ku Isonga",
+      "description": "Reba abatsinze neza mu bizamini by'amategeko y'umuhanda mu Rwanda. Hatana, zamuka mu ntera, ugaragaze ubumenyi bwawe!",
+      "view_leaderboard": "Reba Urutonde rw'Indashyikirwa",
+      "rank": "Umwanya"
+    },
+    "newsletter": {
+      "title": "Komeza Kumenya Amakuru",
+      "desc": "Bona inama ziheruka zo gutwara n'amakuru y'umuhanda byoherejwe muri imeyili yawe.",
+      "enter_email": "Andika imeyili yawe",
+      "subscribe": "Iyandikishe",
+      "success": "✓ Urakoze kwiyandikisha! Reba muri imeyili yawe kugira ngo wemeze.",
+      "error": "Kwiyandikisha byanze. Ongera ugerageze."
+    },
+    "developers_section": {
+      "badge": "ISHAMI ku Bakora Porogaramu",
+      "title": "Wubake Ukoresheje ISHAMI API",
+      "description": "Injiza amategeko y'umuhanda mu Rwanda, ibibazo by'ibizamini, ibyapa by'umuhanda, n'amakarita y'imyitozo muri porogaramu yawe. Hariho n'uburyo bw'ubuntu.",
+      "get_started_free": "Tangira ku Buntu",
+      "documentation": "Inyandiko z'Ubuyobozi",
+      "quiz_questions": "Ibibazo by'Imyitozo",
+      "road_signs": "Ibyapa by'Umuhanda",
+      "flip_cards": "Amakarita y'Imyitozo",
+      "powered_by": "Bikozwe na Ferrivox Ltd"
+    },
+    "cta": {
+      "title": "Witeguye Gutangira?",
+      "subtitle": "Fatanya n'ibihumbi by'Abanyarwanda barimo kumenya amategeko y'umuhanda bakoresheje ISHAMI",
+      "start": "Tangira ku Buntu"
+    }
   }
 }

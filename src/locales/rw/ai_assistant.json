@@ -1,38 +1,104 @@
 {
-  "title": "Moto-Sensei",
-  "subtitle": "Umwarimu wa AI ku Mategeko y'Umuhanda mu Rwanda",
-  "badges": {
-    "languages": "Ikinyarwanda + Icyongereza",
-    "safety_validated": "Umutekano wemejwe",
-    "verified_knowledge": "Ubumenyi bwagenzuwe"
-  },
-  "free_questions": "Hasigaye ibibazo {count} by'ubuntu",
-  "new_chat": "Ibiganiro Bishya",
-  "search_chats_placeholder": "Shakisha mu biganiro...",
-  "no_conversations": "Nta biganiro byabonetse",
-  "conversation_count": "Ibiganiro {count}",
-  "export": "Sohora",
-  "import": "Injiza",
-  "importing": "Birinjira...",
-  "share": "Sangiza",
-  "copy_link": "Koporora ihuza",
-  "copied": "Byakoporowe!",
-  "messages": "ubutumwa",
-  "confidence": {
-    "high": "Icyizere cyo hejuru",
-    "medium": "Icyizere giciriritse",
-    "low": "Icyizere gito"
-  },
-  "errors": {
-    "rate_limited": "Ubusabe bubaye bwinshi ako kanya. Tegereza akanya gato wongere ugerageze. #GerayoAmahoro",
-    "server_error": "Uburyo bwa AI bugize ikibazo by'akanya gato. Ongera ugerageze mu kanya. #GerayoAmahoro"
-  },
-  "suggested_prompts": [
-    "Icyapa cya STOP gisobanura iki?",
-    "Sobanura amategeko yo gutanga inzira (uburenganzira bw'ibanze)",
-    "Umuvuduko ntarengwa mu Rwanda ni uwuhe?",
-    "Nyigisha uko baparika ku musozi",
-    "Mpa ibibazo 5 by'ibizamini byerekeye ibyapa",
-    "Ndegera rond-point, ngomba gukora iki?"
-  ]
+  "ai": {
+    "title": "Moto-Sensei",
+    "subtitle": "Umwarimu wa AI ku Mategeko y'Umuhanda mu Rwanda",
+    "badges": {
+      "languages": "Ikinyarwanda + Icyongereza",
+      "safety_validated": "Umutekano wemejwe",
+      "verified_knowledge": "Ubumenyi bwagenzuwe"
+    },
+    "free_questions": "Hasigaye ibibazo {count} by'ubuntu",
+    "new_chat": "Ikiganiro Gishya",
+    "search_chats_placeholder": "Shakisha ibiganiro...",
+    "no_conversations": "Nta biganiro byabonetse",
+    "conversation_count": "Ibiganiro {count}",
+    "messages": "ubutumwa",
+    "export": "Sohora",
+    "import": "Injiza",
+    "importing": "Birinjira...",
+    "share": "Sangiza",
+    "copy_link": "Koporora ihuza",
+    "copied": "Byakoporowe!",
+    "welcome_title": "Muraho!",
+    "welcome_desc": "Ndi Moto-Sensei — umwarimu wawe wa AI ku mategeko y'umuhanda mu Rwanda. Nshobora kukwigisha, kukuyobora no kugusuzuma.",
+    "choose_topic": "Hitamo ingingo ushaka kwiga:",
+    "loading_conversations": "Birimo gutangiza ibiganiro...",
+    "is_thinking": "arandika...",
+    "you": "Wowe",
+    "save_resend": "Bika & Ongera",
+    "free_questions_remaining": "ibibazo by'ubuntu byasigaye",
+    "verified": "✓ Ubumenyi bw'amategeko y'umuhanda mu Rwanda bwemejwe",
+    "mode": {
+      "ask": "Baza",
+      "ask_desc": "Baza ikintu icyo ari cyo cyose",
+      "learn": "Iga",
+      "learn_desc": "Amasomo ateguye neza",
+      "practice": "Imyitozo",
+      "practice_desc": "Imyitozo ishingiye ku bibaho mu muhanda",
+      "exam": "Ikizamini",
+      "exam_desc": "Igerageza ryo kwiga nk'ikizamini nyacyo"
+    },
+    "topics": {
+      "road_signs": "Ibyapa by'Umuhanda",
+      "speed_limits": "Umuvuduko Ntarengwa",
+      "right_of_way": "Uburenganzira bwo Gutambuka Mbere",
+      "overtaking": "Kunyuranaho",
+      "parking_stopping": "Gupaka no Guhagarara",
+      "turning_signals": "Gukata / Amatara Ndangacyerekezo",
+      "traffic_lights": "Amatara y'Umuhanda",
+      "pedestrians": "Abanyamaguru",
+      "emergency_vehicles": "Ibinyabiziga Byitabara Byihutirwa",
+      "vehicle_controls": "Uburyo Ikinyabiziga Gikora",
+      "road_safety": "Umutekano wo mu Muhanda",
+      "exam_mode": "Imyitozo y'Ikizamini",
+      "scenario_mode": "Imyitozo yo Gutwara",
+      "road_markings": "Imirongo yo mu Muhanda",
+      "definitions": "Ibisobanuro by'Amagambo",
+      "conversation": "Ikiganiro Rusange",
+      "general": "Amategeko y'Umuhanda"
+    },
+    "learning_topics": {
+      "traffic_signs": "Ibyapa by'Umuhanda",
+      "roundabouts": "Rond-point",
+      "right_of_way": "Uburenganzira bwo Gutambuka Mbere",
+      "parking": "Gupaka",
+      "highway": "Gutwara ku Muhanda Munini",
+      "traffic_rules": "Amategeko y'Umuhanda"
+    },
+    "confidence": {
+      "high": "Icyizere cyo hejuru",
+      "medium": "Icyizere cyo hagati",
+      "low": "Icyizere gito"
+    },
+    "errors": {
+      "rate_limited": "Ubusabe bubaye bwinshi ako kanya. Tegereza akanya gato wongere ugerageze. #GerayoAmahoro",
+      "server_error": "Uburyo bwa AI bugize ikibazo by'akanya gato. Ongera ugerageze mu kanya. #GerayoAmahoro"
+    },
+    "suggested_prompts": [
+      "Icyapa cya STOP gisobanura iki?",
+      "Nsobanurira amategeko agenga gutanga inzira (uburenganzira bwo gutambuka)",
+      "Umuvuduko ntarengwa mu Rwanda ni uwuhe?",
+      "Nyigisha uko bapaka ku musozi (ahanyerera cyangwa ahazamuka)",
+      "Mpa ibibazo 5 by'ikizamini byerekeye ibyapa",
+      "Ngeze kuri rond-point, nkore iki?"
+    ],
+    "mixed_prompts": [
+      "Who has priority at a roundabout?",
+      "Sinumva uburyo bwo gutanga inzira (right of way), nsobanurira",
+      "Uko ugeze ku cyapa cya STOP, ugomba gukora iki?"
+    ],
+    "whatsapp_share": "🧑🏿‍🏫 Inama ya Moto-Sensei (Ishami.rw):",
+    "whatsapp_footer": "📍 Koresha Ishami App nawe utsinde ikizamini: https://ishami.rw",
+    "payment": {
+      "title": "Gura Pro",
+      "description": "Fungura ibibazo bya AI bidashira, amasuzuma yose, n'ibindi byinshi.",
+      "phone_label": "Numero ya Telefone",
+      "phone_placeholder": "+250 78X XXX XXX",
+      "pay_now": "Ishyura Ubu",
+      "cancel": "Kureka",
+      "processing": "Kuri kwishyura...",
+      "success": "Kwishyura byagenze neza! Ubu ufite uburenganzira bwose.",
+      "failed": "Kwishyura byanze. Ongera ugerageze."
+    }
+  }
 }

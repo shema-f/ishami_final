@@ -1,26 +1,28 @@
 {
-  "title": "Imfashanyigisho zo Kwiga",
-  "subtitle": "Koporora inyandiko zo kwiga, amashusho, n'amafoto y'urufatiro",
-  "filters": {
-    "all": "Byose",
-    "pdf": "PDF",
-    "video": "Amashusho",
-    "image": "Amafoto"
-  },
-  "resource": {
-    "size": "Ingano:",
-    "coming_soon": "Bizaza vuba",
-    "pro_only": "Aba Pro gusa",
-    "watch": "Reba",
-    "download": "Download"
-  },
-  "empty_state": "Nta mfashanyigisho zibonetse kuri iyi muyunguruzi.",
-  "paywall": {
-    "title": "Imfashanyigisho Zihariye (Premium)",
-    "description": "Iyi mfashanyigisho igenewe gusa abanyamuryango ba Pro. Kora upgrade kuri",
-    "price": "100 RWF",
-    "description_suffix": "kugira ngo ugere ku masomo yose yihariye.",
-    "upgrade_button": "Zamura kuri Pro - 100 RWF",
-    "browse_free": "Shakisha Imfashanyigisho z'Ubuntu"
+  "res": {
+    "title": "Ibifashishwa byo Kwiga",
+    "subtitle": "Kuramo inyandiko zo kwiga, amashusho, n'amafoto y'urufatiro",
+    "filters": {
+      "all": "Byose",
+      "pdf": "PDF",
+      "video": "Amashusho",
+      "image": "Amafoto"
+    },
+    "resource": {
+      "size": "Ingano:",
+      "coming_soon": "Biraza vuba",
+      "pro_only": "Aba Pro gusa",
+      "watch": "Reba",
+      "download": "Kuramo"
+    },
+    "empty_state": "Nta bifashishwa bibonetse muri ubu buryo bwo gushungura.",
+    "paywall": {
+      "title": "Ibifashishwa byihariye (Premium)",
+      "description": "Ibi bifashishwa bigenewe abanyamuryango ba Pro gusa. Zamura kuri",
+      "price": "100 RWF",
+      "description_suffix": "kugira ngo ubone ibikubiyemo byose byihariye.",
+      "upgrade_button": "Zamura kuri Pro - 100 RWF",
+      "browse_free": "Shakisha Ibifashishwa by'Ubuntu"
+    }
   }
 }

@@ -1,0 +1,8 @@
+{
+  "not_found": {
+    "title": "404 - Page Not Found",
+    "description": "Oops! Looks like you took a wrong turn. This page doesn't exist.",
+    "go_home": "Go Home",
+    "start_quiz": "Start Quiz"
+  }
+}

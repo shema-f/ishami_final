@@ -1,39 +1,83 @@
 {
-  "results": {
-    "congratulations": "Congratulations! 🎉",
-    "keep_practicing": "Keep Practicing! 💪",
-    "your_score": "Your Score:",
-    "excellent_work": "Excellent work! You're ready for the real driving test. Keep up the great work!",
-    "need_70_percent": "You need 70% to pass. Review the materials and try again. You got this!",
-    "get_certificate": "🎓 Get Your Certificate",
-    "try_again": "Try Again",
-    "view_leaderboard": "View Leaderboard"
-  },
-  "quiz_list": {
+  "quiz": {
+    "title": "Quiz",
+    "subtitle": "Each quiz contains 20 questions. Test your knowledge!",
+    "no_quizzes": "No quizzes available yet.",
+    "start_quiz": "Start Quiz",
+    "start": "Start Quiz",
+    "question": "Question",
+    "of": "of",
     "time_left": "Time Left",
-    "progress": "Progress",
-    "score": "Score",
+    "submit": "Submit",
+    "next": "Next",
     "previous": "Previous",
-    "next_question": "Next Question",
-    "finish_quiz": "Finish Quiz"
-  },
-  "paywall": {
-    "title": "Unlock Pro Access",
-    "description": "You've completed 6 free questions! Unlock all 20 questions and premium features for only",
-    "testing_price": "100 RWF",
-    "production_price": "1,000 RWF",
-    "pro_features_title": "Pro Features:",
-    "features": {
-      "unlimited_quizzes": "Unlimited quiz attempts",
-      "full_simulation": "Full 3D simulation access",
-      "unlimited_ai": "Unlimited AI assistant questions",
-      "premium_resources": "Premium resources download"
+    "finish": "Finish Quiz",
+    "score": "Score",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "passed": "Passed",
+    "failed": "Failed",
+    "pass_rate": "70% to pass",
+    "quiz_completed": "Quiz Completed!",
+    "your_score": "Your Score",
+    "total_questions": "Total Questions",
+    "time_taken": "Time Taken",
+    "try_again": "Try Again",
+    "view_leaderboard": "View Leaderboard",
+    "view_certificate": "View Certificate",
+    "back_to_quizzes": "Back to Quizzes",
+    "questions_answered": "Questions Answered",
+    "correct_answers": "Correct Answers",
+    "incorrect_answers": "Incorrect Answers",
+    "percentage": "Percentage",
+    "results": "Results",
+    "quiz_list": {
+      "time_left": "Time Left",
+      "progress": "Progress",
+      "score": "Score",
+      "previous": "Previous",
+      "next_question": "Next Question",
+      "finish_quiz": "Finish Quiz"
     },
-    "phone_placeholder": "Phone number (e.g. 0788xxxxxx)",
-    "processing": "Processing...",
-    "pay_button": "Pay with Mobile Money - 100 RWF",
-    "phone_not_found": "Your phone number is not approved on Paypack. Please add it on the Paypack dashboard → Approved Numbers.",
-    "check_phone": "📱 Check your phone for USSD prompt...",
-    "maybe_later": "Maybe Later"
+    "results": {
+      "congratulations": "Congratulations! 🎉",
+      "keep_practicing": "Keep Practicing! 💪",
+      "your_score": "Your Score:",
+      "excellent_work": "Excellent work! You're ready for the real driving test. Keep up the great work!",
+      "need_70_percent": "You need 70% to pass. Review the materials and try again. You got this!",
+      "get_certificate": "🎓 Get Your Certificate",
+      "try_again": "Try Again",
+      "view_leaderboard": "View Leaderboard"
+    },
+    "paywall": {
+      "title": "Unlock More Questions",
+      "description": "You've used all free questions. Upgrade to continue practicing!",
+      "upgrade_button": "Upgrade to Pro",
+      "continue_free": "Continue with Free Questions",
+      "testing_price": "100 RWF",
+      "production_price": "1,000 RWF",
+      "pro_features_title": "Pro Features:",
+      "features": {
+        "unlimited_quizzes": "Unlimited quiz attempts",
+        "full_simulation": "Full 3D simulation access",
+        "unlimited_ai": "Unlimited AI assistant questions",
+        "premium_resources": "Premium resources download"
+      },
+      "maybe_later": "Maybe Later",
+      "phone_placeholder": "Phone number (e.g. 0788xxxxxx)",
+      "phone_invalid": "Please enter a valid phone number",
+      "processing": "Processing...",
+      "pay_button": "Pay with Mobile Money - 1,000 RWF",
+      "phone_not_found": "Your phone number is not approved on Paypack. Please add it on the Paypack dashboard → Approved Numbers.",
+      "check_phone": "📱 Check your phone for USSD prompt..."
+    },
+    "free_limit": {
+      "remaining": "{count} free questions remaining",
+      "used_up": "Free questions used up"
+    },
+    "language_toggle": {
+      "switch_to_english": "Switch to English",
+      "switch_to_kinyarwanda": "Switch to Kinyarwanda"
+    }
   }
 }

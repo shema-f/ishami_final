@@ -1,38 +1,104 @@
 {
-  "title": "Moto-Sensei",
-  "subtitle": "Rwanda Traffic Rules AI Instructor",
-  "badges": {
-    "languages": "Kinyarwanda + English",
-    "safety_validated": "Safety validated",
-    "verified_knowledge": "Verified knowledge"
-  },
-  "free_questions": "{count} free questions remaining",
-  "new_chat": "New Chat",
-  "search_chats_placeholder": "Search chats...",
-  "no_conversations": "No conversations found",
-  "conversation_count": "{count} conversations",
-  "export": "Export",
-  "import": "Import",
-  "importing": "Importing...",
-  "share": "Share",
-  "copy_link": "Copy link",
-  "copied": "Copied!",
-  "messages": "messages",
-  "confidence": {
-    "high": "High confidence",
-    "medium": "Medium confidence",
-    "low": "Low confidence"
-  },
-  "errors": {
-    "rate_limited": "Too many requests right now. Please wait a moment and try again. #GerayoAmahoro",
-    "server_error": "The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro"
-  },
-  "suggested_prompts": [
-    "What does a STOP sign mean?",
-    "Explain right-of-way rules",
-    "What are the speed limits in Rwanda?",
-    "Teach me how to park on a hill",
-    "Give me 5 exam questions about signs",
-    "I am approaching a roundabout, what do I do?"
-  ]
+  "ai": {
+    "title": "Moto-Sensei",
+    "subtitle": "Rwanda Traffic Rules AI Instructor",
+    "badges": {
+      "languages": "Kinyarwanda + English",
+      "safety_validated": "Safety validated",
+      "verified_knowledge": "Verified knowledge"
+    },
+    "free_questions": "{count} free questions remaining",
+    "new_chat": "New Chat",
+    "search_chats_placeholder": "Search chats...",
+    "no_conversations": "No conversations found",
+    "conversation_count": "{count} conversations",
+    "messages": "messages",
+    "export": "Export",
+    "import": "Import",
+    "importing": "Importing...",
+    "share": "Share",
+    "copy_link": "Copy link",
+    "copied": "Copied!",
+    "welcome_title": "Welcome back!",
+    "welcome_desc": "I'm Moto-Sensei — your Rwanda AI Driving Instructor. I can teach, guide, and test your traffic knowledge.",
+    "choose_topic": "Choose a topic to start learning:",
+    "loading_conversations": "Loading conversations...",
+    "is_thinking": "is thinking...",
+    "you": "You",
+    "save_resend": "Save & Resend",
+    "free_questions_remaining": "free AI questions remaining",
+    "verified": "✓ Rwanda Traffic Knowledge Verified",
+    "mode": {
+      "ask": "Ask",
+      "ask_desc": "Ask anything",
+      "learn": "Learn",
+      "learn_desc": "Structured lessons",
+      "practice": "Practice",
+      "practice_desc": "Practice scenarios",
+      "exam": "Exam",
+      "exam_desc": "Exam simulation"
+    },
+    "topics": {
+      "road_signs": "Road Signs",
+      "speed_limits": "Speed Limits",
+      "right_of_way": "Right of Way",
+      "overtaking": "Overtaking",
+      "parking_stopping": "Parking & Stopping",
+      "turning_signals": "Turning / Signals",
+      "traffic_lights": "Traffic Lights",
+      "pedestrians": "Pedestrians",
+      "emergency_vehicles": "Emergency Vehicles",
+      "vehicle_controls": "Vehicle Controls",
+      "road_safety": "Road Safety",
+      "exam_mode": "Exam Practice",
+      "scenario_mode": "Driving Scenario",
+      "road_markings": "Road Markings",
+      "definitions": "Definitions",
+      "conversation": "General",
+      "general": "Traffic"
+    },
+    "learning_topics": {
+      "traffic_signs": "Traffic Signs",
+      "roundabouts": "Roundabouts",
+      "right_of_way": "Right of Way",
+      "parking": "Parking",
+      "highway": "Highway Driving",
+      "traffic_rules": "Traffic Rules"
+    },
+    "confidence": {
+      "high": "High confidence",
+      "medium": "Medium confidence",
+      "low": "Low confidence"
+    },
+    "errors": {
+      "rate_limited": "Too many requests right now. Please wait a moment and try again. #GerayoAmahoro",
+      "server_error": "The AI engine ran into a temporary issue. Please try again shortly. #GerayoAmahoro"
+    },
+    "suggested_prompts": [
+      "What does a STOP sign mean?",
+      "Explain right-of-way rules",
+      "What are the speed limits in Rwanda?",
+      "Teach me how to park on a hill",
+      "Give me 5 exam questions about signs",
+      "I'm approaching a roundabout, what do I do?"
+    ],
+    "mixed_prompts": [
+      "Who has priority at a roundabout?",
+      "I don't understand right of way, explain it to me",
+      "When you reach a stop sign, what must you do?"
+    ],
+    "whatsapp_share": "🧑🏿‍🏫 Moto-Sensei driving tip (Ishami.rw):",
+    "whatsapp_footer": "📍 Use the Ishami App and pass your exam too: https://ishami.rw",
+    "payment": {
+      "title": "Upgrade to Pro",
+      "description": "Unlock unlimited AI questions, all quizzes, and more.",
+      "phone_label": "Phone Number",
+      "phone_placeholder": "+250 78X XXX XXX",
+      "pay_now": "Pay Now",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "success": "Payment successful! You now have full access.",
+      "failed": "Payment failed. Please try again."
+    }
+  }
 }

@@ -1,72 +1,81 @@
 {
-  "title": "Irembo Driving Test Registration",
-  "subtitle": "We'll help you register for your driving code exam through Irembo",
-  "service_fee": "Service Fee: 5,500 RWF",
-  "info_banner": {
-    "title": "Before You Start:",
-    "items": {
-      "age": "You must be at least 16 years old",
-      "national_id": "National ID is required (passports not accepted)",
-      "phone": "Ensure your phone number is active for SMS notifications",
-      "processing": "Processing time: Within 8 hours of payment"
-    }
-  },
-  "form": {
-    "full_name": "Full Legal Name *",
-    "full_name_placeholder": "Enter your full name as on ID",
-    "national_id": "National ID Number *",
-    "national_id_placeholder": "16-digit National ID",
-    "phone": "Phone Number *",
-    "phone_placeholder": "+250 78X XXX XXX",
-    "email": "Email Address *",
-    "email_placeholder": "your.email@example.com",
-    "language": "Preferred Language *",
-    "test_mode": "Test Mode *",
-    "district": "Test Center (District) *",
-    "district_placeholder": "Select your district",
-    "test_date": "Preferred Test Date *",
-    "terms": "I confirm that all information provided is correct and I accept that passports or replacement ID certificates are not accepted. I agree to the",
-    "terms_link": "terms and conditions",
-    "submit_button": "Submit Registration - 5,500 RWF",
-    "processing": "Processing…"
-  },
-  "validation": {
-    "national_id_digits": "National ID must be exactly 16 digits",
-    "age_requirement": "You must be at least 16 years old",
-    "phone_invalid": "Please enter a valid Rwandan phone number",
-    "email_invalid": "Please enter a valid email address",
-    "terms_required": "You must accept the terms and conditions"
-  },
-  "success": {
-    "title": "Application Submitted Successfully!",
-    "description": "Your Irembo driving test registration has been received.",
-    "details_title": "Registration Details",
-    "transaction": "Transaction:",
-    "amount": "Amount:",
-    "application_id": "Application ID:",
-    "valid_until": "Valid Until:",
-    "check_phone": "📱 Check your phone for USSD prompt to confirm payment...",
-    "important_title": "Important:",
-    "important_items": {
-      "approve": "Approve the payment prompt within 8 hours",
-      "slot_release": "If payment is not completed, your slot will be released",
-      "sms_confirmation": "You will receive an SMS confirmation after payment",
-      "no_sms": "If no SMS within 2 hours, contact us at support@ishami.rw"
+  "irembo": {
+    "title": "Irembo Driving Test Registration",
+    "subtitle": "We'll help you register for your driving code exam through Irembo",
+    "pricing": {
+      "provisional": "Provisional License",
+      "permanent": "Permanent License",
+      "pro_features": "Pro Features"
     },
-    "submit_another": "Submit Another Application"
-  },
-  "contact": {
-    "need_help": "Need help? Contact us at",
-    "or_call": "or call"
-  },
-  "payment_dialog": {
-    "title": "Confirm Payment",
-    "description": "To complete your Irembo registration, a payment of 5,500 RWF is required.",
-    "registration_fee": "Registration Test Fee:",
-    "service_fee": "Service Provider Fee:",
-    "total": "Total:",
-    "momo_number": "MoMo Number",
-    "cancel": "Cancel",
-    "pay_now": "Pay Now"
+    "info_banner": {
+      "title": "Before You Start:",
+      "items": {
+        "age": "You must be at least 16 years old",
+        "national_id": "National ID is required (passports not accepted)",
+        "phone": "Ensure your phone number is active for SMS notifications",
+        "processing": "Processing time: Within 8 hours of payment"
+      }
+    },
+    "form": {
+      "full_name": "Full Legal Name *",
+      "full_name_placeholder": "Enter your full name as on ID",
+      "national_id": "National ID Number *",
+      "national_id_placeholder": "16-digit National ID",
+      "phone": "Phone Number *",
+      "phone_placeholder": "+250 78X XXX XXX",
+      "email": "Email Address *",
+      "email_placeholder": "your.email@example.com",
+      "language": "Preferred Language *",
+      "license_type": "License Type *",
+      "test_mode": "Test Mode *",
+      "district": "Test Center (District) *",
+      "district_placeholder": "Select your district",
+      "test_date": "Preferred Test Date *",
+      "terms": "I confirm that all information provided is correct and I accept that passports or replacement ID certificates are not accepted. I agree to the",
+      "terms_link": "terms and conditions",
+      "processing": "Processing…",
+      "submit_provisional": "Submit Registration - 5,500 RWF",
+      "submit_permanent": "Submit Registration - 10,500 RWF"
+    },
+    "validation": {
+      "national_id_digits": "National ID must be exactly 16 digits",
+      "age_requirement": "You must be at least 16 years old",
+      "phone_invalid": "Please enter a valid Rwandan phone number",
+      "email_invalid": "Please enter a valid email address",
+      "terms_required": "You must accept the terms and conditions"
+    },
+    "success": {
+      "title": "Application Submitted Successfully!",
+      "description": "Your Irembo driving test registration has been received.",
+      "details_title": "Registration Details",
+      "transaction": "Transaction:",
+      "amount": "Amount:",
+      "application_id": "Application ID:",
+      "valid_until": "Valid Until:",
+      "check_phone": "📱 Check your phone for USSD prompt to confirm payment...",
+      "important_title": "Important:",
+      "important_items": {
+        "approve": "Approve the payment prompt within 8 hours",
+        "slot_release": "If payment is not completed, your slot will be released",
+        "sms_confirmation": "You will receive an SMS confirmation after payment",
+        "no_sms": "If no SMS within 2 hours, contact us at support@ishami.rw"
+      },
+      "submit_another": "Submit Another Application"
+    },
+    "payment_dialog": {
+      "title": "Confirm Payment",
+      "description": "To complete your Irembo registration, a payment is required.",
+      "registration_fee": "Registration Test Fee:",
+      "service_fee": "Service Provider Fee:",
+      "permanent_fee": "Permanent License Fee:",
+      "total": "Total:",
+      "momo_number": "MoMo Number",
+      "pay_now": "Pay Now",
+      "cancel": "Cancel"
+    },
+    "contact": {
+      "need_help": "Need help? Contact us at",
+      "or_call": "or call"
+    }
   }
 }

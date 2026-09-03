@@ -1,17 +1,15 @@
 {
-  "auth_required": {
-    "message": "Please log in to view your certificate.",
-    "button": "Log In"
-  },
-  "back_button": "Back",
-  "certificate": {
-    "title": "ISHAMI",
+  "cert": {
+    "title": "Certificate",
     "subtitle": "Digital Driving Education & Assessment Platform",
     "certified": "CERTIFIED",
-    "completion_title": "CERTIFICATE OF COMPLETION",
+    "back_button": "Back",
+    "back_to_leaderboard": "View Leaderboard",
+    "certificate_title": "CERTIFICATE OF COMPLETION",
     "presented_to": "This certificate is proudly presented to",
     "description": "for successfully completing the {quizTitle} Program and demonstrating satisfactory knowledge of traffic regulations, road signs, and safe road-user behavior.",
-    "areas_title": "Areas of Understanding",
+    "areasTitle": "Areas of Understanding",
+    "areas_title": "AREAS OF UNDERSTANDING",
     "areas": {
       "road_signs": "Road signs and their meanings",
       "pedestrian_safety": "Pedestrian and cyclist safety",
@@ -24,19 +22,21 @@
     },
     "details": {
       "training_result": "Training Result",
-      "pass": "PASS",
-      "fail": "FAIL",
+      "result": "Result",
       "final_score": "Final Score",
       "training_level": "Training Level",
       "training_level_value": "Traffic Rules Understanding",
       "certificate_no": "Certificate No.",
       "date_issued": "Date Issued",
-      "valid_until": "Valid Until"
+      "valid_until": "Valid Until",
+      "pass": "PASS",
+      "fail": "FAIL"
     },
     "verification": {
       "title": "Certificate Verification",
-      "scan_text": "Scan QR code or visit link to verify authenticity:",
-      "scan_to_verify": "Scan to Verify"
+      "scan_text": "Scan the QR code or visit the link to verify its authenticity:",
+      "scan_to_verify": "Scan to Verify",
+      "electronically_verifiable": "This certificate can be electronically verified at ishami-final.vercel.app/verify"
     },
     "signatures": {
       "managing_director": "Managing Director",
@@ -45,11 +45,19 @@
       "motto_line1": "Safe Roads, Safe Lives",
       "motto_line2": "Build a Better Rwanda"
     },
-    "footer_note": "This certificate can be electronically verified through the Ishami platform."
-  },
-  "actions": {
-    "downloading": "Downloading...",
-    "download_pdf": "Download PDF Certificate",
-    "view_leaderboard": "View Leaderboard"
+    "footer_note": "This certificate can be electronically verified through the Ishami platform.",
+    "pdf": {
+      "generating": "Generating PDF...",
+      "download": "Download PDF Certificate"
+    },
+    "actions": {
+      "downloading": "Downloading...",
+      "download_pdf": "Download PDF Certificate",
+      "view_leaderboard": "View Leaderboard"
+    },
+    "access_gate": {
+      "title": "Certificate Requires Full Access",
+      "description": "Upgrade to Full Access (3,000 RWF) to earn your Certificate of Completion."
+    }
   }
 }

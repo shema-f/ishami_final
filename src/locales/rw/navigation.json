@@ -1,26 +1,31 @@
 {
   "nav": {
     "home": "Ahabanza",
-    "aiAssistant": " AI ",
+    "aiAssistant": "Umufasha wa AI",
     "quiz": "Ibizamini",
-    "simulation": "3D simulation",
-    "resources": "Imfashanyigisho",
-    "leaderboard": "Leaderboard",
+    "simulation": "Imyitozo ya 3D",
+    "courses": "Amasomo",
+    "resources": "Ibifashishwa",
+    "leaderboard": "Urutonde rw'Indashyikirwa",
+    "blog": "Inyandiko n'Amakuru",
+    "bookmarks": "Ibyabitswe",
+    "notifications": "Imenyesha",
     "signIn": "Injira",
     "getStarted": "Tangira Ubu",
-    "signOut": "Sohoka"
+    "signOut": "Sohoka",
+    "signed_in_as": "Uwinjiye nka"
   },
   "footer": {
     "subtitle": "Amategeko y'Umuhanda",
-    "description": "Menya neza amategeko y'umuhanda mu Rwanda ukoresheje ibizamini bikorwa kuri interineti, ubufasha bwa AI, n'imyitozo yo gutwara muri 3D.",
+    "description": "Menya neza amategeko y'umuhanda mu Rwanda ukoresheje ibizamini, ubufasha bwa AI, n'imyitozo yo gutwara muri 3D.",
     "quickLinks": "Aho Wahita Ugana",
     "legal": "Amategeko",
     "contactUs": "Twandikire",
     "privacy": "Politiki y'Ubuzima Bwite",
     "terms": "Amabwiriza n'Amategeko y'Imikoreshereze",
     "cookies": "Politiki ya Kuki (Cookies)",
-    "rights": "all rights reserved",
-    "madeIn": "made with'",
+    "rights": "Uburenganzira bwose burizewe.",
+    "madeIn": "Bikozwe na",
     "partnership": "Ku bufatanye na"
   },
   "root": {
@@ -31,7 +36,7 @@
   },
   "common": {
     "select": "Hitamo Uburyo bw'Imyitozo",
-    "estimated": "min",
+    "estimated": "imin",
     "objectives": "Intego",
     "difficulty": "Uburemere"
   }

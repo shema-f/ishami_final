@@ -1,26 +1,28 @@
 {
-  "title": "Learning Resources",
-  "subtitle": "Download study materials, videos, and reference images",
-  "filters": {
-    "all": "All",
-    "pdf": "PDF",
-    "video": "Video",
-    "image": "Image"
-  },
-  "resource": {
-    "size": "Size:",
-    "coming_soon": "Coming Soon",
-    "pro_only": "Pro Only",
-    "watch": "Watch",
-    "download": "Download"
-  },
-  "empty_state": "No resources found for this filter.",
-  "paywall": {
-    "title": "Premium Resource",
-    "description": "This resource is only available to Pro members. Upgrade for only",
-    "price": "100 RWF",
-    "description_suffix": "to access all premium content.",
-    "upgrade_button": "Upgrade to Pro - 100 RWF",
-    "browse_free": "Browse Free Resources"
+  "res": {
+    "title": "Learning Resources",
+    "subtitle": "Download study materials, videos, and reference images",
+    "filters": {
+      "all": "All",
+      "pdf": "PDF",
+      "video": "Video",
+      "image": "Image"
+    },
+    "resource": {
+      "size": "Size:",
+      "coming_soon": "Coming Soon",
+      "pro_only": "Pro Only",
+      "watch": "Watch",
+      "download": "Download"
+    },
+    "empty_state": "No resources found for this filter.",
+    "paywall": {
+      "title": "Premium Resource",
+      "description": "This resource is only available to Pro members. Upgrade for only",
+      "price": "100 RWF",
+      "description_suffix": "to access all premium content.",
+      "upgrade_button": "Upgrade to Pro - 100 RWF",
+      "browse_free": "Browse Free Resources"
+    }
   }
 }

@@ -1,0 +1,38 @@
+{
+  "blog": {
+    "title": "Blog & Articles",
+    "subtitle": "Stay updated with driving tips, traffic rules guides, and licensing information",
+    "read_time": "min read",
+    "views": "views",
+    "share": "Share:",
+    "read_more": "Read more",
+    "back_to_blog": "Back to Blog",
+    "no_articles": "No articles found.",
+    "search_placeholder": "Search articles...",
+    "filter_all": "All",
+    "comments_title": "Comments",
+    "leave_comment": "Leave a comment...",
+    "post_comment": "Post Comment",
+    "reply": "Reply",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "sign_in_to_comment": "Sign in to comment",
+    "reading_mode": "Reading Mode",
+    "reading_mode_on": "Reading mode is on",
+    "reading_mode_off": "Reading mode is off",
+    "related_articles": "Related Articles",
+    "table_of_contents": "Table of Contents",
+    "share_article": "Share this article",
+    "bookmark_added": "Bookmark added",
+    "bookmark_removed": "Bookmark removed",
+    "copied": "Copied!",
+    "copy_link": "Copy link"
+  },
+  "share": {
+    "share": "Share:",
+    "copied": "Copied!",
+    "copy_link": "Copy Link"
+  }
+}
