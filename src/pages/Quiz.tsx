@@ -732,9 +732,9 @@ export default function Quiz() {
                       <h3 className="text-lg font-bold text-yellow-400">{lang === 'rw' ? 'VIP Premium' : 'VIP Premium'}</h3>
                       <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: ibibazo, amasomero, AI, 3D simulation' : 'Unlock everything: quizzes, courses, AI assistant, and 3D simulation'}</p>
+                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: ibibazo, amasomo, AI, na simulation ya 3D' : 'Unlock everything: quizzes, courses, AI assistant, and 3D simulation'}</p>
                     <div className="space-y-2">
-                      {[lang === 'rw' ? 'Ibibazo byose\'ubuntu' : 'Unlimited quiz questions', lang === 'rw' ? 'Amasomero yose' : 'All courses & resources', lang === 'rw' ? 'AI Assistant' : 'AI assistant access', lang === 'rw' ? '3D Simulation' : '3D driving simulation', lang === 'rw' ? 'Ibyemezo' : 'Certificate of completion'].map((label, i) => (
+                      {[lang === 'rw' ? 'Ibibazo byose\'ubuntu' : 'Unlimited quiz questions', lang === 'rw' ? 'Amasomo yose' : 'All courses & resources', lang === 'rw' ? 'AI Assistant' : 'AI assistant access', lang === 'rw' ? '3D Simulation' : '3D driving simulation', lang === 'rw' ? 'Ibyemezo' : 'Certificate of completion'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2 text-left">
                           <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
                           <span className="text-sm text-gray-300">{label}</span>

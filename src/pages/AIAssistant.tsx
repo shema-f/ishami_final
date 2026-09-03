@@ -1052,7 +1052,7 @@ export default function AIAssistant() {
                       <h3 className="text-lg font-bold text-yellow-400">Full Access</h3>
                       <span className="text-2xl font-bold text-yellow-400">3,000 RWF</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: AI, ibibazo, amasomero, 3D simulation' : 'Unlock everything: AI, quizzes, courses, 3D simulation'}</p>
+                    <p className="text-sm text-gray-400 mb-3">{lang === 'rw' ? 'Fungura byose: AI, ibibazo, amasomo, na simulation ya 3D' : 'Unlock everything: AI, quizzes, courses, 3D simulation'}</p>
                     <div className="space-y-2">
                       {['Unlimited AI questions', 'Unlimited quiz questions', '3D driving simulation', 'All courses & resources', 'Certificate of completion'].map((label, i) => (
                         <div key={i} className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /><span className="text-sm text-gray-300">{label}</span></div>

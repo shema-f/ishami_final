@@ -181,14 +181,14 @@ export default function Home() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
               <BookOpen className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400 font-medium">{lang === 'rw' ? 'Amasomero' : 'Structured Learning'}</span>
+              <span className="text-sm text-blue-400 font-medium">{lang === 'rw' ? 'Kwiga mu Masomo Ateguye Neza' : 'Structured Learning'}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
-              {lang === 'rw' ? 'Amasomero yacu' : 'Our Courses'}
+              {lang === 'rw' ? 'Amasomo Yacu' : 'Our Courses'}
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
               {lang === 'rw'
-                ? 'Menya ubushobozi bwo kubaga mu Rwanda mu buryo bwasozwe. Amasomero yakozwe n\'Moto Sensei.'
+                ? 'Amasomo ateguye neza yateguwe na Moto Sensei. Kuva ku by\'ibanze by\'amategeko kugeza ku bumenyi bwo hejuru bwo gutwara.'
                 : 'Structured courses designed by Moto Sensei. From traffic fundamentals to advanced driving skills.'}
             </p>
           </motion.div>
@@ -250,7 +250,7 @@ export default function Home() {
               to="/courses"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300"
             >
-              {lang === 'rw' ? 'Raba Amasomero Yose' : 'View All Courses'}
+              {lang === 'rw' ? 'Reba Amasomo Yose' : 'View All Courses'}
               <ChevronRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -272,7 +272,7 @@ export default function Home() {
                 <span className="text-sm text-emerald-400 font-medium">{lang === 'rw' ? 'Komeza Ushingire' : 'Continue Learning'}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white font-[family-name:var(--font-heading)]">
-                {lang === 'rw' ? 'Amasomero Urayobowe' : 'Pick Up Where You Left Off'}
+                {lang === 'rw' ? 'Komereza Aho Wari Ugeze' : 'Pick Up Where You Left Off'}
               </h2>
             </motion.div>
 

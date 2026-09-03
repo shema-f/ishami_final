@@ -29,10 +29,10 @@ export default function CourseDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-          <h2 className="text-2xl font-bold text-white mb-2">Course Not Found</h2>
-          <p className="text-gray-400 mb-6">The course you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">{lang === 'rw' ? 'Isomo Ntiryabonetse' : 'Course Not Found'}</h2>
+          <p className="text-gray-400 mb-6">{lang === 'rw' ? "Isomo urimo gushaka ntiribaho." : "The course you're looking for doesn't exist."}</p>
           <Link to="/courses" className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors">
-            Back to Courses
+            {lang === 'rw' ? 'Subira ku Masomo' : 'Back to Courses'}
           </Link>
         </div>
       </div>
@@ -42,8 +42,8 @@ export default function CourseDetail() {
   return (
     <AccessGate
       requiredTier="quiz"
-      title="Courses Require Quiz Access"
-      description="Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons."
+      title={lang === 'rw' ? 'Amasomo Asaba Uburenganzira bwa Quiz' : 'Courses Require Quiz Access'}
+      description={lang === 'rw' ? 'Gura Uburenganzira bwa Quiz (1,000 RWF) kugira ngo ufungure amasomo n\'inyigisho zose.' : 'Upgrade to Quiz Access (1,000 RWF) to unlock all courses and lessons.'}
     >
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
@@ -58,7 +58,7 @@ export default function CourseDetail() {
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">{lang === 'rw' ? 'Amasomero' : 'All Courses'}</span>
+            <span className="text-sm font-medium">{lang === 'rw' ? 'Amasomo Yose' : 'All Courses'}</span>
           </Link>
         </motion.div>
 
