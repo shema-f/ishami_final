@@ -12,6 +12,12 @@ import BlogSidebar from '../components/BlogSidebar';
 import SEOHead from '../components/SEOHead';
 import { useArticleAnalytics } from '../contexts/ArticleAnalyticsContext';
 
+function localizedReadTime(readTime: string, t: (key: string, fallback?: string) => string): string {
+  const minutes = parseInt(readTime, 10);
+  const n = Number.isFinite(minutes) && minutes > 0 ? minutes : 0;
+  return t('blogpage.read_min', readTime).replace('{n}', String(n));
+}
+
 function ArticleCard({ article }: { article: Article }) {
   const { lang, t } = useTranslation();
   const { getArticleStats } = useArticleAnalytics();
@@ -45,7 +51,7 @@ function ArticleCard({ article }: { article: Article }) {
           <div className="flex items-center gap-3 text-gray-500 text-xs mb-3">
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {article.readTime}
+              {localizedReadTime(article.readTime, t)}
             </span>
             <span>·</span>
             <span>{new Date(article.date).toLocaleDateString()}</span>
@@ -272,7 +278,7 @@ function RelatedArticles({ currentArticle }: { currentArticle: Article }) {
                 </p>
                 <div className="mt-3 flex items-center gap-2 text-gray-500 text-xs">
                   <Clock className="w-3 h-3" />
-                  <span>{related.readTime}</span>
+                  <span>{localizedReadTime(related.readTime, t)}</span>
                 </div>
               </div>
             </motion.div>

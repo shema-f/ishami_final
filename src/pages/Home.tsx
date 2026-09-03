@@ -821,9 +821,9 @@ export default function Home() {
                 {/* Quick stats */}
                 <div className="flex flex-wrap gap-4">
                   {[
-                    { value: '25+', label: 'Quiz Questions' },
-                    { value: '30+', label: 'Road Signs' },
-                    { value: '25+', label: 'Flip Cards' },
+                    { value: '25+', label: t('dev.stat_questions', 'Quiz Questions') },
+                    { value: '30+', label: t('dev.stat_signs', 'Road Signs') },
+                    { value: '25+', label: t('dev.stat_cards', 'Flip Cards') },
                   ].map((stat, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <span className="text-lg font-bold text-white">{stat.value}</span>
