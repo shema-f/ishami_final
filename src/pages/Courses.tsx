@@ -89,6 +89,7 @@ export default function Courses() {
 }
 
 function CourseCard({ course, index, lang, userId }: { course: Course; index: number; lang: string; userId: string }) {
+  const { t } = useTranslation();
   const cp = getCourseProgress(userId, course.id);
   const pct = cp?.percentage || 0;
   const completed = cp?.completedLessons.length || 0;

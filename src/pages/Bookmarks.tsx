@@ -229,7 +229,7 @@ function HistoryCard({ item, article, formatDate, onRemove }: {
   formatDate: (timestamp: number) => string;
   onRemove: () => void;
 }) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
 
   return (
     <Link to={`/blog/${article.slug}`}>

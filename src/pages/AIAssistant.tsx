@@ -134,7 +134,7 @@ function saveProgress(progress: TopicProgress[]) {
 /* ─── Main Component ──────────────────────────────────── */
 
 export default function AIAssistant() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { t, lang } = useTranslation();
   const {
     conversations, activeConversation, setActiveConversation,

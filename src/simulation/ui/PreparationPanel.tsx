@@ -268,7 +268,7 @@ export default function PreparationPanel({
 
                   {/* Engine start */}
                   <button
-                    onClick={onStart}
+                    onClick={onEngineStart}
                     disabled={!state.clutchPressed || state.gear !== 'N' || !state.handbrakeOn}
                     className={`w-full py-4 rounded-xl text-base font-bold transition-all flex items-center justify-center gap-2 active:scale-95 ${
                       state.clutchPressed && state.gear === 'N' && state.handbrakeOn

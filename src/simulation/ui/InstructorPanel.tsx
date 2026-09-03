@@ -20,7 +20,7 @@ export default function InstructorPanel({
   trigger = 'stage_enter',
   visible = true,
 }: InstructorPanelProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [message, setMessage] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const prevStageRef = useRef<InstructorStage>(stage);

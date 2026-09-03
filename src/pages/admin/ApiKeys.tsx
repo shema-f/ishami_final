@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import {
   getAllKeys, createApiKey, revokeApiKey, reactivateApiKey, deleteApiKey,
-  getUsageSummary, getUsageForKey, seedDemoApiData,
+  getAllUsage, getUsageSummary, getUsageForKey, seedDemoApiData,
   type ApiKey, type ApiUsageSummary, type ApiUsageRecord
 } from '../../lib/apiKeyStore';
 

@@ -17,6 +17,7 @@ import {
   type InstructorStage,
   type GearState,
   type SimulationState,
+  type Waypoint,
 } from '../simulation/core/SimulationState';
 import { GUIDED_START_WAYPOINTS, GUIDED_START_CONFIG } from '../simulation/scenarios/GuidedStartConfig';
 import { getScenarioConfig, ALL_SCENARIO_CONFIGS, type ScenarioConfig } from '../simulation/scenarios/AllScenarios';
