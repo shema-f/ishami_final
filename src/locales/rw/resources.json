@@ -26,13 +26,13 @@
     }
   },
   "flip": {
-    "click": "Kanda ku kibaho kugira ngo urabe",
-    "new_set": "Hindura",
+    "click": "Kanda ku karita kugira ngo uyihindure",
+    "new_set": "Seti Nshya",
     "question": "Ikibazo",
     "reveal": "Kanda kugira ngo urabe igisubizo",
-    "answer_options": "Ibisubizo",
+    "answer_options": "Amahitamo",
     "great_job": "Wakoze Neza!",
-    "score": "Wujeje {correct}/{total} ibibazo neza!",
+    "score": "Washubije neza ibibazo {correct} muri {total}!",
     "new_questions": "Ibibazo Bishya"
   }
 }

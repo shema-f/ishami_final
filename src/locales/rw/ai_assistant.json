@@ -118,8 +118,8 @@
       "full_button": "Umwanya Wose — 3,000 RWF",
       "ussd_check": "Reba telefone yawe...",
       "ussd_confirm": "Emeza ubwishyu kuri telefone yawe",
-      "delete_title": "Siba Intindiro?",
-      "delete_desc": "\"{title}\" irasibwa."
+      "delete_title": "Siba Ikiganiro?",
+      "delete_desc": "\"{title}\" irasibwa burundu."
     }
   }
 }
