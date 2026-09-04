@@ -3,8 +3,16 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI, certificatesAPI, flushPendingQuizSubmissions } from '../services/api';
+import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI, flushPendingQuizSubmissions } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
+import {
+  computeEligibility,
+  cacheQuizTitles,
+  issueProgramCertificate,
+  loadQuizHistory,
+  PROGRAM_QUIZ_TITLE,
+  type CertificateEligibility,
+} from '../lib/certificateGate';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
   const n = Math.min(idx + 1, 20);
@@ -56,6 +64,16 @@ export default function Quiz() {
   const [quizLang, setQuizLang] = useState<'rw' | 'en'>(lang === 'en' ? 'en' : 'rw');
   const [quizFreeUsed, setQuizFreeUsed] = useState<number>(0);
   const FREE_QUIZ_LIMIT = 5;
+  const [certUnlocked, setCertUnlocked] = useState(false);
+  const [certEligibility, setCertEligibility] = useState<{ checked: boolean } & CertificateEligibility>({
+    checked: false,
+    total: 0,
+    finished: 0,
+    average: 0,
+    missing: [],
+    finishedAll: false,
+    eligible: false,
+  });
 
   // Load quiz free usage from backend database
   useEffect(() => {
@@ -217,12 +235,43 @@ export default function Quiz() {
     });
   };
 
+  const resetToQuizList = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setTimeLeft(1200);
+    setQuizCompleted(false);
+    setAnswered(false);
+    setSelectedAnswer(null);
+    setSelectedQuiz(null);
+    setCertUnlocked(false);
+    setCertEligibility({ checked: false, total: 0, finished: 0, average: 0, missing: [], finishedAll: false, eligible: false });
+  };
+
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setAnswered(false);
     } else {
+      // Evaluate the certificate gate right away (before the async submit) so
+      // the results screen shows the correct message instantly.
+      const pct = Math.round((score / Math.max(1, questions.length)) * 100);
+      const pendingEntry = {
+        id: `${Date.now()}-${selectedQuiz?.id || 'quiz'}`,
+        quizTitle: selectedQuiz?.title || `Quiz ${selectedQuiz?.id || ''}`,
+        score,
+        totalQuestions: questions.length,
+        percentage: pct,
+        completedAt: new Date().toISOString(),
+        passed: pct >= 70,
+      };
+      try {
+        const existing = localStorage.getItem('quizHistory');
+        const prev = existing ? JSON.parse(existing) : [];
+        const requiredTitles = (quizzes || []).map(q => q.title).filter(Boolean);
+        const elig = computeEligibility(requiredTitles, [pendingEntry, ...(Array.isArray(prev) ? prev : [])]);
+        setCertEligibility({ checked: true, ...elig });
+      } catch {}
       setQuizCompleted(true);
     }
   };
@@ -287,35 +336,28 @@ export default function Quiz() {
         const history = existing ? JSON.parse(existing) : [];
         history.unshift(historyEntry);
         localStorage.setItem('quizHistory', JSON.stringify(history.slice(0, 50)));
-        if (passed) {
-          // Persist the certificate on the server so it can be publicly verified
-          // at /verify/:certificateNo. The server issues the official number.
-          let certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
-          let issuedISO = new Date().toISOString();
-          try {
-            const res = await certificatesAPI.generate({
-              score,
-              totalQuestions: questions.length,
-              quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
+
+        // ── Certificate gate ─────────────────────────────────────────────
+        // A certificate is only earned once EVERY quiz has been finished with
+        // an average of ≥60% (best attempt per quiz). Finishing one quiz is no
+        // longer enough — the program must be completed.
+        const requiredTitles = (quizzes || []).map(q => q.title).filter(Boolean);
+        if (requiredTitles.length > 0) {
+          const eligibility = computeEligibility(requiredTitles, history as any);
+          setCertEligibility({ checked: true, ...eligibility });
+          if (eligibility.eligible) {
+            await issueProgramCertificate({
+              userId: user.id,
+              username: user.username,
+              average: eligibility.average,
             });
-            if (res?.certificate?.certificateNo) {
-              certNo = res.certificate.certificateNo;
-              issuedISO = res.certificate.issuedAt || issuedISO;
-            }
-          } catch { /* offline — keep local certificate */ }
-          const expiryDate = new Date(new Date(issuedISO).getTime());
-          expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-          localStorage.setItem('latestCertificate', JSON.stringify({
-            userId: user.id,
-            username: user.username,
-            score,
-            totalQuestions: questions.length,
-            quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
-            issuedAt: new Date(issuedISO).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-            expiresAt: expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-            certificateNo: certNo,
-            passed: true,
-          }));
+            setCertUnlocked(true);
+          } else {
+            setCertUnlocked(false);
+          }
+        } else {
+          setCertEligibility({ checked: true, finished: 0, total: 0, average: 0, missing: [], finishedAll: false, eligible: false });
+          setCertUnlocked(false);
         }
       }
     })();
@@ -344,10 +386,12 @@ export default function Quiz() {
   if (selectedQuiz && quizCompleted) {
     const percentage = Math.round((score / questions.length) * 100);
     const passed = percentage >= 70;
+    const checkedElig = certEligibility.checked ? certEligibility : null;
+    const certReady = certUnlocked || (!!checkedElig?.eligible);
 
     return (
       <div className="min-h-screen py-12 px-4 flex items-center justify-center">
-        {passed && <Confetti />}
+        {(passed || certReady) && <Confetti />}
         
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
         
@@ -360,9 +404,9 @@ export default function Quiz() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-            className={`inline-flex p-6 rounded-3xl mb-6 ${passed ? 'bg-green-500/20' : 'bg-orange-500/20'}`}
+            className={`inline-flex p-6 rounded-3xl mb-6 ${passed || certReady ? 'bg-green-500/20' : 'bg-orange-500/20'}`}
           >
-            {passed ? (
+            {passed || certReady ? (
               <Trophy className="w-16 h-16 text-green-400" />
             ) : (
               <Clock className="w-16 h-16 text-orange-400" />
@@ -370,11 +414,11 @@ export default function Quiz() {
           </motion.div>
           
           <h1 className="text-3xl font-bold text-white mb-2 font-[family-name:var(--font-heading)]">
-            {passed ? t('quiz.results.congratulations', 'Congratulations! 🎉') : t('quiz.results.keep_practicing', 'Keep Practicing! 💪')}
+            {passed || certReady ? t('quiz.results.congratulations', 'Congratulations! 🎉') : t('quiz.results.keep_practicing', 'Keep Practicing! 💪')}
           </h1>
           
           <p className="text-gray-400 mb-6">
-            {t('quiz.results.your_score', 'Your Score:')} <span className={`text-4xl font-bold ${passed ? 'text-green-400' : 'text-orange-400'}`}>{score}/{questions.length}</span>
+            {t('quiz.results.your_score', 'Your Score:')} <span className={`text-4xl font-bold ${passed || certReady ? 'text-green-400' : 'text-orange-400'}`}>{score}/{questions.length}</span>
             <span className="block mt-2 text-lg">({percentage}%)</span>
           </p>
 
@@ -388,31 +432,55 @@ export default function Quiz() {
             </p>
           )}
 
+          {certReady ? (
+            <p className="text-emerald-300 text-sm mb-6">
+              {t('quiz.results.certificate_ready', "🎉 You've completed every quiz with a 60%+ average. Your certificate is ready!")}
+            </p>
+          ) : checkedElig && checkedElig.total > 0 && (
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-6 text-left">
+              <p className="text-sm text-gray-300 mb-2 flex items-center gap-2">
+                <Award className="w-4 h-4 text-yellow-400 shrink-0" />
+                {checkedElig.finishedAll && checkedElig.average < 60
+                  ? t('quiz.results.certificate_avg_short', 'Average {avg}% — you need 60%+ to unlock your certificate.').replace('{avg}', String(checkedElig.average))
+                  : t('quiz.results.certificate_locked', 'Finish all {total} quizzes with a 60% average to unlock your certificate.').replace('{total}', String(checkedElig.total))}
+              </p>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{t('quiz.results.certificate_progress', 'Quizzes finished')}: {checkedElig.finished}/{checkedElig.total}</span>
+                <span>{t('quiz.results.certificate_avg', 'Average')}: {checkedElig.average}%</span>
+              </div>
+              <div className="h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all" style={{ width: `${checkedElig.total > 0 ? Math.round((checkedElig.finished / checkedElig.total) * 100) : 0}%` }} />
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {passed ? (
+            {certReady ? (
               <button
                 onClick={() => navigate('/certificate')}
                 className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/30 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 {t('quiz.results.get_certificate', '🎓 Get Your Certificate')}
               </button>
-            ) : (
+            ) : passed && checkedElig && !checkedElig.eligible ? (
               <button
-                onClick={() => {
-                  setCurrentQuestion(0);
-                  setScore(0);
-                  setTimeLeft(1200);
-                  setQuizCompleted(false);
-                  setAnswered(false);
-                  setSelectedAnswer(null);
-                  setSelectedQuiz(null);
-                }}
+                onClick={resetToQuizList}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                {checkedElig.finishedAll && checkedElig.average < 60
+                  ? t('quiz.results.improve_average', 'Retake Quizzes to Improve Average')
+                  : t('quiz.results.finish_all_quizzes', 'Finish All Quizzes')}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            ) : !passed ? (
+              <button
+                onClick={resetToQuizList}
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 {t('quiz.results.try_again', 'Try Again')}
                 <ArrowRight className="w-5 h-5" />
               </button>
-            )}
+            ) : null}
             <button
               onClick={() => navigate('/leaderboard')}
               className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-all duration-300"

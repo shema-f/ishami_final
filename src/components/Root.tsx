@@ -2,6 +2,7 @@ import { Outlet } from 'react-router';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import AnimatedBackground from './AnimatedBackground';
+import WhatsAppButton from './WhatsAppButton';
 import { useEffect, useState, Suspense, Component, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Download, X, AlertTriangle, RefreshCw } from 'lucide-react';
@@ -86,6 +87,7 @@ export default function Root() {
         </ErrorBoundary>
       </main>
       <Footer />
+      <WhatsAppButton />
 
       <AnimatePresence>
         {!installed && showInstall && (

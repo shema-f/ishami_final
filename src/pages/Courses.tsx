@@ -2,10 +2,11 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router';
 import { Clock, BookOpen, User, ChevronRight, Filter, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
-import { courses, type Course } from '../data/courses';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getCourseProgress } from '../lib/courseProgress';
+import { useCourses } from '../hooks/useCourses';
+import type { CourseRecord } from '../lib/courseRegistry';
 import AccessGate from '../components/AccessGate';
 
 const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'] as const;
@@ -14,6 +15,7 @@ export default function Courses() {
   const { lang, t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id || user?.uid || 'guest';
+  const { courses, loading } = useCourses();
   const [filter, setFilter] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
 
   const filtered = filter === 'All' ? courses : courses.filter(c => c.level === filter);
@@ -88,7 +90,7 @@ export default function Courses() {
   );
 }
 
-function CourseCard({ course, index, lang, userId }: { course: Course; index: number; lang: string; userId: string }) {
+function CourseCard({ course, index, lang, userId }: { course: CourseRecord; index: number; lang: string; userId: string }) {
   const { t } = useTranslation();
   const cp = getCourseProgress(userId, course.id);
   const pct = cp?.percentage || 0;

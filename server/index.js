@@ -164,9 +164,52 @@ const ResourceSchema = new Schema({
   fileUrl: { type: String, default: '' },
   thumbnail: { type: String, default: '' },
   size: { type: String, default: '' },
+  courseId: { type: String, default: '' }, // '' = library only, else course id/slug this belongs to
+  description: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 const Resource = model('Resource', ResourceSchema);
+
+const CourseLessonSchema = new Schema({
+  id: { type: Number, default: 1 },
+  title: { type: String, default: '' },
+  titleKiny: { type: String, default: '' },
+  type: { type: String, default: 'text' }, // text | video | interactive | quiz | assessment
+  duration: { type: String, default: '15 min' },
+  description: { type: String, default: '' },
+  body: { type: String, default: '' },        // free-form text content (custom courses)
+  videoUrl: { type: String, default: '' }     // embed URL for video lessons
+}, { _id: false });
+
+const CourseCurriculumSchema = new Schema({
+  title: { type: String, default: 'Course Curriculum' },
+  titleKiny: { type: String, default: 'Ibikubiyemo by' },
+  lessons: { type: [CourseLessonSchema], default: [] }
+}, { _id: false });
+
+const CourseSchema = new Schema({
+  slug: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
+  titleKiny: { type: String, default: '' },
+  description: { type: String, default: '' },
+  descriptionKiny: { type: String, default: '' },
+  level: { type: String, default: 'Beginner' }, // Beginner | Intermediate | Advanced
+  levelKiny: { type: String, default: 'Utangira' },
+  instructor: { type: String, default: 'Moto Sensei' },
+  instructorTitle: { type: String, default: 'Driving Expert & Instructor' },
+  duration: { type: String, default: '2 hours' },
+  totalLessons: { type: Number, default: 0 },
+  gradient: { type: String, default: 'from-blue-500 via-indigo-500 to-violet-500' },
+  icon: { type: String, default: '🚗' },
+  badge: { type: String, default: '' },
+  badgeColor: { type: String, default: 'bg-blue-500' },
+  curriculum: { type: CourseCurriculumSchema, default: () => ({ title: 'Course Curriculum', titleKiny: "Ibikubiyemo by", lessons: [] }) },
+  isActive: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+CourseSchema.index({ createdAt: -1 });
+const Course = model('Course', CourseSchema);
 
 const IremboSchema = new Schema({
   userId: { type: Types.ObjectId, ref: 'User' },
@@ -598,6 +641,150 @@ async function seed() {
     },
     { upsert: true }
   );
+
+  // ── Official downloadable course materials (photos / videos / PDFs) ──────
+  // Point the seeded exam-prep documents at the official files the team shared
+  // and attach them to the courses they belong to, so each course has a
+  // Resources subpage with real downloadable content.
+  const officialCourseResources = [
+    {
+      title: "Ibibazo n'Ibisubizo by'Izihushya (Exam Questions & Answers PDF)",
+      titleKiny: "Ibibazo n'Ibisubizo (PDF)",
+      type: 'PDF',
+      category: 'Exams',
+      premium: false,
+      fileUrl: 'https://drive.google.com/uc?export=download&id=1oQqT5dG5nGwobJM5hKIsW0bNdu6G5sDd',
+      thumbnail: 'https://placehold.co/640x360?text=Ibibazo+n%27Ibisubizo',
+      courseId: 'traffic-rules-fundamentals',
+      description: 'Official exam questions with answers used to prepare for the driving licence test.'
+    },
+    {
+      title: "Igazeti y'Amategeko y'Umuhanda (Traffic Law Gazette PDF)",
+      titleKiny: "Igazeti y'Amategeko y'Umuhanda (PDF)",
+      type: 'PDF',
+      category: 'Law',
+      premium: false,
+      fileUrl: 'https://drive.google.com/uc?export=download&id=1wLPsXMXV_qSltj-HZczP0Z_SrKhHEeaR',
+      thumbnail: 'https://placehold.co/640x360?text=Gazette+y%27Amategeko',
+      courseId: 'traffic-rules-fundamentals',
+      description: 'The official gazette of Rwanda road traffic law (Igazeti y\'Amategeko y\'Umuhanda).'
+    },
+    {
+      title: "Ibimenyetso Bimurika (Light Signals PDF)",
+      titleKiny: "Ibimenyetso Bimurika (PDF)",
+      type: 'PDF',
+      category: 'Signs',
+      premium: false,
+      fileUrl: 'https://drive.google.com/uc?export=download&id=1iFTIZGO2aITVuyL7nktbpQOgQ3kUJtcf',
+      thumbnail: 'https://placehold.co/640x360?text=Ibimenyetso+Bimurika',
+      courseId: 'road-signs-markings',
+      description: 'Light signals (traffic lights) explained in Kinyarwanda, ready to study offline.'
+    },
+    {
+      title: "Videwo: Traffic Signs & Light Signals (Ibimenyetso by'Umuhanda)",
+      titleKiny: "Videwo y'Ibimenyetso by'Umuhanda",
+      type: 'Video',
+      category: 'Signs',
+      premium: false,
+      fileUrl: 'https://www.youtube.com/watch?v=x-06FDV8qT8',
+      thumbnail: 'https://img.youtube.com/vi/x-06FDV8qT8/maxresdefault.jpg',
+      courseId: 'road-signs-markings',
+      description: 'Video lesson covering road signs and light signals.'
+    },
+    {
+      title: "Videwo: Exam Questions Practice (Izihushya)",
+      titleKiny: "Videwo y'Izihushya",
+      type: 'Video',
+      category: 'Exams',
+      premium: false,
+      fileUrl: 'https://www.youtube.com/watch?v=zMcXild1WM4',
+      thumbnail: 'https://img.youtube.com/vi/zMcXild1WM4/maxresdefault.jpg',
+      courseId: 'traffic-rules-fundamentals',
+      description: 'Video walking through the most asked exam questions for the provisional licence.'
+    },
+    {
+      title: "Videwo: Kubaga Neza mu Umuhanda (Defensive Driving)",
+      titleKiny: "Videwo yo Kubaga Neza",
+      type: 'Video',
+      category: 'Safety',
+      premium: false,
+      fileUrl: 'https://www.youtube.com/watch?v=goro8MaDq2k',
+      thumbnail: 'https://img.youtube.com/vi/goro8MaDq2k/maxresdefault.jpg',
+      courseId: 'safe-driving-road-safety',
+      description: 'Defensive driving tips to keep you safe on Rwandan roads.'
+    },
+    {
+      title: "Road Sign Photo Pack (Traffic Signs Pictures)",
+      titleKiny: "Amafoto y'Ibyapa by'Umuhanda",
+      type: 'Image',
+      category: 'Signs',
+      premium: false,
+      fileUrl: 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=1200',
+      thumbnail: 'https://images.unsplash.com/photo-1597633611385-17238892d086?w=800',
+      courseId: 'road-signs-markings',
+      description: 'Photos of real traffic signs to help you recognise them at a glance.'
+    },
+    {
+      title: "Driving & Road Photos",
+      titleKiny: "Amafoto y'Imodoka n'Umuhanda",
+      type: 'Image',
+      category: 'Practical',
+      premium: false,
+      fileUrl: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200',
+      thumbnail: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800',
+      courseId: 'safe-driving-road-safety',
+      description: 'Reference photos for practical driving scenarios.'
+    },
+    {
+      title: "Traffic Light Reference Photos",
+      titleKiny: "Amafoto y'Amatara y'Umuhanda",
+      type: 'Image',
+      category: 'Signs',
+      premium: false,
+      fileUrl: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200',
+      thumbnail: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800',
+      courseId: 'road-signs-markings',
+      description: 'Traffic light photos to study signals and junctions.'
+    }
+  ];
+  for (const item of officialCourseResources) {
+    await Resource.updateOne(
+      { title: item.title },
+      { $set: item },
+      { upsert: true }
+    );
+  }
+  // Update the older placeholder-seeded documents with the same official files
+  // so the library does not show duplicate/outdated downloads.
+  await Resource.updateOne(
+    { title: "Ibibazo ku Amategeko y'Umuhanda (PDF)" },
+    { $set: { fileUrl: 'https://drive.google.com/uc?export=download&id=1oQqT5dG5nGwobJM5hKIsW0bNdu6G5sDd', courseId: 'traffic-rules-fundamentals' } }
+  );
+  await Resource.updateOne(
+    { title: "Igazeti y'Amategeko y'Umuhanda (PDF)" },
+    { $set: { fileUrl: 'https://drive.google.com/uc?export=download&id=1wLPsXMXV_qSltj-HZczP0Z_SrKhHEeaR', courseId: 'traffic-rules-fundamentals' } }
+  );
+  await Resource.updateOne(
+    { title: 'Ibimenyetso Bimurika' },
+    { $set: { fileUrl: 'https://drive.google.com/uc?export=download&id=1iFTIZGO2aITVuyL7nktbpQOgQ3kUJtcf', courseId: 'road-signs-markings' } }
+  );
+  // Video seeds from the team's channel get attached to their courses too.
+  await Resource.updateOne(
+    { title: "AMATEGEKO Y’UMUHANDA🚨🚔🚨IBIBAZO N’IBISUBIZO" },
+    { $set: { courseId: 'traffic-rules-fundamentals' } }
+  );
+  await Resource.updateOne(
+    { title: "🚨🚨🚗Ikibazo gikunzwe kubazwa mu Gukorera provisoire" },
+    { $set: { courseId: 'traffic-rules-fundamentals' } }
+  );
+  await Resource.updateOne(
+    { title: "Impuruza (Alarms) & Ibyapa Byo Ku Muhanda (Traffic Signs)" },
+    { $set: { courseId: 'road-signs-markings' } }
+  );
+  await Resource.updateOne(
+    { title: "Kwirinda Impanuka (Road Safety Tips)" },
+    { $set: { courseId: 'safe-driving-road-safety' } }
+  );
 }
 
 // Email service: Resend API (HTTPS, works on Render free tier)
@@ -612,7 +799,8 @@ await Promise.all([
   Notification.syncIndexes(),
   FraudLog.syncIndexes(),
   Certificate.syncIndexes(),
-  Conversation.syncIndexes()
+  Conversation.syncIndexes(),
+  Course.syncIndexes()
 ]);
 await seed();
 
@@ -2476,7 +2664,9 @@ app.get('/api/resources', optionalAuthMiddleware, async (req, res) => {
           fileUrl: isLocked ? null : (r.fileUrl || ''),
           locked: isLocked,
           thumbnail: r.thumbnail || '',
-          size: r.size || ''
+          size: r.size || '',
+          courseId: r.courseId || '',
+          description: r.description || ''
         };
       })
     });
@@ -2573,15 +2763,84 @@ app.get('/api/leaderboard', optionalAuthMiddleware, async (req, res) => {
   res.json({ leaderboard, myEntry, updatedAt: new Date().toISOString() });
 });
 
+// COURSES
+// Map a Course document to the public API shape. Static courses use their id as
+// slug, so dynamic courses expose slug as id to stay drop-in compatible.
+function serializeCourse(c) {
+  const lessons = Array.isArray(c.curriculum?.lessons) ? c.curriculum.lessons : [];
+  const totalLessons = Number(c.totalLessons) || lessons.length || 0;
+  return {
+    _id: String(c._id || ''),
+    id: c.slug,
+    slug: c.slug,
+    title: c.title || '',
+    titleKiny: c.titleKiny || '',
+    description: c.description || '',
+    descriptionKiny: c.descriptionKiny || '',
+    level: c.level || 'Beginner',
+    levelKiny: c.levelKiny || '',
+    instructor: c.instructor || 'Moto Sensei',
+    instructorTitle: c.instructorTitle || 'Driving Expert & Instructor',
+    duration: c.duration || '',
+    totalLessons,
+    gradient: c.gradient || 'from-blue-500 via-indigo-500 to-violet-500',
+    icon: c.icon || '🚗',
+    badge: c.badge || '',
+    badgeColor: c.badgeColor || 'bg-blue-500',
+    curriculum: {
+      title: c.curriculum?.title || 'Course Curriculum',
+      titleKiny: c.curriculum?.titleKiny || "Ibikubiyemo by'Isomo",
+      lessons: lessons.map((l, i) => ({
+        id: Number(l.id) || i + 1,
+        title: l.title || `Lesson ${i + 1}`,
+        titleKiny: l.titleKiny || '',
+        type: l.type || 'text',
+        duration: l.duration || '15 min',
+        description: l.description || '',
+        body: l.body || '',
+        videoUrl: l.videoUrl || ''
+      }))
+    },
+    isActive: c.isActive !== false,
+    createdAt: c.createdAt
+  };
+}
+
+app.get('/api/courses', async (_req, res) => {
+  try {
+    const items = await Course.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+    res.json({ courses: items.map(serializeCourse) });
+  } catch (e) {
+    console.error('[Courses] list error:', e?.message || e);
+    res.status(500).json({ courses: [], error: 'Failed to load courses' });
+  }
+});
+
+app.get('/api/courses/:courseId', async (req, res) => {
+  try {
+    const id = String(req.params.courseId || '').trim();
+    const c = await Course.findOne({
+      $or: [{ slug: id }, { _id: /^[0-9a-fA-F]{24}$/.test(id) ? id : '000000000000000000000000' }]
+    }).lean();
+    if (!c) return res.status(404).json({ message: 'Course not found' });
+    res.json({ course: serializeCourse(c) });
+  } catch (e) {
+    console.error('[Courses] get error:', e?.message || e);
+    res.status(500).json({ message: 'Failed to load course' });
+  }
+});
+
 // CERTIFICATES
-// Generate a new certificate after a passing quiz
+// Generate the program certificate. Issued only once the learner has finished
+// every quiz with a ≥60% average across all quizzes (the client enforces the
+// all-quizzes gate; this endpoint validates the reported average).
 app.post('/api/certificates/generate', authMiddleware, async (req, res) => {
   try {
     const { score, totalQuestions, quizTitle } = req.body || {};
     const user = req.user;
     const percentage = Math.round(((score || 0) / Math.max(1, totalQuestions || 1)) * 100);
-    if (percentage < 70) {
-      return res.status(400).json({ message: 'Certificate requires 70% or higher' });
+    if (percentage < 60) {
+      return res.status(400).json({ message: 'Certificate requires a 60% or higher average across all quizzes' });
     }
     const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
     const issuedDate = new Date();
@@ -3065,6 +3324,8 @@ app.post('/api/admin/resources', authMiddleware, adminMiddleware, upload.single(
       if (!fileUrl) fileUrl = relativePath.replace(/\\/g, '/');
     }
 
+    const courseId = String(body.courseId || '');
+    const description = String(body.description || '');
     const r = await Resource.create({ 
       title, 
       titleKiny, 
@@ -3073,7 +3334,9 @@ app.post('/api/admin/resources', authMiddleware, adminMiddleware, upload.single(
       premium, 
       fileUrl, 
       thumbnail,
-      size
+      size,
+      courseId,
+      description
     });
     
     res.json({ 
@@ -3086,7 +3349,9 @@ app.post('/api/admin/resources', authMiddleware, adminMiddleware, upload.single(
         premium: r.premium,
         fileUrl: r.fileUrl,
         thumbnail: r.thumbnail,
-        size: r.size
+        size: r.size,
+        courseId: r.courseId || '',
+        description: r.description || ''
       } 
     });
   } catch (e) {
@@ -3099,6 +3364,156 @@ app.delete('/api/admin/resources/:resourceId', authMiddleware, adminOnly, async 
   const r = await Resource.findByIdAndDelete(req.params.resourceId);
   if (!r) return res.status(404).json({ message: 'Not found' });
   res.json({ message: 'Deleted' });
+});
+
+// Update an existing resource (title / type / course assignment / premium …)
+app.put('/api/admin/resources/:resourceId', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const r = await Resource.findById(req.params.resourceId);
+    if (!r) return res.status(404).json({ message: 'Not found' });
+    const fields = ['title', 'titleKiny', 'type', 'category', 'premium', 'fileUrl', 'thumbnail', 'size', 'courseId', 'description'];
+    for (const f of fields) {
+      if (body[f] !== undefined) r[f] = body[f];
+    }
+    await r.save();
+    res.json({
+      resource: {
+        id: String(r._id),
+        title: r.title,
+        titleKiny: r.titleKiny,
+        type: r.type,
+        category: r.category,
+        premium: r.premium,
+        fileUrl: r.fileUrl,
+        thumbnail: r.thumbnail,
+        size: r.size,
+        courseId: r.courseId || '',
+        description: r.description || ''
+      }
+    });
+  } catch (e) {
+    console.error('Admin resource update error:', e?.stack || e);
+    res.status(500).json({ message: e?.message || 'Failed to update resource' });
+  }
+});
+
+// ─── Admin: Courses CRUD ─────────────────────────────────
+// Full dynamic courses — admins create courses with a rich curriculum, and they
+// immediately appear on the public site (merged with the static seed courses).
+app.get('/api/admin/courses', authMiddleware, adminOnly, async (_req, res) => {
+  try {
+    const items = await Course.find({}).sort({ createdAt: -1 }).lean();
+    res.json({ courses: items.map(serializeCourse) });
+  } catch (e) {
+    console.error('[Admin Courses] list error:', e?.message || e);
+    res.status(500).json({ courses: [], error: 'Failed to load courses' });
+  }
+});
+
+app.post('/api/admin/courses', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const lessons = Array.isArray(b.lessons)
+      ? b.lessons
+      : (Array.isArray(b.curriculum?.lessons) ? b.curriculum.lessons : []);
+    const cleaned = lessons.map((l, i) => ({
+      id: Number(l.id) || i + 1,
+      title: String(l.title || `Lesson ${i + 1}`),
+      titleKiny: String(l.titleKiny || ''),
+      type: String(l.type || 'text'),
+      duration: String(l.duration || '15 min'),
+      description: String(l.description || ''),
+      body: String(l.body || ''),
+      videoUrl: String(l.videoUrl || '')
+    }));
+    let slug = String(b.slug || b.id || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (!slug) slug = String(b.title || 'course').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `course-${Date.now()}`;
+    const existing = await Course.findOne({ slug });
+    if (existing) return res.status(409).json({ message: `A course with slug "${slug}" already exists` });
+    const c = await Course.create({
+      slug,
+      title: String(b.title || 'Untitled Course'),
+      titleKiny: String(b.titleKiny || ''),
+      description: String(b.description || ''),
+      descriptionKiny: String(b.descriptionKiny || ''),
+      level: String(b.level || 'Beginner'),
+      levelKiny: String(b.levelKiny || ''),
+      instructor: String(b.instructor || 'Moto Sensei'),
+      instructorTitle: String(b.instructorTitle || 'Driving Expert & Instructor'),
+      duration: String(b.duration || '2 hours'),
+      totalLessons: cleaned.length,
+      gradient: String(b.gradient || 'from-blue-500 via-indigo-500 to-violet-500'),
+      icon: String(b.icon || '🚗'),
+      badge: String(b.badge || ''),
+      badgeColor: String(b.badgeColor || 'bg-blue-500'),
+      curriculum: {
+        title: String(b.curriculumTitle || (b.curriculum?.title) || 'Course Curriculum'),
+        titleKiny: String(b.curriculumTitleKiny || (b.curriculum?.titleKiny) || "Ibikubiyemo by'Isomo"),
+        lessons: cleaned
+      },
+      isActive: b.isActive !== false
+    });
+    res.status(201).json({ course: serializeCourse(c.toObject()) });
+  } catch (e) {
+    console.error('[Admin Courses] create error:', e?.stack || e);
+    res.status(500).json({ message: e?.message || 'Failed to create course' });
+  }
+});
+
+app.put('/api/admin/courses/:courseId', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const b = req.body || {};
+    const c = await Course.findById(req.params.courseId);
+    if (!c) return res.status(404).json({ message: 'Course not found' });
+    const lessons = Array.isArray(b.lessons)
+      ? b.lessons
+      : (Array.isArray(b.curriculum?.lessons) ? b.curriculum.lessons : (c.curriculum?.lessons || []));
+    const cleaned = lessons.map((l, i) => ({
+      id: Number(l.id) || i + 1,
+      title: String(l.title || `Lesson ${i + 1}`),
+      titleKiny: String(l.titleKiny || ''),
+      type: String(l.type || 'text'),
+      duration: String(l.duration || '15 min'),
+      description: String(l.description || ''),
+      body: String(l.body || ''),
+      videoUrl: String(l.videoUrl || '')
+    }));
+    if (b.slug) {
+      const slug = String(b.slug).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      if (slug && slug !== c.slug) {
+        const clash = await Course.findOne({ slug, _id: { $ne: c._id } });
+        if (clash) return res.status(409).json({ message: `A course with slug "${slug}" already exists` });
+        c.slug = slug;
+      }
+    }
+    ['title', 'titleKiny', 'description', 'descriptionKiny', 'level', 'levelKiny', 'instructor', 'instructorTitle', 'duration', 'gradient', 'icon', 'badge', 'badgeColor'].forEach(f => {
+      if (b[f] !== undefined) c[f] = b[f];
+    });
+    c.curriculum = {
+      title: String(b.curriculumTitle || b.curriculum?.title || c.curriculum?.title || 'Course Curriculum'),
+      titleKiny: String(b.curriculumTitleKiny || b.curriculum?.titleKiny || c.curriculum?.titleKiny || "Ibikubiyemo by'Isomo"),
+      lessons: cleaned
+    };
+    c.totalLessons = cleaned.length;
+    if (b.isActive !== undefined) c.isActive = b.isActive;
+    c.updatedAt = new Date();
+    await c.save();
+    res.json({ course: serializeCourse(c.toObject()) });
+  } catch (e) {
+    console.error('[Admin Courses] update error:', e?.stack || e);
+    res.status(500).json({ message: e?.message || 'Failed to update course' });
+  }
+});
+
+app.delete('/api/admin/courses/:courseId', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const c = await Course.findByIdAndDelete(req.params.courseId);
+    if (!c) return res.status(404).json({ message: 'Course not found' });
+    res.json({ message: 'Deleted' });
+  } catch (e) {
+    res.status(500).json({ message: e?.message || 'Failed to delete course' });
+  }
 });
 
 // ─── English Translation Migration ──────────────────────

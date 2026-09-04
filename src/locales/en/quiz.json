@@ -47,7 +47,14 @@
       "need_70_percent": "You need 70% to pass. Review the materials and try again. You got this!",
       "get_certificate": "🎓 Get Your Certificate",
       "try_again": "Try Again",
-      "view_leaderboard": "View Leaderboard"
+      "view_leaderboard": "View Leaderboard",
+      "certificate_ready": "🎉 You've completed every quiz with a 60%+ average. Your certificate is ready!",
+      "certificate_avg_short": "Average {avg}% — you need 60%+ to unlock your certificate.",
+      "certificate_locked": "Finish all {total} quizzes with a 60% average to unlock your certificate.",
+      "certificate_progress": "Quizzes finished",
+      "certificate_avg": "Average",
+      "finish_all_quizzes": "Finish All Quizzes",
+      "improve_average": "Retake Quizzes to Improve Average"
     },
     "paywall": {
       "title": "Unlock More Questions",

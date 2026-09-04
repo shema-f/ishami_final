@@ -386,6 +386,78 @@ export const paymentAPI = {
 };
 
 // ============================================
+// COURSE APIs
+// ============================================
+
+/**
+ * Public + admin APIs for courses. Dynamic courses created by admins are
+ * returned with `id` equal to their slug so they are drop-in compatible with
+ * the static courses shipped in src/data/courses.ts.
+ */
+export const coursesAPI = {
+  /**
+   * List all active courses (static seed is merged client-side).
+   * Backend endpoint: GET /api/courses
+   */
+  list: async () => {
+    const res = await apiCall('/api/courses');
+    return Array.isArray(res?.courses) ? res.courses : [];
+  },
+
+  /**
+   * Get a single course by slug or id.
+   * Backend endpoint: GET /api/courses/:courseId
+   */
+  get: async (courseId: string) => {
+    const res = await apiCall(`/api/courses/${encodeURIComponent(courseId)}`);
+    return res?.course || null;
+  },
+
+  /**
+   * Admin: list every course (including inactive ones).
+   * Backend endpoint: GET /api/admin/courses
+   */
+  adminList: async () => {
+    const res = await apiCall('/api/admin/courses');
+    return Array.isArray(res?.courses) ? res.courses : [];
+  },
+
+  /**
+   * Admin: create a course.
+   * Backend endpoint: POST /api/admin/courses
+   */
+  create: async (payload: any) => {
+    const res = await apiCall('/api/admin/courses', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return res?.course || null;
+  },
+
+  /**
+   * Admin: update a course (by database id).
+   * Backend endpoint: PUT /api/admin/courses/:courseId
+   */
+  update: async (courseId: string, payload: any) => {
+    const res = await apiCall(`/api/admin/courses/${courseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
+    return res?.course || null;
+  },
+
+  /**
+   * Admin: delete a course (by database id).
+   * Backend endpoint: DELETE /api/admin/courses/:courseId
+   */
+  remove: async (courseId: string) => {
+    return apiCall(`/api/admin/courses/${courseId}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// ============================================
 // RESOURCES APIs
 // ============================================
 
@@ -872,6 +944,29 @@ export const adminAPI = {
     return apiCall(`/api/admin/resources/${resourceId}`, {
       method: 'DELETE',
     });
+  },
+
+  /**
+   * Update a resource (title, type, premium, course assignment, …)
+   * Backend endpoint: PUT /api/admin/resources/:resourceId
+   */
+  updateResource: async (resourceId: string, updates: {
+    title?: string;
+    titleKiny?: string;
+    type?: string;
+    category?: string;
+    premium?: boolean;
+    fileUrl?: string;
+    thumbnail?: string;
+    size?: string;
+    courseId?: string;
+    description?: string;
+  }) => {
+    const res = await apiCall(`/api/admin/resources/${resourceId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    return res?.resource || null;
   },
 
   /**

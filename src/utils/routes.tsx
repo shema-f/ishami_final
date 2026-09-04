@@ -11,7 +11,9 @@ const AIAssistant = lazy(() => import("../pages/AIAssistant"));
 const Quiz = lazy(() => import("../pages/Quiz"));
 const Courses = lazy(() => import("../pages/Courses"));
 const CourseDetail = lazy(() => import("../pages/CourseDetail"));
+const CourseResources = lazy(() => import("../pages/CourseResources"));
 const Lesson = lazy(() => import("../pages/Lesson"));
+const ResourcesPage = lazy(() => import("../pages/Resources"));
 const Leaderboard = lazy(() => import("../pages/Leaderboard"));
 const Auth = lazy(() => import("../pages/Auth"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
@@ -37,6 +39,7 @@ const AdminQuestions = lazy(() => import("../pages/admin/Questions"));
 const AdminPayments = lazy(() => import("../pages/admin/Payments"));
 const AdminIremboApplications = lazy(() => import("../pages/admin/IremboApplications"));
 const AdminResources = lazy(() => import("../pages/admin/Resources"));
+const AdminCourses = lazy(() => import("../pages/admin/Courses"));
 const AdminArticles = lazy(() => import("../pages/admin/Articles"));
 const AdminAnalytics = lazy(() => import("../pages/admin/Analytics"));
 const AdminNotifications = lazy(() => import("../pages/admin/Notifications"));
@@ -55,8 +58,9 @@ export const router = createBrowserRouter([
       { path: "quiz", Component: Quiz },
       { path: "courses", Component: Courses },
       { path: "courses/:courseId", Component: CourseDetail },
+      { path: "courses/:courseId/resources", Component: CourseResources },
       { path: "courses/:courseId/lessons/:lessonId", Component: Lesson },
-      { path: "resources", Component: Courses },
+      { path: "resources", Component: ResourcesPage },
       { path: "leaderboard", Component: Leaderboard },
       { path: "auth", Component: Auth },
       { path: "reset", Component: ResetPassword },
@@ -90,6 +94,7 @@ export const router = createBrowserRouter([
       { path: "questions", Component: AdminQuestions },
       { path: "payments", Component: AdminPayments },
       { path: "irembo", Component: AdminIremboApplications },
+      { path: "courses", Component: AdminCourses },
       { path: "resources", Component: AdminResources },
       { path: "articles", Component: AdminArticles },
       { path: "analytics", Component: AdminAnalytics },

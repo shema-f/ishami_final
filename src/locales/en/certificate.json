@@ -58,6 +58,14 @@
     "access_gate": {
       "title": "Certificate Requires Full Access",
       "description": "Upgrade to Full Access (3,000 RWF) to earn your Certificate of Completion."
+    },
+    "gate": {
+      "checking": "Checking certificate eligibility…",
+      "title": "Finish All Quizzes First",
+      "description": "Your certificate unlocks once you have completed every quiz with an average of 60% or higher.",
+      "progress_quizzes": "Quizzes completed",
+      "progress_average": "Your average",
+      "cta": "Go to Quizzes"
     }
   }
 }

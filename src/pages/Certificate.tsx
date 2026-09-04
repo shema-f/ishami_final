@@ -1,10 +1,11 @@
 import { motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import AccessGate from '../components/AccessGate';
-import { Shield, Trophy, Download, ArrowLeft, CheckCircle2, Calendar, Hash, BarChart3, Award, FileText, ExternalLink } from 'lucide-react';
+import { Shield, Trophy, Download, ArrowLeft, CheckCircle2, Calendar, Hash, BarChart3, ExternalLink, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useTranslation } from '../contexts/I18nContext';
+import { evaluateCertificateEligibility, type CertificateEligibility } from '../lib/certificateGate';
 
 interface CertificateData {
   id: string;
@@ -25,6 +26,8 @@ export default function Certificate() {
   const { t, lang } = useTranslation();
   const [certData, setCertData] = useState<CertificateData | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [gateState, setGateState] = useState<'loading' | 'ok' | 'blocked'>('loading');
+  const [eligibility, setEligibility] = useState<CertificateEligibility | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('latestCertificate');
@@ -35,18 +38,55 @@ export default function Certificate() {
     }
   }, []);
 
-  const certificateNo = certData?.certificateNo || `ISH-TRU-${new Date().getFullYear()}-000000`;
-  const score = certData?.score || 87;
-  const totalQuestions = certData?.totalQuestions || 20;
-  const percentage = Math.round((score / totalQuestions) * 100);
-  const passed = certData?.passed ?? percentage >= 70;
-  const quizTitle = certData?.quizTitle || 'Traffic Rules & Road Safety Understanding';
-  const issuedDate = certData?.issuedAt || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  const expiresDate = certData?.expiresAt || (() => {
+  // Certificate gate — the certificate may only be seen / downloaded once the
+  // learner has finished EVERY quiz and their average is ≥60%.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const elig = await evaluateCertificateEligibility();
+      if (cancelled) return;
+      setEligibility(elig);
+      setGateState(elig.eligible ? 'ok' : 'blocked');
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // If the user is eligible but has no stored certificate (e.g. old session),
+  // synthesize the display data from the overall average without re-issuing.
+  const synthesizedCert = useMemo(() => {
+    if (gateState !== 'ok' || certData || !eligibility) return null;
+    const avg = eligibility.average;
+    const issued = new Date();
+    const expires = new Date(issued);
+    expires.setFullYear(expires.getFullYear() + 1);
+    return {
+      id: 'local-synth',
+      userId: user?.id || '',
+      username: user?.username || 'ISHAMI Learner',
+      score: avg,
+      totalQuestions: 100,
+      quizTitle: 'Traffic Rules & Road Safety',
+      issuedAt: issued.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+      expiresAt: expires.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+      certificateNo: `ISH-TRU-${issued.getFullYear()}-LOCAL`,
+      passed: true,
+    } as CertificateData;
+  }, [gateState, certData, eligibility, user?.id, user?.username]);
+
+  const displayCert: CertificateData | null = certData || synthesizedCert;
+
+  const certificateNo = displayCert?.certificateNo || `ISH-TRU-${new Date().getFullYear()}-000000`;
+  const score = displayCert?.score || 60;
+  const totalQuestions = displayCert?.totalQuestions || 100;
+  const percentage = Math.round((score / Math.max(1, totalQuestions)) * 100);
+  const passed = displayCert?.passed ?? percentage >= 60;
+  const quizTitle = displayCert?.quizTitle || 'Traffic Rules & Road Safety';
+  const issuedDate = displayCert?.issuedAt || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const expiresDate = displayCert?.expiresAt || (() => {
     const d = new Date(); d.setFullYear(d.getFullYear() + 1);
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   })();
-  const displayName = certData?.username || user?.username || 'ISHAMI Learner';
+  const displayName = displayCert?.username || user?.username || 'ISHAMI Learner';
   const verifyUrl = `https://ishami-final.vercel.app/verify/${certificateNo}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}&bgcolor=FFFFFF&color=000000&margin=8`;
 
@@ -62,6 +102,10 @@ export default function Certificate() {
   ];
 
   const handleDownloadPDF = async () => {
+    if (gateState !== 'ok') {
+      // Should never be reachable (button hidden when blocked) — safety net.
+      return;
+    }
     try {
       setDownloading(true);
       const { default: jsPDF } = await import('jspdf');
@@ -283,9 +327,59 @@ export default function Certificate() {
   return (
     <AccessGate
       requiredTier="full"
-      title="Certificate Requires Full Access"
-      description="Upgrade to Full Access (3,000 RWF) to earn your Certificate of Completion."
+      title={t('cert.access_gate.title', 'Certificate Requires Full Access')}
+      description={t('cert.access_gate.description', 'Upgrade to Full Access (3,000 RWF) to earn your Certificate of Completion.')}
     >
+    {gateState === 'loading' ? (
+      <div className="min-h-screen py-8 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 text-yellow-400 animate-spin mx-auto mb-4" />
+          <p className="text-gray-400 text-sm">{t('cert.gate.checking', 'Checking certificate eligibility…')}</p>
+        </div>
+      </div>
+    ) : gateState === 'blocked' ? (
+      <div className="min-h-screen py-8 px-4">
+        <div className="max-w-lg mx-auto pt-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10"
+          >
+            <div className="inline-flex p-5 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 mb-6">
+              <Lock className="w-10 h-10 text-yellow-400" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-3 font-[family-name:var(--font-heading)]">
+              {t('cert.gate.title', 'Finish All Quizzes First')}
+            </h1>
+            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+              {t('cert.gate.description', 'Your certificate unlocks once you have completed every quiz with an average of 60% or higher.')}
+            </p>
+            {eligibility && eligibility.total > 0 && (
+              <div className="bg-white/5 rounded-2xl p-4 mb-6 text-left">
+                <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+                  <span>{t('cert.gate.progress_quizzes', 'Quizzes completed')}</span>
+                  <span className="text-white font-medium">{eligibility.finished}/{eligibility.total}</span>
+                </div>
+                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-3">
+                  <div className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full" style={{ width: `${Math.round((eligibility.finished / Math.max(1, eligibility.total)) * 100)}%` }} />
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>{t('cert.gate.progress_average', 'Your average')}</span>
+                  <span className={`font-medium ${eligibility.average >= 60 ? 'text-emerald-400' : 'text-yellow-400'}`}>{eligibility.average}%</span>
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => navigate('/quiz')}
+              className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300"
+            >
+              {t('cert.gate.cta', 'Go to Quizzes')}
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    ) : (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-5xl mx-auto pt-16">
         {/* Back Button */}
@@ -461,6 +555,7 @@ export default function Certificate() {
         </motion.div>
       </div>
     </div>
+    )}
     </AccessGate>
   );
 }

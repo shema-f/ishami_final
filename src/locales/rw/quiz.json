@@ -47,7 +47,14 @@
       "need_70_percent": "Ukeneye 70% kugira ngo utsinde. Subiramo ibyo wize maze wongere ugerageze. Urabishoboye!",
       "get_certificate": "🎓 Bona Icyemezo Cyawe",
       "try_again": "Ongera Ugerageze",
-      "view_leaderboard": "Reba Urutonde rw'Indashyikirwa"
+      "view_leaderboard": "Reba Urutonde rw'Indashyikirwa",
+      "certificate_ready": "🎉 Wusoje ibizamini byose ugira impuzandengo 60%+. Icyemezo cyawe giteguye!",
+      "certificate_avg_short": "Impuzandengo {avg}% — ukeneye 60%+ kugira ngo ufungure icyemezo cyawe.",
+      "certificate_locked": "Soza ibizamini byose {total} ugire impuzandengo 60% kugira ngo ufungure icyemezo cyawe.",
+      "certificate_progress": "Ibizamini byarangiye",
+      "certificate_avg": "Impuzandengo",
+      "finish_all_quizzes": "Soza Ibizamini Byose",
+      "improve_average": "Ongera Ukore Ibizamini Kugira ngo Uzamuze Impuzandengo"
     },
     "paywall": {
       "title": "Fungura Ibibazo Byinshi",

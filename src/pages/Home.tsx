@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getAllArticles } from '../lib/articleStore';
-import { courses } from '../data/courses';
 import { getProgressSummary } from '../lib/courseProgress';
+import { useCourses } from '../hooks/useCourses';
 
 // Lazy-load heavy components below the fold
 const FlipCard = lazy(() => import('../components/FlipCard'));
@@ -22,6 +22,7 @@ export default function Home() {
   const { t, lang } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id || user?.uid || 'guest';
+  const { courses } = useCourses();
   const progressSummary = getProgressSummary(userId);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);

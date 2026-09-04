@@ -2,12 +2,77 @@ import { useParams, Link, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, FileText, Video, Zap, ClipboardCheck, Star, AlertTriangle, Lightbulb, Info, Play, RotateCcw, Trophy } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
-import { getCourseById, type Course, type CourseLesson } from '../data/courses';
-import { getLessonContent, type LessonContent, type QuizQuestion } from '../data/lessonContent';
+import { getLessonContent, type LessonContent, type QuizQuestion, type LessonSection } from '../data/lessonContent';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { completeLesson, isLessonCompleted, getCourseProgress } from '../lib/courseProgress';
+import { useCourse } from '../hooks/useCourses';
+import type { DynamicCourseLesson } from '../lib/courseRegistry';
 import AccessGate from '../components/AccessGate';
+
+/**
+ * Convert a YouTube watch / youtu.be URL into an embeddable URL so dynamic
+ * (admin-created) video lessons can play inline like the static ones.
+ */
+function toEmbeddableVideoUrl(raw: string): string {
+  const url = String(raw || '').trim();
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) {
+      const id = u.pathname.split('/').filter(Boolean)[0] || '';
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    if (u.hostname.includes('youtube.com')) {
+      if (u.pathname.startsWith('/embed/') || u.pathname.startsWith('/live/')) return url;
+      const id = u.searchParams.get('v') || '';
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    }
+    if (u.hostname.includes('drive.google.com') && u.pathname.includes('/file/d/')) {
+      const id = u.pathname.match(/\/file\/d\/([^/]+)/)?.[1] || '';
+      return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+    }
+  } catch { /* not a valid URL — return as-is */ }
+  return url;
+}
+
+/**
+ * Build lesson content for a dynamic (admin-created) course lesson that has no
+ * entry in the static lessonContent data — its body/videoUrl are used instead.
+ */
+function buildDynamicLessonData(
+  course: { title: string; titleKiny: string } | undefined,
+  meta: DynamicCourseLesson | undefined,
+  lessonId: number
+): LessonContent | undefined {
+  if (!meta) return undefined;
+  const body = String(meta.body || '').trim();
+  const sections: LessonSection[] = [];
+  if (body) {
+    body.split(/\n\s*\n/).forEach((para) => {
+      const text = para.trim();
+      if (text) sections.push({ type: 'paragraph', text });
+    });
+  }
+  if (sections.length === 0) {
+    sections.push({
+      type: 'paragraph',
+      text: meta.description || 'This lesson has no written content yet. Mark it as complete once you are done.',
+    });
+  }
+  let type = meta.type;
+  if (type === 'quiz' || type === 'assessment') type = 'interactive'; // dynamic lessons have no authored questions
+  const videoUrl = meta.type === 'video' && meta.videoUrl ? toEmbeddableVideoUrl(meta.videoUrl) : undefined;
+  return {
+    courseId: '',
+    lessonId,
+    type,
+    title: meta.title,
+    titleKiny: meta.titleKiny || meta.title,
+    content: sections,
+    ...(videoUrl ? { videoUrl } : {}),
+  };
+}
 
 const lessonTypeConfig: Record<string, { icon: typeof FileText; color: string; bgGradient: string; label: string }> = {
   text: { icon: FileText, color: 'text-blue-400', bgGradient: 'from-blue-500 to-indigo-600', label: 'Reading' },
@@ -23,10 +88,13 @@ export default function Lesson() {
   const { lang } = useTranslation();
   const { user } = useAuth();
 
-  const course = getCourseById(courseId || '');
+  const { course, loading } = useCourse(courseId);
   const lessonNum = parseInt(lessonId || '1', 10);
-  const lessonData = getLessonContent(courseId || '', lessonNum);
-  const lessonMeta = course?.curriculum.lessons.find((l: CourseLesson) => l.id === lessonNum);
+  const lessonMeta = course?.curriculum.lessons.find((l: DynamicCourseLesson) => l.id === lessonNum);
+  // Static courses have authored content in lessonContent.ts; dynamic courses
+  // carry their content on the lesson record itself.
+  const staticLessonData = getLessonContent(courseId || '', lessonNum);
+  const lessonData = staticLessonData || buildDynamicLessonData(course, lessonMeta, lessonNum);
 
   const userId = user?.id || user?.uid || 'guest';
   const lessonDone = isLessonCompleted(userId, courseId || '', lessonNum);
@@ -55,6 +123,14 @@ export default function Lesson() {
   const handleMarkComplete = () => {
     completeLesson(userId, courseId || '', lessonNum);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!course || !lessonMeta || !lessonData) {
     return (

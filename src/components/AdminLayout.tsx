@@ -1,7 +1,7 @@
 import { Link, useLocation, Outlet, Navigate } from 'react-router';
 import { 
   LayoutDashboard, Users, FileQuestion, DollarSign, 
-  FileCheck, Bell, Shield, LogOut, Menu, X, BookOpen, Newspaper, BarChart3, Key
+  FileCheck, Bell, Shield, LogOut, Menu, X, BookOpen, Newspaper, BarChart3, Key, GraduationCap
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,6 +32,7 @@ export default function AdminLayout() {
     { path: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { path: '/admin/users', label: 'Users', icon: <Users className="w-5 h-5" /> },
     { path: '/admin/questions', label: 'Questions', icon: <FileQuestion className="w-5 h-5" /> },
+    { path: '/admin/courses', label: 'Courses', icon: <GraduationCap className="w-5 h-5" /> },
     { path: '/admin/resources', label: 'Resources', icon: <BookOpen className="w-5 h-5" /> },
     { path: '/admin/articles', label: 'Articles', icon: <Newspaper className="w-5 h-5" /> },
     { path: '/admin/analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },

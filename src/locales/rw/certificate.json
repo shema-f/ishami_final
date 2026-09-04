@@ -58,6 +58,14 @@
     "access_gate": {
       "title": "Icyemezo Gisaba Uburenganzira Bwuzuye",
       "description": "Gura Uburenganzira Bwuzuye (3,000 RWF) kugira ngo uhabwe Icyemezo cy'Uburangize."
+    },
+    "gate": {
+      "checking": "Biragenzurwa niba wujuje ibisabwa by'icyemezo…",
+      "title": "Banza Usoze Ibizamini Byose",
+      "description": "Icyemezo cyawe gifunguka nyuma yo gusoza ibizamini byose ugize impuzandengo ya 60% cyangwa hejuru.",
+      "progress_quizzes": "Ibizamini byarangiye",
+      "progress_average": "Impuzandengo yawe",
+      "cta": "Jya ku Bizamini"
     }
   }
 }

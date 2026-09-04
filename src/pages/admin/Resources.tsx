@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Trash2, ExternalLink, FileText, Video, Image as ImageIcon } from 'lucide-react';
 import { resourcesAPI } from '../../services/api';
 import { toast } from 'sonner';
+import { ensureCoursesLoaded, getAllCourses } from '../../lib/courseRegistry';
 
 interface Resource {
   id: string;
@@ -11,6 +12,7 @@ interface Resource {
   category: string;
   isPremium: boolean;
   fileUrl: string;
+  courseId?: string;
 }
 
 export default function AdminResources() {
@@ -21,17 +23,22 @@ export default function AdminResources() {
   const [submitting, setSubmitting] = useState(false);
 
   // Form State
+  const [courseOptions, setCourseOptions] = useState<{ id: string; title: string }[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     titleKiny: '',
     type: 'PDF',
     category: 'General',
     fileUrl: '',
-    premium: false
+    premium: false,
+    courseId: ''
   });
 
   useEffect(() => {
     fetchResources();
+    ensureCoursesLoaded().then(() => {
+      setCourseOptions(getAllCourses().map((c) => ({ id: c.id, title: c.title })));
+    }).catch(() => {});
   }, []);
 
   const fetchResources = async () => {
@@ -70,6 +77,7 @@ export default function AdminResources() {
       data.append('category', formData.category);
       data.append('fileUrl', formData.fileUrl);
       data.append('premium', String(formData.premium));
+      data.append('courseId', formData.courseId);
 
       await resourcesAPI.uploadResource(data);
       toast.success('Resource added successfully');
@@ -80,7 +88,8 @@ export default function AdminResources() {
         type: 'PDF',
         category: 'General',
         fileUrl: '',
-        premium: false
+        premium: false,
+        courseId: ''
       });
       fetchResources();
     } catch (error) {
@@ -95,6 +104,16 @@ export default function AdminResources() {
     r.title_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
     r.title_kiny.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAssignCourse = async (resource: Resource, courseId: string) => {
+    try {
+      await resourcesAPI.updateResource(resource.id, { courseId });
+      setResources(prev => prev.map(r => r.id === resource.id ? { ...r, courseId } : r));
+      toast.success(courseId ? 'Resource attached to course' : 'Resource moved to library (all resources page)');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to update resource');
+    }
+  };
 
   return (
     <div className="p-6">
@@ -133,6 +152,7 @@ export default function AdminResources() {
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Course</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Access</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
@@ -155,6 +175,19 @@ export default function AdminResources() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{resource.category}</td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={resource.courseId || ''}
+                      onChange={(e) => handleAssignCourse(resource, e.target.value)}
+                      className="max-w-[190px] px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:ring-1 focus:ring-[#00A3AD] outline-none"
+                      title="Attach this resource to a course (its Resources subpage) or keep it in the library"
+                    >
+                      <option value="">📚 Library only</option>
+                      {courseOptions.map((c) => (
+                        <option key={c.id} value={c.id}>{c.title}</option>
+                      ))}
+                    </select>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       resource.isPremium 
@@ -188,7 +221,7 @@ export default function AdminResources() {
               ))}
               {filteredResources.length === 0 && !loading && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     No resources found. Add one to get started.
                   </td>
                 </tr>
@@ -258,6 +291,20 @@ export default function AdminResources() {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent dark:text-white focus:ring-2 focus:ring-[#00A3AD] outline-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">Direct link to PDF, YouTube video, or Drive file</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Attach to course (optional)</label>
+                <select
+                  value={formData.courseId}
+                  onChange={e => setFormData({...formData, courseId: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent dark:text-white focus:ring-2 focus:ring-[#00A3AD] outline-none"
+                >
+                  <option value="">Library only — shows on the Resources page</option>
+                  {courseOptions.map((c) => (
+                    <option key={c.id} value={c.id}>{c.title} — course Resources subpage</option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Resources attached to a course appear on that course's Resources page too.</p>
               </div>
               <div className="flex items-center">
                 <input

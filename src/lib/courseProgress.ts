@@ -3,7 +3,7 @@
  * Tracks lesson completion and course progress per user via localStorage.
  */
 
-import { courses, getCourseById } from '../data/courses';
+import { getAllCourses, getCourseByIdentifier } from './courseRegistry';
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ export function completeLesson(
   quizScore?: number
 ): CourseProgress {
   const data = loadUserProgress(userId);
-  const course = getCourseById(courseId);
+  const course = getCourseByIdentifier(courseId);
 
   if (!data.courses[courseId]) {
     data.courses[courseId] = {
@@ -121,7 +121,7 @@ export function isLessonCompleted(userId: string, courseId: string, lessonId: nu
 /** Get the next incomplete lesson for a course (for "Continue" button) */
 export function getNextLesson(userId: string, courseId: string): number {
   const cp = getCourseProgress(userId, courseId);
-  const course = getCourseById(courseId);
+  const course = getCourseByIdentifier(courseId);
   if (!course) return 1;
 
   if (!cp || cp.completedLessons.length === 0) return 1;
@@ -148,7 +148,7 @@ export function getProgressSummary(userId: string): {
   let completedCourses = 0;
   const inProgressCourses: any[] = [];
 
-  courses.forEach(course => {
+  getAllCourses().forEach(course => {
     const cp = allProgress[course.id];
     totalLessons += course.totalLessons;
     if (cp) {
