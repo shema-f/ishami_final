@@ -44,7 +44,6 @@ export default function WhatsAppButton() {
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40 opacity-75" />
         <WhatsAppIcon className="relative w-7 h-7" />
       </span>
-      <span className="hidden sm:inline-block text-sm font-semibold pr-1">{WHATSAPP_DISPLAY}</span>
     </motion.a>
   );
 }

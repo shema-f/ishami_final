@@ -170,7 +170,7 @@ export function getProgressSummary(userId: string): {
   });
 
   return {
-    totalCourses: courses.length,
+    totalCourses: getAllCourses().length,
     startedCourses,
     completedCourses,
     totalLessonsCompleted,
