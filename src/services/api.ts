@@ -901,6 +901,60 @@ export const adminAPI = {
       body: JSON.stringify({ subject, body }),
     });
   },
+
+  // ── Public API keys & usage (live backend data) ─────────────────────
+
+  /**
+   * List all public API keys (admin)
+   * Backend endpoint: GET /api/admin/api/keys
+   */
+  getApiKeys: async () => {
+    const res = await apiCall('/api/admin/api/keys');
+    return res.data || { keys: [], total: 0, active: 0, pro: 0, enterprise: 0 };
+  },
+
+  /**
+   * Create a public API key (admin) with an access plan.
+   * Backend endpoint: POST /api/admin/api/keys
+   */
+  createApiKey: async (data: { name: string; website?: string; plan?: 'free' | 'pro' | 'enterprise'; rateLimit?: number }) => {
+    const res = await apiCall('/api/admin/api/keys', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return res.data;
+  },
+
+  /**
+   * Update a public API key (admin): plan, active state, rate limit, etc.
+   * Backend endpoint: PATCH /api/admin/api/keys/:id
+   */
+  updateApiKey: async (id: string, updates: { name?: string; website?: string; plan?: 'free' | 'pro' | 'enterprise'; rateLimit?: number; isActive?: boolean }) => {
+    const res = await apiCall(`/api/admin/api/keys/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
+    return res.data;
+  },
+
+  /**
+   * Delete a public API key (admin)
+   * Backend endpoint: DELETE /api/admin/api/keys/:id
+   */
+  deleteApiKey: async (id: string) => {
+    return apiCall(`/api/admin/api/keys/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Get usage summary + recent request logs (admin)
+   * Backend endpoint: GET /api/admin/api/usage?limit=300&days=7
+   */
+  getApiUsage: async () => {
+    const res = await apiCall('/api/admin/api/usage?limit=300&days=7');
+    return res.data || { summary: null, logs: [] };
+  },
 };
 
 export default {

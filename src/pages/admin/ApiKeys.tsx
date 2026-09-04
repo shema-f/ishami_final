@@ -6,10 +6,11 @@ import {
   Activity, TrendingUp, Zap, Search, X, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import {
-  getAllKeys, createApiKey, revokeApiKey, reactivateApiKey, deleteApiKey,
+  getAllKeys, createApiKey as createKeyLocal, revokeApiKey as revokeKeyLocal, reactivateApiKey as reactivateKeyLocal, deleteApiKey as deleteKeyLocal,
   getAllUsage, getUsageSummary, getUsageForKey, seedDemoApiData,
   type ApiKey, type ApiUsageSummary, type ApiUsageRecord
 } from '../../lib/apiKeyStore';
+import { adminAPI } from '../../services/api';
 
 export default function AdminApiKeys() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
@@ -24,25 +25,85 @@ export default function AdminApiKeys() {
   const [keyUsage, setKeyUsage] = useState<ApiUsageRecord[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'keys' | 'usage'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
+  const [newKeyPlan, setNewKeyPlan] = useState<'free' | 'pro' | 'enterprise'>('free');
+  // When true the page shows live backend data; false = offline/demo fallback (localStorage)
+  const [serverMode, setServerMode] = useState(true);
+  const [liveLogs, setLiveLogs] = useState<ApiUsageRecord[]>([]);
+
+  // ── Remote-first data loading with a localStorage fallback ────────────
+  const loadData = async (silent = false) => {
+    try {
+      const remote = await adminAPI.getApiKeys();
+      const remoteKeys: ApiKey[] = (remote.keys || []).map((k: any) => ({
+        id: k.id,
+        key: k.key,
+        name: k.name,
+        website: k.website || '',
+        plan: k.plan || 'free',
+        createdAt: k.createdAt ? new Date(k.createdAt).toISOString() : new Date().toISOString(),
+        lastUsedAt: k.lastUsedAt ? new Date(k.lastUsedAt).toISOString() : undefined,
+        isActive: k.isActive !== false,
+        rateLimit: k.rateLimit || 60,
+        totalRequests: k.totalRequests || 0,
+      }));
+      setKeys(remoteKeys);
+      setServerMode(true);
+      try {
+        const usage = await adminAPI.getApiUsage();
+        if (usage.summary) setSummary(usage.summary as ApiUsageSummary);
+        if (Array.isArray(usage.logs)) {
+          setLiveLogs(usage.logs.map((l: any) => ({
+            id: l.id,
+            apiKeyId: l.keyId || '',
+            endpoint: l.endpoint,
+            timestamp: l.timestamp ? new Date(l.timestamp).toISOString() : new Date().toISOString(),
+            origin: l.origin || '',
+            responseTime: l.responseTime || 0,
+            success: l.success !== false,
+            httpStatus: l.httpStatus || 200,
+          })));
+        }
+      } catch { /* summary optional */ }
+      return;
+    } catch {
+      // Backend unreachable → demo/offline mode from localStorage
+      if (!silent) seedDemoApiData();
+      setKeys(getAllKeys());
+      setSummary(getUsageSummary());
+      setServerMode(false);
+    }
+  };
 
   useEffect(() => {
-    seedDemoApiData();
     loadData();
   }, []);
 
-  const loadData = () => {
-    setKeys(getAllKeys());
-    setSummary(getUsageSummary());
-  };
-
   const handleCreateKey = async () => {
     if (!newKeyName.trim()) return;
-    await createApiKey(newKeyName.trim(), newKeyWebsite.trim() || undefined, newKeyRateLimit);
+    if (serverMode) {
+      try {
+        await adminAPI.createApiKey({
+          name: newKeyName.trim(),
+          website: newKeyWebsite.trim() || undefined,
+          plan: newKeyPlan,
+          rateLimit: newKeyRateLimit,
+        });
+        setNewKeyName('');
+        setNewKeyWebsite('');
+        setNewKeyRateLimit(60);
+        setNewKeyPlan('free');
+        setShowCreateModal(false);
+        await loadData(true);
+        return;
+      } catch { /* fall through to local */ }
+    }
+    await createKeyLocal(newKeyName.trim(), newKeyWebsite.trim() || undefined, newKeyRateLimit);
     setNewKeyName('');
     setNewKeyWebsite('');
     setNewKeyRateLimit(60);
+    setNewKeyPlan('free');
     setShowCreateModal(false);
-    loadData();
+    loadData(true);
   };
 
   const handleCopyKey = (key: string) => {
@@ -53,8 +114,50 @@ export default function AdminApiKeys() {
 
   const handleViewKeyUsage = (keyId: string) => {
     setSelectedKey(keyId);
-    setKeyUsage(getUsageForKey(keyId));
+    setKeyUsage(
+      serverMode
+        ? liveLogs.filter(l => l.apiKeyId === keyId)
+        : getUsageForKey(keyId)
+    );
     setActiveTab('usage');
+  };
+
+  const handleToggleActive = async (key: ApiKey) => {
+    if (serverMode) {
+      try {
+        await adminAPI.updateApiKey(key.id, { isActive: !key.isActive });
+        await loadData(true);
+        return;
+      } catch { /* fall through */ }
+    }
+    key.isActive ? revokeKeyLocal(key.id) : reactivateKeyLocal(key.id);
+    loadData(true);
+  };
+
+  const handleDeleteKey = async (keyId: string) => {
+    if (serverMode) {
+      try {
+        await adminAPI.deleteApiKey(keyId);
+        await loadData(true);
+        return;
+      } catch { /* fall through */ }
+    }
+    deleteKeyLocal(keyId);
+    loadData(true);
+  };
+
+  const handleSetPlan = async (keyId: string, plan: 'free' | 'pro' | 'enterprise') => {
+    if (serverMode) {
+      try {
+        await adminAPI.updateApiKey(keyId, { plan });
+        await loadData(true);
+        return;
+      } catch { /* fall through */ }
+    }
+    // Offline mode: record the plan locally
+    const localKeys = getAllKeys().map(k => (k.id === keyId ? { ...k, plan } : k));
+    localStorage.setItem('ishami_api_keys', JSON.stringify(localKeys));
+    loadData(true);
   };
 
   const toggleKeyVisibility = (keyId: string) => {
@@ -263,6 +366,16 @@ export default function AdminApiKeys() {
                       }`}>
                         {key.isActive ? 'Active' : 'Revoked'}
                       </span>
+                      <select
+                        value={(key as any).plan || 'free'}
+                        onChange={(e) => handleSetPlan(key.id, e.target.value as 'free' | 'pro' | 'enterprise')}
+                        className="text-[10px] font-bold bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md px-1.5 py-0.5 text-gray-600 dark:text-gray-300 outline-none focus:ring-1 focus:ring-violet-500/50"
+                        title="Access plan — Pro (10,000 RWF/month) unlocks Courses & Moto Sensei AI"
+                      >
+                        <option value="free">Free</option>
+                        <option value="pro">Pro · 10,000 RWF/mo</option>
+                        <option value="enterprise">Enterprise</option>
+                      </select>
                     </div>
 
                     {key.website && (
@@ -303,14 +416,14 @@ export default function AdminApiKeys() {
                       <BarChart3 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => { key.isActive ? revokeApiKey(key.id) : reactivateApiKey(key.id); loadData(); }}
+                      onClick={() => handleToggleActive(key)}
                       className="p-2 text-gray-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-all"
                       title={key.isActive ? 'Revoke' : 'Reactivate'}
                     >
                       {key.isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
                     </button>
                     <button
-                      onClick={() => { if (confirm('Delete this API key? This cannot be undone.')) { deleteApiKey(key.id); loadData(); } }}
+                      onClick={() => { if (confirm('Delete this API key? This cannot be undone.')) { handleDeleteKey(key.id); } }}
                       className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                       title="Delete"
                     >
@@ -347,13 +460,12 @@ export default function AdminApiKeys() {
                     <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Endpoint</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Origin</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Status</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Response</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Time</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Latency</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Timestamp</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(selectedKey ? keyUsage : getAllUsage()).slice(0, 50).map(record => (
+                  {(selectedKey ? keyUsage : (serverMode ? liveLogs : getAllUsage())).slice(0, 50).map(record => (
                     <tr key={record.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30">
                       <td className="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-300">{record.endpoint}</td>
                       <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 max-w-[150px] truncate">{record.origin || '-'}</td>
@@ -368,7 +480,6 @@ export default function AdminApiKeys() {
                           {record.httpStatus}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{record.responseTime}ms</td>
                       <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400">{record.responseTime}ms</td>
                       <td className="px-4 py-3 text-xs text-gray-400">{new Date(record.timestamp).toLocaleString()}</td>
                     </tr>
@@ -419,6 +530,21 @@ export default function AdminApiKeys() {
                     placeholder="https://example.com"
                     className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Access Plan</label>
+                  <select
+                    value={newKeyPlan}
+                    onChange={(e) => setNewKeyPlan(e.target.value as 'free' | 'pro' | 'enterprise')}
+                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                  >
+                    <option value="free">Free — quizzes, signs, flip cards</option>
+                    <option value="pro">Pro — 10,000 RWF/mo: adds Courses & Moto Sensei AI</option>
+                    <option value="enterprise">Enterprise — everything, unlimited</option>
+                  </select>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                    Free keys receive HTTP 403 on Courses & Moto Sensei AI endpoints. Pro is billed 10,000 RWF/month.
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit (requests/minute)</label>

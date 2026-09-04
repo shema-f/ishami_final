@@ -99,8 +99,8 @@
     "developers_section": {
       "badge": "ISHAMI for Developers",
       "title": "Build with ISHAMI API",
-      "description": "Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.",
-      "get_started_free": "Get Started Free",
+      "description": "Integrate Rwanda traffic rules, quizzes, road signs, flip cards, full courses and the Moto Sensei AI driving instructor into your web or mobile app — in Kinyarwanda & English. Pro: 10,000 RWF/month.",
+      "get_started_free": "Get Started",
       "documentation": "Documentation",
       "quiz_questions": "Quiz Questions",
       "road_signs": "Road Signs",

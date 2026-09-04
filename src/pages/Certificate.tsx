@@ -66,6 +66,21 @@ export default function Certificate() {
       setDownloading(true);
       const { default: jsPDF } = await import('jspdf');
 
+      // Convert a same-origin asset into a data URL so it can be embedded in the
+      // PDF — used to stamp the real ISHAMI logo onto the certificate.
+      const toDataUrl = async (src: string) => {
+        const resp = await fetch(src);
+        const blob = await resp.blob();
+        return await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      };
+
+      let logoDataUrl: string | null = null;
+      try { logoDataUrl = await toDataUrl('/apple-touch-icon.png'); } catch { /* fallback to drawn mark below */ }
+
       // Create landscape A4 PDF
       const pdf = new jsPDF('l', 'mm', 'a4');
       const pageW = 297;
@@ -93,15 +108,31 @@ export default function Certificate() {
       // Bottom-right
       pdf.triangle(pageW - 8, pageH - 8, pageW - 35, pageH - 8, pageW - 8, pageH - 35, 'F');
 
-      // ISHAMI Logo text
+      // ISHAMI logo — embed the real logo image (white tile with gold border,
+      // matching the certificate shown on the website).
+      if (logoDataUrl) {
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(201, 168, 76);
+        pdf.setLineWidth(0.6);
+        pdf.roundedRect(36, 12, 25, 25, 3, 3, 'FD');
+        pdf.addImage(logoDataUrl, 'PNG', 38, 14, 21, 21);
+      } else {
+        // Fallback: gold monogram tile if the logo image could not be loaded
+        pdf.setFillColor(201, 168, 76);
+        pdf.roundedRect(36, 12, 25, 25, 3, 3, 'F');
+        pdf.setTextColor(10, 22, 40);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(10);
+        pdf.text('ISHAMI', 48.5, 28, { align: 'center' });
+      }
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(20);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('ISHAMI', 30, 28);
+      pdf.text('ISHAMI', 68, 26);
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(148, 163, 184);
-      pdf.text('Digital Driving Education & Assessment Platform', 30, 34);
+      pdf.text('Digital Driving Education & Assessment Platform', 68, 32);
 
       // Gold Seal
       pdf.setFillColor(201, 168, 76);
@@ -157,16 +188,18 @@ export default function Certificate() {
       pdf.setFont('helvetica', 'bold');
       pdf.text('AREAS OF UNDERSTANDING', 40, areasY);
 
+      // PDF-safe area rows: standard fonts cannot draw emoji/check glyphs, so use
+      // plain bullets and a drawn marker instead of the emoji icons shown on screen.
       pdf.setTextColor(200, 200, 200);
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
       areasOfUnderstanding.forEach((area, i) => {
         const y = areasY + 6 + (i * 6);
         if (y < pageH - 40) {
-          pdf.text(`${area.icon}  ${area.text}`, 40, y);
-          // Checkmark
-          pdf.setTextColor(34, 197, 94);
-          pdf.text('✓', 160, y);
+          pdf.text(`• ${area.text}`, 40, y);
+          // Checkmark marker
+          pdf.setFillColor(34, 197, 94);
+          pdf.circle(160, y - 1, 1.4, 'F');
           pdf.setTextColor(200, 200, 200);
         }
       });

@@ -7,36 +7,40 @@ import {
   Rocket, Star, Users, BarChart3, Plus, Trash2, Eye, EyeOff,
   Wifi, Database, HelpCircle, Sparkles, FileText, ArrowUpRight
 } from 'lucide-react';
-import { createApiKey, getKeysForUser, revokeApiKey, reactivateApiKey, deleteApiKey, type ApiKey } from '../lib/apiKeyStore';
+import { createApiKey, getKeysForUser, revokeApiKey, reactivateApiKey, deleteApiKey, fetchServerKeyUsage, type ApiKey } from '../lib/apiKeyStore';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 
 const POWERED_BY = 'Powered by Ferrivox Ltd';
 
+const API_PLAN_META: Record<string, { label: string; cls: string }> = {
+  free: { label: 'Free', cls: 'bg-slate-500/15 text-slate-400 border border-slate-500/20' },
+  pro: { label: 'Pro', cls: 'bg-violet-500/15 text-violet-400 border border-violet-500/25' },
+  enterprise: { label: 'Enterprise', cls: 'bg-amber-500/15 text-amber-400 border border-amber-500/25' },
+};
+
+// API access plans.
+// Pro costs 10,000 RWF/month and unlocks every endpoint incl. Courses &
+// Moto Sensei AI. Enterprise is for large organisations — contact customer care.
+const CUSTOMER_CARE_EMAIL = 'support@ishami.rw';
+const CUSTOMER_CARE_WHATSAPP = 'https://wa.me/250798603694';
+const PRO_PRICE = '10,000 RWF/mo';
+const PRO_PRICE_RW = 'RWF 10,000/ukwezi';
+
 const PRICING_TIERS = [
   {
-    name: 'Starter',
-    name_rw: 'Intangiriro',
-    price: 'Free',
-    price_rw: 'Birahwitse',
-    requests: '1,000 requests/month',
-    requests_rw: 'Ibisabwa 1,000 mu kwezi',
-    features: ['Quiz Questions', 'Road Signs', 'Flip Cards', 'Email Support'],
-    features_rw: ['Ibibazo', 'Ibyapa', 'Amakhadi', 'Ubufasha bwa Email'],
-    color: 'emerald',
-    popular: false,
-  },
-  {
-    name: 'Growth',
-    name_rw: 'Ukubaka',
-    price: '5,000 RWF/mo',
-    price_rw: 'RWF 5,000/ukwezi',
+    name: 'Pro',
+    name_rw: 'Pro',
+    price: PRO_PRICE,
+    price_rw: PRO_PRICE_RW,
     requests: '50,000 requests/month',
     requests_rw: 'Ibisabwa 50,000 mu kwezi',
-    features: ['All Starter features', 'Priority support', 'Custom rate limits', 'Analytics dashboard'],
-    features_rw: ['Ibintu byose bitangiriro', 'Ubufasha bwihutirwa', 'Imigabire yihariye', 'Ikibaho cy\'amakuru'],
-    color: 'blue',
+    features: ['Quiz Questions', 'Road Signs', 'Flip Cards', 'Courses (amasomo)', 'Moto Sensei AI', 'Priority customer care'],
+    features_rw: ['Ibibazo', 'Ibyapa', 'Amakhadi', 'Amasomo', 'Moto Sensei AI', 'Ubufasha bwihutirwa'],
+    color: 'violet',
     popular: true,
+    cta_en: 'Get Pro',
+    cta_rw: 'Bona Pro',
   },
   {
     name: 'Enterprise',
@@ -44,11 +48,13 @@ const PRICING_TIERS = [
     price: 'Custom',
     price_rw: 'Bihariwe',
     requests: 'Unlimited requests',
-    requests_rw: 'Ibisabwa ntigishobora kugera ku giciro',
-    features: ['All Growth features', 'Dedicated support', 'SLA guarantee', 'Custom integration'],
-    features_rw: ['Ibintu byose by\'Ukubaka', 'Ubufasha bwihariye', 'Urwego rwa serivisi', 'Uhuza no gukemura'],
-    color: 'violet',
+    requests_rw: 'Ibisabwa bitagira ingano',
+    features: ['Everything in Pro', 'Unlimited requests', 'Dedicated support', 'SLA guarantee', 'Custom integration'],
+    features_rw: ['Ibintu byose bya Pro', 'Ibisabwa bitagira ingano', 'Ubufasha bwihariye', 'Urwego rwa serivisi (SLA)', 'Uhuza no gukemura'],
+    color: 'amber',
     popular: false,
+    cta_en: 'Contact Customer Care',
+    cta_rw: 'Vugana Customer Care',
   },
 ];
 
@@ -60,6 +66,7 @@ const API_ENDPOINTS = [
     title_rw: 'Ibibazo by\'Ikizamini',
     desc: 'Rwanda traffic quiz with multiple choice',
     desc_rw: 'Ikizamini cy\'umuhanda mu Rwanda',
+    plan: 'free',
   },
   {
     method: 'GET',
@@ -68,6 +75,7 @@ const API_ENDPOINTS = [
     title_rw: 'Ibice by\'Ikizamini',
     desc: 'List of quiz categories',
     desc_rw: 'Urutonde rw\'ibice by\'ikizamini',
+    plan: 'free',
   },
   {
     method: 'GET',
@@ -76,6 +84,7 @@ const API_ENDPOINTS = [
     title_rw: 'Ibyapa by\'Umuhanda',
     desc: 'Rwanda road signs (bilingual)',
     desc_rw: 'Ibyapa by\'umuhanda mu Rwanda',
+    plan: 'free',
   },
   {
     method: 'GET',
@@ -84,6 +93,7 @@ const API_ENDPOINTS = [
     title_rw: 'Ubwoko bw\'Ibyapa',
     desc: 'Road sign type categories',
     desc_rw: 'Ibice by\'ibyapa',
+    plan: 'free',
   },
   {
     method: 'GET',
@@ -92,6 +102,7 @@ const API_ENDPOINTS = [
     title_rw: 'Amakhadi',
     desc: 'Bilingual Q&A flip cards',
     desc_rw: 'Amakhadi y\'ibibazo n\'ibisubizo',
+    plan: 'free',
   },
   {
     method: 'GET',
@@ -100,6 +111,34 @@ const API_ENDPOINTS = [
     title_rw: 'Amakhadi Yerekeranyijwe',
     desc: 'Random flip card selection',
     desc_rw: 'Urwitondero rw\'amakarita',
+    plan: 'free',
+  },
+  {
+    method: 'GET',
+    path: '/api/public/courses',
+    title: 'Courses',
+    title_rw: 'Amasomo',
+    desc: 'All ISHAMI driving courses (bilingual, no curriculum)',
+    desc_rw: 'Amasomo yose ya ISHAMI (mu ndimi ebyiri)',
+    plan: 'pro',
+  },
+  {
+    method: 'GET',
+    path: '/api/public/courses/:courseId',
+    title: 'Course Details',
+    title_rw: 'Ibisobanuro by\'Isomo',
+    desc: 'A single course incl. its full curriculum & lessons',
+    desc_rw: 'Isomo rimwe hamwe n\'ibikubiyemo',
+    plan: 'pro',
+  },
+  {
+    method: 'POST',
+    path: '/api/public/moto-sensei/ask',
+    title: 'Moto Sensei AI',
+    title_rw: 'Moto Sensei AI',
+    desc: 'Ask Moto Sensei AI (Kinyarwanda & English) traffic questions',
+    desc_rw: 'Baza Moto Sensei AI ibibazo by\'umuhanda (mu Kinyarwanda n\'Icyongereza)',
+    plan: 'pro',
   },
   {
     method: 'GET',
@@ -108,6 +147,7 @@ const API_ENDPOINTS = [
     title_rw: 'Imimerere ya API',
     desc: 'Health check endpoint',
     desc_rw: 'Iparameta y\'ubuzima',
+    plan: 'free',
   },
 ];
 
@@ -122,6 +162,8 @@ export default function Developers() {
   const [activeSection, setActiveSection] = useState<'overview' | 'docs' | 'pricing'>('overview');
   const [expandedEndpoint, setExpandedEndpoint] = useState<number | null>(null);
   const [pdfGenerating, setPdfGenerating] = useState(false);
+  // Live usage + plan for each of the user's keys (from the backend when reachable)
+  const [usageByKey, setUsageByKey] = useState<Record<string, { totalRequests: number; todayRequests: number; plan: string; isActive: boolean } | null>>({});
 
   const { user } = useAuth();
 
@@ -130,6 +172,23 @@ export default function Developers() {
       setApiKeys(getKeysForUser(user.id));
     }
   }, [user]);
+
+  // Refresh each key's real usage + plan from the server
+  useEffect(() => {
+    const keysNow = getKeysForUser(user?.id || '');
+    if (keysNow.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const results: Record<string, { totalRequests: number; todayRequests: number; plan: string; isActive: boolean } | null> = {};
+      for (const k of keysNow) {
+        const live = await fetchServerKeyUsage(k.key);
+        results[k.id] = live;
+        if (cancelled) return;
+        setUsageByKey(prev => ({ ...prev, [k.id]: live }));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   const handleCreateKey = async () => {
     if (!newKeyName.trim() || !user?.id) return;
@@ -235,14 +294,19 @@ export default function Developers() {
     doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
     API_ENDPOINTS.forEach(ep => {
+      const label = `${ep.method} ${ep.path}${ep.plan === 'pro' ? '  (PRO)' : ''}`;
       doc.setFont('courier', 'bold');
       doc.setFontSize(9);
-      doc.text(`GET ${ep.path}`, 25, y);
+      doc.text(label, 25, y);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
-      doc.text(`  — ${ep.desc}`, 25 + doc.getTextWidth(`GET ${ep.path}`) + 2, y);
+      doc.text(`— ${ep.desc}`, 25 + doc.getTextWidth(label) + 2, y);
       y += 7;
     });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(139, 92, 246);
+    doc.text('Courses & Moto Sensei AI endpoints require a Pro (10,000 RWF/month) or Enterprise API key.', 25, y + 4);
 
     // Page 2 - Examples
     doc.addPage();
@@ -337,6 +401,8 @@ export default function Developers() {
     doc.setTextColor(80, 80, 80);
     doc.text('Email: support@ishami.rw', 20, priceY);
     priceY += 6;
+    doc.text('WhatsApp Customer Care: wa.me/250798603694', 20, priceY);
+    priceY += 6;
     doc.text('Website: https://ishami-final.vercel.app/api-docs', 20, priceY);
     priceY += 6;
     doc.text(`${POWERED_BY} — https://ferrivox.com`, 20, priceY);
@@ -382,7 +448,7 @@ export default function Developers() {
                 className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-violet-500/25 transition-all flex items-center justify-center gap-2"
               >
                 <Zap className="w-4 h-4" />
-                {t('dev.get_started_free', 'Get Started Free')}
+                {t('dev.get_started_free', 'Get Started')}
               </button>
               <button
                 onClick={generatePdf}
@@ -431,8 +497,8 @@ export default function Developers() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {[
-                  { step: 1, icon: Key, title: t('dev.step1_title', 'Generate API Key'), desc: t('dev.step1_desc', 'Create your free API key below. No signup required.'), color: 'violet' },
-                  { step: 2, icon: Code, title: t('dev.step2_title', 'Make Requests'), desc: t('dev.step2_desc', 'Add X-API-Key header and call any endpoint.'), color: 'blue' },
+                  { step: 1, icon: Key, title: t('dev.step1_title', 'Generate API Key'), desc: t('dev.step1_desc', 'Create your API key below. Free keys unlock quizzes, signs & cards; Pro (10,000 RWF/mo) adds Courses & Moto Sensei AI.'), color: 'violet' },
+                  { step: 2, icon: Code, title: t('dev.step2_title', 'Make Requests'), desc: t('dev.step2_desc', 'Add X-API-Key header and call any endpoint. Courses & AI need a Pro/Enterprise key.'), color: 'blue' },
                   { step: 3, icon: Layers, title: t('dev.step3_title', 'Build & Ship'), desc: t('dev.step3_desc', 'Use JSON in your app. All responses include Ferrivox Ltd branding.'), color: 'emerald' },
                 ].map((item, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6">
@@ -490,11 +556,20 @@ export default function Developers() {
                     {apiKeys.map(key => (
                       <div key={key.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-[#0d1225] rounded-xl border border-white/5">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             <span className="text-sm font-semibold text-white">{key.name}</span>
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${key.isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                               {key.isActive ? 'Active' : 'Revoked'}
                             </span>
+                            {(() => {
+                              const plan = usageByKey[key.id]?.plan || key.plan || 'free';
+                              const meta = API_PLAN_META[plan] || API_PLAN_META.free;
+                              return (
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${meta.cls}`}>
+                                  {meta.label}
+                                </span>
+                              );
+                            })()}
                           </div>
                           <div className="flex items-center gap-2">
                             <code className="text-xs text-gray-400 font-mono truncate">
@@ -508,8 +583,18 @@ export default function Developers() {
                             </button>
                           </div>
                           <div className="text-[10px] text-gray-600 mt-1">
-                            {key.totalRequests} requests · {key.rateLimit}/min · Created {new Date(key.createdAt).toLocaleDateString()}
+                            {usageByKey[key.id]
+                              ? `${usageByKey[key.id]!.totalRequests} requests · ${usageByKey[key.id]!.todayRequests} today`
+                              : `${key.totalRequests} requests`} · {key.rateLimit}/min · Created {new Date(key.createdAt).toLocaleDateString()}
                           </div>
+                          {(usageByKey[key.id]?.plan || key.plan) !== 'pro' && (usageByKey[key.id]?.plan || key.plan) !== 'enterprise' && (
+                            <p className="text-[10px] text-violet-400/80 mt-1">
+                              Courses & Moto Sensei AI need a Pro key (10,000 RWF/month).{' '}
+                              <a href="mailto:support@ishami.rw?subject=ISHAMI API Pro upgrade request" className="text-violet-300 underline underline-offset-2">
+                                Contact customer care to upgrade
+                              </a>
+                            </p>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {key.isActive ? (
@@ -591,6 +676,9 @@ export default function Developers() {
                     <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/20 text-emerald-400 shrink-0">
                       {ep.method}
                     </span>
+                    {ep.plan === 'pro' && (
+                      <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/25 shrink-0">PRO</span>
+                    )}
                     <div className="flex-1 min-w-0">
                       <code className="text-xs text-white font-mono truncate block">{ep.path}</code>
                       <span className="text-[10px] text-gray-500">{lang === 'rw' ? ep.title_rw : ep.title}</span>
@@ -631,6 +719,11 @@ export default function Developers() {
                 <p className="text-sm text-gray-300 mb-4">
                   {t('dev.auth_desc', 'All API requests require an API key passed via the X-API-Key header. Rate limit: 60 requests/minute.')}
                 </p>
+                <p className="text-xs text-gray-400 mb-4">
+                  Quizzes, road signs, flip cards & status are open to every key. <b className="text-violet-300">Courses</b> and{' '}
+                  <b className="text-violet-300">Moto Sensei AI</b> need a <b className="text-violet-300">Pro</b> (10,000 RWF/month) or{' '}
+                  <b className="text-amber-300">Enterprise</b> key. Ask an ISHAMI admin to set your key to Pro/Enterprise after subscribing.
+                </p>
                 <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-sm overflow-x-auto">
                   <span className="text-gray-500"># Include your API key</span><br />
                   <span className="text-emerald-400">curl</span><span className="text-white"> -H </span><span className="text-amber-400">"X-API-Key: ishami_pub_your_key_here"</span><span className="text-white"> \</span><br />
@@ -655,6 +748,9 @@ export default function Developers() {
                   <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
                     <button onClick={() => setExpandedEndpoint(expandedEndpoint === i ? null : i)} className="w-full flex items-center gap-3 p-4 sm:p-5 text-left hover:bg-white/5 transition-colors">
                       <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/20 text-emerald-400 shrink-0">{ep.method}</span>
+                      {ep.plan === 'pro' && (
+                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/25 shrink-0">PRO</span>
+                      )}
                       <code className="text-sm text-white font-mono flex-1 truncate">{ep.path}</code>
                       <span className="text-xs text-gray-400 hidden sm:inline">{lang === 'rw' ? ep.title_rw : ep.title}</span>
                       {expandedEndpoint === i ? <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" /> : <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />}
@@ -662,6 +758,11 @@ export default function Developers() {
                     {expandedEndpoint === i && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="border-t border-white/5 p-4 sm:p-5">
                         <p className="text-sm text-gray-300 mb-3">{lang === 'rw' ? ep.title_rw : ep.desc}</p>
+                        {ep.plan === 'pro' && (
+                          <p className="text-xs text-violet-300 mb-3">
+                            🔒 Requires a <b>Pro</b> or <b>Enterprise</b> key — Pro is 10,000 RWF/month. Free keys receive 403 for this endpoint.
+                          </p>
+                        )}
                         <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-xs text-gray-300 overflow-x-auto">
                           <pre>{`curl -H "X-API-Key: your_key" "https://ishami-final.onrender.com${ep.path}"`}</pre>
                         </div>
@@ -703,6 +804,38 @@ export default function Developers() {
                     title: 'cURL',
                     code: `curl -X GET "https://ishami-final.onrender.com/api/public/quiz?limit=5&category=road_signs" \\\n  -H "X-API-Key: ishami_pub_your_key_here" \\\n  -H "Content-Type: application/json"`,
                   },
+                  {
+                    title: 'Courses (fetch)',
+                    code: `fetch('https://ishami-final.onrender.com/api/public/courses?level=Beginner', {
+  headers: { 'X-API-Key': 'ishami_pub_your_key_here' }
+})
+  .then(res => res.json())
+  .then(data => console.log(data.data)); // Requires Pro/Enterprise key`,
+                  },
+                  {
+                    title: 'Moto Sensei AI (fetch)',
+                    code: `// Ask Moto Sensei AI a traffic question in Kinyarwanda or English
+const res = await fetch('https://ishami-final.onrender.com/api/public/moto-sensei/ask', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'ishami_pub_your_key_here'
+  },
+  body: JSON.stringify({
+    message: "Ni iki icyapa cya STOP gisobanura?",
+    history: []
+  })
+});
+const data = await res.json();
+console.log(data.data.response); // Requires Pro/Enterprise key`,
+                  },
+                  {
+                    title: 'cURL — Moto Sensei AI',
+                    code: `curl -X POST "https://ishami-final.onrender.com/api/public/moto-sensei/ask" \
+  -H "X-API-Key: ishami_pub_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What does a STOP sign mean?"}'`,
+                  },
                 ].map((example, i) => (
                   <div key={i} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-3 border-b border-white/5">
@@ -730,7 +863,10 @@ export default function Developers() {
                 <div className="space-y-3 font-mono text-sm">
                   {[
                     { code: '200', label: 'Success', color: 'emerald' },
+                    { code: '400', label: 'Bad request — missing/invalid parameters (e.g. no question for Moto Sensei AI)', color: 'amber' },
                     { code: '401', label: 'Invalid or missing API key', color: 'amber' },
+                    { code: '403', label: 'Plan required — Courses & Moto Sensei AI need a Pro (10,000 RWF/mo) or Enterprise key', color: 'violet' },
+                    { code: '404', label: 'Not found (e.g. unknown course id)', color: 'amber' },
                     { code: '429', label: 'Rate limit exceeded', color: 'amber' },
                     { code: '500', label: 'Internal server error', color: 'red' },
                   ].map((err, i) => (
@@ -754,7 +890,9 @@ export default function Developers() {
                 {t('dev.pricing', 'API Pricing')}
               </h2>
               <p className="text-sm text-gray-400 max-w-xl mx-auto">
-                {t('dev.pricing_desc', 'Choose the plan that fits your needs. Start free, upgrade anytime.')}
+                {lang === 'rw'
+                  ? 'Hitamo umugambi ukugendera. Pro ni 10,000 RWF ku kwezi kandi ufungura Amasomo na Moto Sensei AI; kuri Enterprise, vugana customer care yacu.'
+                  : 'Choose the plan that fits your needs. Pro is 10,000 RWF/month and unlocks Courses & Moto Sensei AI; for Enterprise contact our customer care.'}
               </p>
             </section>
 
@@ -788,15 +926,16 @@ export default function Developers() {
                       </li>
                     ))}
                   </ul>
-                  <button className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
-                    tier.popular
-                      ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-500/25'
-                      : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
-                  }`}>
-                    {tier.price === 'Free' || tier.price === 'Birahwitse'
-                      ? t('dev.get_started', 'Get Started')
-                      : t('dev.contact_sales', 'Contact Sales')}
-                  </button>
+                  <a
+                    href={`mailto:${CUSTOMER_CARE_EMAIL}?subject=${encodeURIComponent('ISHAMI API — ' + (lang === 'rw' ? tier.name_rw : tier.name) + ' subscription request')}`}
+                    className={`w-full py-3 rounded-xl font-semibold text-sm transition-all text-center block ${
+                      tier.popular
+                        ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-500/25'
+                        : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {lang === 'rw' ? tier.cta_rw : tier.cta_en}
+                  </a>
                 </motion.div>
               ))}
             </div>
@@ -811,10 +950,16 @@ export default function Developers() {
                 <p className="text-sm text-gray-400 mb-4">
                   {t('dev.custom_desc', 'Contact our team for enterprise solutions and custom pricing.')}
                 </p>
-                <a href="mailto:support@ishami.rw" className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-500/20 text-violet-400 rounded-xl font-semibold text-sm hover:bg-violet-500/30 transition-all">
-                  <MessageCircle className="w-4 h-4" />
-                  support@ishami.rw
-                </a>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a href="mailto:support@ishami.rw" className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-500/20 text-violet-400 rounded-xl font-semibold text-sm hover:bg-violet-500/30 transition-all">
+                    <MessageCircle className="w-4 h-4" />
+                    {CUSTOMER_CARE_EMAIL}
+                  </a>
+                  <a href={CUSTOMER_CARE_WHATSAPP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 rounded-xl font-semibold text-sm hover:bg-emerald-500/25 transition-all">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp Customer Care
+                  </a>
+                </div>
               </div>
             </section>
           </motion.div>

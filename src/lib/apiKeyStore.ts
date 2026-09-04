@@ -15,6 +15,7 @@ export interface ApiKey {
   name: string;          // Friendly name e.g. "My Website"
   website?: string;      // Originating website URL
   userId?: string;       // Owner user ID — keys are scoped to the creator
+  plan?: 'free' | 'pro' | 'enterprise'; // Access tier: courses + Moto Sensei AI need pro/enterprise
   createdAt: string;
   lastUsedAt?: string;
   isActive: boolean;
@@ -101,6 +102,7 @@ export async function createApiKey(name: string, website?: string, rateLimit: nu
           name: data.data.name,
           website: data.data.website,
           userId: data.data.userId || userId,
+          plan: data.data.plan || 'free',
           createdAt: data.data.createdAt,
           isActive: true,
           rateLimit: data.data.rateLimit || rateLimit,
@@ -121,6 +123,7 @@ export async function createApiKey(name: string, website?: string, rateLimit: nu
     name,
     website,
     userId,
+    plan: 'free',
     createdAt: new Date().toISOString(),
     isActive: true,
     rateLimit,
@@ -129,6 +132,28 @@ export async function createApiKey(name: string, website?: string, rateLimit: nu
   keys.push(newKey);
   saveKeys(keys);
   return newKey;
+}
+
+/**
+ * Fetch live usage for a key from the backend (GET /api/public/keys/:key/usage).
+ * Returns null when the backend is unreachable so callers can fall back to the
+ * locally cached numbers.
+ */
+export async function fetchServerKeyUsage(key: string): Promise<{ totalRequests: number; todayRequests: number; plan: string; isActive: boolean } | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/public/keys/${encodeURIComponent(key)}/usage`);
+    if (!res.ok) return null;
+    const body = await res.json();
+    if (!body?.success || !body?.data) return null;
+    return {
+      totalRequests: body.data.totalRequests || 0,
+      todayRequests: body.data.todayRequests || 0,
+      plan: body.data.plan || 'free',
+      isActive: body.data.isActive !== false,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export function revokeApiKey(keyId: string): void {

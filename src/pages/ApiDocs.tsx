@@ -119,6 +119,91 @@ const API_ENDPOINTS = [
   },
   {
     method: 'GET',
+    path: '/api/public/courses',
+    title: 'List Courses (Amasomo)',
+    title_rw: 'Urutonde rw\'Amasomo',
+    description: 'Retrieve all ISHAMI driving courses (bilingual metadata: title, level, duration, lessons count). Requires a Pro or Enterprise API key.',
+    plan: 'pro',
+    params: [
+      { name: 'limit', type: 'number', default: '50', desc: 'Number of courses per page' },
+      { name: 'page', type: 'number', default: '1', desc: 'Page number' },
+      { name: 'q', type: 'string', default: '', desc: 'Search courses by title or description (English or Kinyarwanda)' },
+      { name: 'level', type: 'string', default: '', desc: 'Filter: Beginner, Intermediate, Advanced' },
+    ],
+    example: `curl -H "X-API-Key: ishami_pub_pro_key_here" \\
+  "https://ishami-final.onrender.com/api/public/courses?level=Beginner"`,
+    exampleResponse: `{
+  "success": true,
+  "data": [
+    {
+      "id": "traffic-rules-fundamentals",
+      "title": "Rwanda Traffic Rules Fundamentals",
+      "titleKiny": "Amategeko y'Umuhanda y'u Rwanda: Intangiriro",
+      "level": "Beginner",
+      "duration": "3 hours",
+      "totalLessons": 8,
+      "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
+    }
+  ],
+  "meta": { "total": 9, "page": 1, "limit": 50, "poweredBy": "...", "apiVersion": "1.0.0" },
+  "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
+}`,
+  },
+  {
+    method: 'GET',
+    path: '/api/public/courses/:courseId',
+    title: 'Get Course Details',
+    title_rw: 'Ibisobanuro by\'Isomo',
+    description: 'Retrieve one course including its full curriculum and every lesson (title, type, duration, description — bilingual). Requires a Pro or Enterprise API key.',
+    plan: 'pro',
+    params: [
+      { name: 'courseId', type: 'string', default: '—', desc: 'Course id, e.g. traffic-rules-fundamentals (path parameter)' },
+    ],
+    example: `curl -H "X-API-Key: ishami_pub_pro_key_here" \\
+  "https://ishami-final.onrender.com/api/public/courses/traffic-rules-fundamentals"`,
+    exampleResponse: `{
+  "success": true,
+  "data": {
+    "id": "traffic-rules-fundamentals",
+    "title": "Rwanda Traffic Rules Fundamentals",
+    "curriculum": {
+      "title": "Course Curriculum",
+      "lessons": [
+        { "id": 1, "title": "Introduction to Rwanda Traffic Rules", "type": "text", "duration": "20 min" }
+      ]
+    },
+    "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
+  },
+  "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
+}`,
+  },
+  {
+    method: 'POST',
+    path: '/api/public/moto-sensei/ask',
+    title: 'Moto Sensei AI',
+    title_rw: 'Moto Sensei AI',
+    description: 'Ask Moto Sensei AI any Rwanda traffic question. It answers in Kinyarwanda or English (auto-detected). Requires a Pro or Enterprise API key.',
+    plan: 'pro',
+    params: [
+      { name: 'message', type: 'string (body)', default: '—', desc: 'The question to ask Moto Sensei AI (Kinyarwanda or English)' },
+      { name: 'history', type: 'array (body)', default: '[]', desc: 'Optional recent messages for context: [{ role: "user"|"model", content: "..." }]' },
+    ],
+    example: `curl -X POST "https://ishami-final.onrender.com/api/public/moto-sensei/ask" \\
+  -H "X-API-Key: ishami_pub_pro_key_here" \\
+  -H "Content-Type: application/json" \\
+  -d '{"message": "Ni iki icyapa cya STOP gisobanura?"}'`,
+    exampleResponse: `{
+  "success": true,
+  "data": {
+    "question": "Ni iki icyapa cya STOP gisobanura?",
+    "response": "Icyapa cya STOP gisaba umushoferi guhagarara burundu ...",
+    "structured": { "language": "rw", "topic": "road_signs", "confidence": "high" }
+  },
+  "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
+}`,
+  },
+  {
+    method: 'GET',
     path: '/api/public/status',
     title: 'API Status',
     title_rw: 'Imimerere ya API',
@@ -131,10 +216,11 @@ const API_ENDPOINTS = [
   "data": {
     "status": "operational",
     "apiVersion": "1.0.0",
-    "endpoints": ["/api/public/quiz", "/api/public/road-signs", "..."],
+    "endpoints": ["/api/public/quiz", "/api/public/road-signs", "/api/public/courses", "/api/public/moto-sensei/ask", "..."],
     "totalQuizQuestions": 25,
     "totalRoadSigns": 30,
-    "totalFlipCards": 25
+    "totalFlipCards": 25,
+    "totalCourses": 9
   },
   "_poweredBy": "Powered by Ferrivox Ltd — https://ferrivox.com"
 }`,
@@ -169,6 +255,32 @@ print(data['data'])  # List of road signs`,
     code: `curl -X GET "https://ishami-final.onrender.com/api/public/quiz?limit=5&category=road_signs" \\
   -H "X-API-Key: ishami_pub_your_key_here" \\
   -H "Content-Type: application/json"`,
+  },
+  {
+    title: 'Courses (JS fetch)',
+    code: `// Requires a Pro or Enterprise API key (10,000 RWF/month for Pro)
+const res = await fetch('https://ishami-final.onrender.com/api/public/courses?level=Beginner', {
+  headers: { 'X-API-Key': 'ishami_pub_pro_key_here' }
+});
+const data = await res.json();
+console.log(data.data); // [{ id, title, titleKiny, level, totalLessons, ... }]`,
+  },
+  {
+    title: 'Moto Sensei AI (JS fetch)',
+    code: `// Requires a Pro or Enterprise API key (10,000 RWF/month for Pro)
+const res = await fetch('https://ishami-final.onrender.com/api/public/moto-sensei/ask', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'ishami_pub_pro_key_here'
+  },
+  body: JSON.stringify({
+    message: "What does a STOP sign mean?",
+    history: []
+  })
+});
+const data = await res.json();
+console.log(data.data.response); // Moto Sensei AI answer (EN or RW)`,
   },
   {
     title: 'React / useEffect',
@@ -226,10 +338,9 @@ export default function ApiDocs() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 font-[family-name:var(--font-heading)]">
               ISHAMI Public API
-            </h1>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-3">
-              Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app.
-            </p>
+            </h1>              <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-3">
+                Integrate Rwanda traffic rules, quiz questions, road signs, flip cards, full courses, and the Moto Sensei AI driving instructor into your web or mobile app — in Kinyarwanda & English.
+              </p>
             <p className="text-sm text-gray-500 mb-8">
               {POWERED_BY} · All responses include Ferrivox Ltd branding
             </p>
@@ -257,8 +368,8 @@ export default function ApiDocs() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
-              { step: 1, icon: Key, title: 'Get API Key', desc: 'Request an API key from the ISHAMI admin dashboard or contact support@ishami.rw', color: 'violet' },
-              { step: 2, icon: Code, title: 'Make Request', desc: 'Add your API key in the X-API-Key header and call any endpoint', color: 'blue' },
+              { step: 1, icon: Key, title: 'Get API Key', desc: 'Sign in on the Developers page and generate a key. Pro (10,000 RWF/mo) unlocks Courses & Moto Sensei AI.', color: 'violet' },
+              { step: 2, icon: Code, title: 'Make Request', desc: 'Add your API key in the X-API-Key header and call any endpoint (Courses & AI need Pro/Enterprise)', color: 'blue' },
               { step: 3, icon: Layers, title: 'Build & Ship', desc: 'Use the JSON response in your app. All responses include Ferrivox Ltd branding.', color: 'emerald' },
             ].map((item, i) => (
               <motion.div
@@ -285,10 +396,14 @@ export default function ApiDocs() {
             <Shield className="w-6 h-6 text-emerald-400" />
             Authentication
           </h2>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-sm text-gray-300 mb-4">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">              <p className="text-sm text-gray-300 mb-4">
               All API requests require an API key passed via the <code className="px-1.5 py-0.5 bg-white/10 rounded text-violet-400 text-xs">X-API-Key</code> header.
               API keys are rate-limited (default: 60 requests/minute).
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              Quizzes, road signs, flip cards & status work with every key. <b className="text-violet-300">Courses</b> and{' '}
+              <b className="text-violet-300">Moto Sensei AI</b> require a <b className="text-violet-300">Pro</b> (10,000 RWF/month) or{' '}
+              <b className="text-amber-300">Enterprise</b> key — our customer care team activates these plans on your key.
             </p>
             <div className="bg-[#0d1225] rounded-xl p-4 font-mono text-sm">
               <span className="text-gray-500"># Include your API key in the request header</span>
@@ -333,6 +448,9 @@ export default function ApiDocs() {
                   }`}>
                     {ep.method}
                   </span>
+                  {ep.plan === 'pro' && (
+                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/25 shrink-0">PRO</span>
+                  )}
                   <code className="text-sm text-white font-mono flex-1">{ep.path}</code>
                   <span className="text-xs text-gray-400 hidden sm:inline">{ep.title}</span>
                   {expandedEndpoint === i ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
@@ -345,6 +463,15 @@ export default function ApiDocs() {
                     className="border-t border-white/5 p-5"
                   >
                     <p className="text-sm text-gray-300 mb-4">{ep.description}</p>
+
+                    {ep.plan === 'pro' && (
+                      <div className="mb-4 px-4 py-3 bg-violet-500/10 border border-violet-500/25 rounded-xl">
+                        <p className="text-xs text-violet-300">
+                          🔒 <b>Pro / Enterprise endpoint.</b> Pro costs <b>10,000 RWF/month</b>. Free keys receive HTTP 403 here.
+                          To activate Pro on your key, contact customer care: <a className="underline underline-offset-2" href="mailto:support@ishami.rw">support@ishami.rw</a> or WhatsApp <a className="underline underline-offset-2" href="https://wa.me/250798603694" target="_blank" rel="noopener noreferrer">+250 798 603 694</a>.
+                        </p>
+                      </div>
+                    )}
 
                     {ep.params.length > 0 && (
                       <div className="mb-4">
@@ -442,8 +569,20 @@ export default function ApiDocs() {
                   <span className="text-gray-400">Success</span>
                 </div>
                 <div className="flex items-center gap-3">
+                  <span className="text-amber-400 w-8">400</span>
+                  <span className="text-gray-400">Bad request (e.g. no message for Moto Sensei AI)</span>
+                </div>
+                <div className="flex items-center gap-3">
                   <span className="text-amber-400 w-8">401</span>
                   <span className="text-gray-400">Invalid or missing API key</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-violet-400 w-8">403</span>
+                  <span className="text-gray-400">Plan required — Courses & Moto Sensei AI need Pro (10,000 RWF/mo) or Enterprise</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-amber-400 w-8">404</span>
+                  <span className="text-gray-400">Not found (e.g. unknown course id)</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-amber-400 w-8">429</span>
@@ -484,7 +623,9 @@ export default function ApiDocs() {
             {POWERED_BY} · ISHAMI Rwanda Driving Education Platform
           </p>
           <p className="text-xs text-gray-600 mt-2">
-            For API key requests, contact <a href="mailto:support@ishami.rw" className="text-violet-400 hover:text-violet-300">support@ishami.rw</a>
+            API pricing — Pro: <a href="mailto:support@ishami.rw?subject=ISHAMI API Pro subscription" className="text-violet-400 hover:text-violet-300">10,000 RWF/month</a> · Enterprise: contact customer care.{' '}
+            <a href="mailto:support@ishami.rw" className="text-violet-400 hover:text-violet-300">support@ishami.rw</a> ·{' '}
+            <a href="https://wa.me/250798603694" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300">WhatsApp +250 798 603 694</a>
           </p>
         </div>
       </div>

@@ -22,6 +22,7 @@ import { GLOSSARY, getRandomTerms } from './ai/glossaryService.js';
 import evaluationQuestionsData from './evaluation_questions.js';
 import { pdfQuizBundles } from './pdfQuestions.js';
 import { pdfFlipCards } from './pdfFlipCards.js';
+import { courses as apiCourses, getCourseById as apiGetCourseById, courseCount as apiCourseCount } from './courses.js';
 
 try {
   const here = path.resolve(process.cwd(), '.env');
@@ -262,6 +263,7 @@ const PublicApiKeySchema = new Schema({
   key: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true },
   website: { type: String, default: '' },
+  plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
   isActive: { type: Boolean, default: true },
   rateLimit: { type: Number, default: 60 },
   totalRequests: { type: Number, default: 0 },
@@ -3972,10 +3974,26 @@ function publicApiLogUsage(req, res, next) {
   next();
 }
 
+// Premium plan check — Courses & Moto Sensei AI endpoints require a Pro or
+// Enterprise key (10,000 RWF/month for Pro; Enterprise via customer care).
+function publicApiPremium(req, res, next) {
+  const doc = req.publicApiKey;
+  const plan = (doc && (doc.plan || 'free')).toLowerCase();
+  if (!doc || !doc.isActive || !['pro', 'enterprise'].includes(plan)) {
+    return res.status(403).json({
+      success: false,
+      error: 'This endpoint requires a Pro or Enterprise API key. Upgrade to Pro for 10,000 RWF/month or contact customer care (support@ishami.rw / WhatsApp +250 798 603 694).',
+      plan,
+      _poweredBy: POWERED_BY,
+    });
+  }
+  next();
+}
+
 // CORS for public API — allow all external origins
 app.options('/api/public/*', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-API-Key, Content-Type');
   res.sendStatus(204);
 });
@@ -3993,7 +4011,7 @@ app.post('/api/public/keys/generate', express.json(), async (req, res) => {
     const doc = await PublicApiKey.create({ key, name: name.trim(), website: website || '' });
     res.json({
       success: true,
-      data: { id: String(doc._id), key: doc.key, name: doc.name, website: doc.website, rateLimit: doc.rateLimit, createdAt: doc.createdAt },
+      data: { id: String(doc._id), key: doc.key, name: doc.name, website: doc.website, plan: doc.plan || 'free', rateLimit: doc.rateLimit, createdAt: doc.createdAt },
       _poweredBy: POWERED_BY,
     });
   } catch (e) {
@@ -4011,7 +4029,7 @@ app.get('/api/public/keys/:key/usage', async (req, res) => {
     const todayRequests = await PublicApiUsage.countDocuments({ apiKeyId: doc._id, timestamp: { $gte: todayStart } });
     res.json({
       success: true,
-      data: { key: doc.key, name: doc.name, totalRequests, todayRequests, rateLimit: doc.rateLimit, isActive: doc.isActive },
+      data: { key: doc.key, name: doc.name, plan: doc.plan || 'free', totalRequests, todayRequests, rateLimit: doc.rateLimit, isActive: doc.isActive },
       _poweredBy: POWERED_BY,
     });
   } catch (e) {
@@ -4026,7 +4044,8 @@ app.get('/api/public/status', publicApiAuth, publicApiRateLimit, publicApiLogUsa
     data: {
       status: 'operational',
       apiVersion: PUBLIC_API_VERSION,
-      endpoints: ['/api/public/quiz', '/api/public/quiz/categories', '/api/public/road-signs', '/api/public/road-signs/types', '/api/public/flipcards', '/api/public/flipcards/random', '/api/public/status'],
+      endpoints: ['/api/public/quiz', '/api/public/quiz/categories', '/api/public/road-signs', '/api/public/road-signs/types', '/api/public/flipcards', '/api/public/flipcards/random', '/api/public/courses', '/api/public/courses/:courseId', '/api/public/moto-sensei/ask', '/api/public/status'],
+      totalCourses: apiCourseCount || 0,
       totalQuizQuestions: (ROAD_SIGNS?.length || 0) + (() => { let c = 0; const eq = evaluationQuestionsData?.default || evaluationQuestionsData; if (eq && typeof eq === 'object') { for (const v of Object.values(eq)) { if (typeof v === 'object') for (const v2 of Object.values(v)) if (Array.isArray(v2)) c += v2.length; } } return c; })(),
       totalRoadSigns: ROAD_SIGNS?.length || 0,
       totalFlipCards: 25,
@@ -4227,6 +4246,290 @@ app.get('/api/public/flipcards/random', publicApiAuth, publicApiRateLimit, publi
     res.json({ success: true, data: cards, meta: { total: cards.length, page: 1, limit: count, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION }, _poweredBy: POWERED_BY });
   } catch (e) {
     res.status(500).json({ success: false, error: 'Failed to fetch random flipcards', _poweredBy: POWERED_BY });
+  }
+});
+
+// ── Courses (Pro / Enterprise keys only) ──────────────────────────────
+app.get('/api/public/courses', publicApiAuth, publicApiRateLimit, publicApiPremium, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '50'), 100);
+    const page = Math.max(parseInt(req.query.page || '1'), 1);
+    const search = (req.query.q || '').toLowerCase().trim();
+    const level = (req.query.level || '').toLowerCase().trim();
+
+    let list = (apiCourses || []).map((c) => ({
+      id: c.id,
+      title: c.title,
+      titleKiny: c.titleKiny,
+      description: c.description,
+      descriptionKiny: c.descriptionKiny,
+      level: c.level,
+      levelKiny: c.levelKiny,
+      instructor: c.instructor,
+      instructorTitle: c.instructorTitle,
+      duration: c.duration,
+      totalLessons: c.totalLessons,
+      icon: c.icon,
+      badge: c.badge,
+      _poweredBy: POWERED_BY,
+    }));
+
+    if (level) list = list.filter((c) => String(c.level || '').toLowerCase() === level);
+    if (search) {
+      list = list.filter((c) =>
+        c.title.toLowerCase().includes(search) ||
+        c.description.toLowerCase().includes(search) ||
+        String(c.titleKiny || '').toLowerCase().includes(search)
+      );
+    }
+
+    const total = list.length;
+    const start = (page - 1) * limit;
+    const data = list.slice(start, start + limit);
+    res.json({
+      success: true,
+      data,
+      meta: { total, page, limit, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route /api/public/courses] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to fetch courses', _poweredBy: POWERED_BY });
+  }
+});
+
+app.get('/api/public/courses/:courseId', publicApiAuth, publicApiRateLimit, publicApiPremium, publicApiLogUsage, (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  try {
+    const course = apiGetCourseById(String(req.params.courseId || ''));
+    if (!course) {
+      return res.status(404).json({ success: false, error: 'Course not found', _poweredBy: POWERED_BY });
+    }
+    res.json({
+      success: true,
+      data: {
+        id: course.id,
+        title: course.title,
+        titleKiny: course.titleKiny,
+        description: course.description,
+        descriptionKiny: course.descriptionKiny,
+        level: course.level,
+        levelKiny: course.levelKiny,
+        instructor: course.instructor,
+        instructorTitle: course.instructorTitle,
+        duration: course.duration,
+        totalLessons: course.totalLessons,
+        icon: course.icon,
+        badge: course.badge,
+        curriculum: course.curriculum || null,
+        _poweredBy: POWERED_BY,
+      },
+      meta: { total: 1, page: 1, limit: 1, poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route /api/public/courses/:courseId] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to fetch course', _poweredBy: POWERED_BY });
+  }
+});
+
+// ── Moto Sensei AI (Pro / Enterprise keys only) ──────────────────────
+app.post('/api/public/moto-sensei/ask', publicApiAuth, publicApiRateLimit, publicApiPremium, publicApiLogUsage, async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  try {
+    const prompt = String(req.body?.message || req.body?.prompt || '').trim();
+    const history = Array.isArray(req.body?.history) ? req.body.history.slice(0, 20) : [];
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        error: 'A question is required. Send JSON: { "message": "What does a STOP sign mean?" }',
+        _poweredBy: POWERED_BY,
+      });
+    }
+    const userName = (req.publicApiKey && req.publicApiKey.name) || 'ISHAMI API User';
+    const result = await askAssistant(prompt, userName, 'neutral', history, null, true);
+    res.json({
+      success: true,
+      data: {
+        question: prompt,
+        response: result.text,
+        structured: result.structured || null,
+      },
+      meta: { poweredBy: POWERED_BY, apiVersion: PUBLIC_API_VERSION },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route /api/public/moto-sensei/ask] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Moto Sensei AI request failed', _poweredBy: POWERED_BY });
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════
+// ADMIN — Public API key & usage management
+// ════════════════════════════════════════════════════════════════════
+app.get('/api/admin/api/keys', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [keys, agg] = await Promise.all([
+      PublicApiKey.find({}).sort({ createdAt: -1 }).lean(),
+      PublicApiUsage.aggregate([{ $group: { _id: '$apiKeyId', count: { $sum: 1 } } }]),
+    ]);
+    const usageMap = new Map(agg.map((a) => [String(a._id), a.count]));
+    const data = keys.map((k) => ({
+      id: String(k._id),
+      key: k.key,
+      name: k.name,
+      website: k.website || '',
+      plan: k.plan || 'free',
+      isActive: k.isActive !== false,
+      rateLimit: k.rateLimit || 60,
+      totalRequests: usageMap.get(String(k._id)) || k.totalRequests || 0,
+      lastUsedAt: k.lastUsedAt || null,
+      createdAt: k.createdAt,
+    }));
+    res.json({
+      success: true,
+      data: {
+        keys: data,
+        total: data.length,
+        active: data.filter((k) => k.isActive).length,
+        pro: data.filter((k) => k.plan === 'pro').length,
+        enterprise: data.filter((k) => k.plan === 'enterprise').length,
+      },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route GET /api/admin/api/keys] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to load API keys' });
+  }
+});
+
+app.post('/api/admin/api/keys', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { name, website, plan, rateLimit } = req.body || {};
+    if (!name || typeof name !== 'string' || name.trim().length < 2) {
+      return res.status(400).json({ success: false, error: 'Name is required (min 2 chars)' });
+    }
+    const chosenPlan = ['free', 'pro', 'enterprise'].includes(plan) ? plan : 'free';
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let key = 'ishami_pub_';
+    for (let i = 0; i < 32; i++) key += chars[Math.floor(Math.random() * chars.length)];
+    const doc = await PublicApiKey.create({
+      key,
+      name: name.trim(),
+      website: website || '',
+      plan: chosenPlan,
+      rateLimit: Math.min(Math.max(parseInt(rateLimit) || 60, 1), 1000),
+    });
+    res.json({
+      success: true,
+      data: { id: String(doc._id), key: doc.key, name: doc.name, website: doc.website, plan: doc.plan, rateLimit: doc.rateLimit, isActive: true, totalRequests: 0, createdAt: doc.createdAt },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route POST /api/admin/api/keys] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to create API key' });
+  }
+});
+
+app.patch('/api/admin/api/keys/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { plan, isActive, rateLimit, name, website } = req.body || {};
+    const $set = {};
+    if (typeof name === 'string' && name.trim().length >= 2) $set.name = name.trim();
+    if (typeof website === 'string') $set.website = website.trim();
+    if (['free', 'pro', 'enterprise'].includes(plan)) $set.plan = plan;
+    if (typeof isActive === 'boolean') $set.isActive = isActive;
+    if (rateLimit) $set.rateLimit = Math.min(Math.max(parseInt(rateLimit) || 60, 1), 1000);
+    if (Object.keys($set).length === 0) return res.status(400).json({ success: false, error: 'Nothing to update' });
+    const doc = await PublicApiKey.findByIdAndUpdate(req.params.id, { $set }, { new: true }).lean();
+    if (!doc) return res.status(404).json({ success: false, error: 'API key not found' });
+    res.json({ success: true, data: { id: String(doc._id), key: doc.key, name: doc.name, website: doc.website, plan: doc.plan || 'free', isActive: doc.isActive !== false, rateLimit: doc.rateLimit || 60, createdAt: doc.createdAt }, _poweredBy: POWERED_BY });
+  } catch (e) {
+    console.error('[Route PATCH /api/admin/api/keys/:id] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to update API key' });
+  }
+});
+
+app.delete('/api/admin/api/keys/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const doc = await PublicApiKey.findByIdAndDelete(req.params.id).lean();
+    if (!doc) return res.status(404).json({ success: false, error: 'API key not found' });
+    await PublicApiUsage.deleteMany({ apiKeyId: req.params.id }).catch(() => {});
+    res.json({ success: true, message: 'API key deleted', _poweredBy: POWERED_BY });
+  } catch (e) {
+    console.error('[Route DELETE /api/admin/api/keys/:id] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to delete API key' });
+  }
+});
+
+app.get('/api/admin/api/usage', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '200'), 1000);
+    const days = Math.min(Math.max(parseInt(req.query.days || '7'), 1), 30);
+    const since = new Date(Date.now() - days * 86400000);
+    const [logsRaw, keys] = await Promise.all([
+      PublicApiUsage.find({ timestamp: { $gte: since } }).sort({ timestamp: -1 }).limit(limit).lean(),
+      PublicApiKey.find({}).lean(),
+    ]);
+    const keyMap = new Map(keys.map((k) => [String(k._id), k]));
+    const logs = logsRaw.map((u) => ({
+      id: String(u._id),
+      keyId: String(u.apiKeyId || ''),
+      keyName: keyMap.get(String(u.apiKeyId))?.name || 'Unknown',
+      plan: keyMap.get(String(u.apiKeyId))?.plan || 'free',
+      endpoint: u.endpoint,
+      origin: u.origin || '',
+      ip: u.ip || '',
+      responseTime: u.responseTime || 0,
+      success: u.success !== false,
+      httpStatus: u.httpStatus || 200,
+      timestamp: u.timestamp,
+    }));
+
+    const endpointCounts = {};
+    const keyCounts = {};
+    logsRaw.forEach((u) => {
+      const ep = String(u.endpoint || '').replace(/^\/api\/public/, '');
+      endpointCounts[ep] = (endpointCounts[ep] || 0) + 1;
+      keyCounts[String(u.apiKeyId)] = (keyCounts[String(u.apiKeyId)] || 0) + 1;
+    });
+    const topEndpoints = Object.entries(endpointCounts).map(([endpoint, count]) => ({ endpoint, count })).sort((a, b) => b.count - a.count).slice(0, 10);
+    const topKeys = Object.entries(keyCounts).map(([keyId, count]) => ({
+      keyId,
+      keyName: keyMap.get(keyId)?.name || 'Unknown',
+      plan: keyMap.get(keyId)?.plan || 'free',
+      count,
+    })).sort((a, b) => b.count - a.count).slice(0, 10);
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayRequests = logsRaw.filter((u) => new Date(u.timestamp) >= todayStart).length;
+    const errors = logsRaw.filter((u) => u.success === false).length;
+    const errorRate = logsRaw.length > 0 ? Math.round((errors / logsRaw.length) * 10000) / 100 : 0;
+
+    const requestsOverTime = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - i);
+      const next = new Date(d);
+      next.setDate(d.getDate() + 1);
+      const count = logsRaw.filter((u) => new Date(u.timestamp) >= d && new Date(u.timestamp) < next).length;
+      requestsOverTime.push({ date: d.toISOString().split('T')[0], count });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        summary: { totalRequests: logsRaw.length, todayRequests, topEndpoints, topKeys, requestsOverTime, errorRate, days },
+        logs,
+      },
+      _poweredBy: POWERED_BY,
+    });
+  } catch (e) {
+    console.error('[Route GET /api/admin/api/usage] error:', e?.stack || e);
+    res.status(500).json({ success: false, error: 'Failed to load API usage' });
   }
 });
 

@@ -105,11 +105,11 @@ export default function HeroContent() {
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                to="/simulation"
+                to="/ai-assistant"
                 className="px-7 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-xl text-white rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base border border-white/20 hover:bg-white/15 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-                {isRw ? 'Reba Video' : 'Watch Video'}
+                {isRw ? 'Reba Moto Sensei AI' : 'Try Moto Sensei AI'}
               </Link>
             </motion.div>
 

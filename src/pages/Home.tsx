@@ -816,7 +816,7 @@ export default function Home() {
                   {t('home.developers_section.title', 'Build with ISHAMI API')}
                 </h2>
                 <p className="text-slate-400 mb-6 max-w-lg leading-relaxed">
-                  {t('home.developers_section.description', 'Integrate Rwanda traffic rules, quiz questions, road signs, and flip cards into your web or mobile app. Free tier available.')}
+                  {t('home.developers_section.description', 'Integrate Rwanda traffic rules, quizzes, road signs, flip cards, full courses and the Moto Sensei AI driving instructor into your web or mobile app — in Kinyarwanda & English. Pro: 10,000 RWF/month.')}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -825,7 +825,7 @@ export default function Home() {
                     className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-violet-500/25 transition-all duration-300 hover:-translate-y-0.5"
                   >
                     <Rocket className="w-4 h-4" />
-                    <span>{t('home.developers_section.get_started_free', 'Get Started Free')}</span>
+                    <span>{t('home.developers_section.get_started_free', 'Get Started')}</span>
                   </Link>
                   <Link
                     to="/api-docs"
@@ -842,6 +842,8 @@ export default function Home() {
                     { value: '25+', label: t('dev.stat_questions', 'Quiz Questions') },
                     { value: '30+', label: t('dev.stat_signs', 'Road Signs') },
                     { value: '25+', label: t('dev.stat_cards', 'Flip Cards') },
+                    { value: '9', label: t('dev.stat_courses', 'Courses') },
+                    { value: 'AI', label: 'Moto Sensei AI' },
                   ].map((stat, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <span className="text-lg font-bold text-white">{stat.value}</span>
@@ -860,17 +862,22 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
                     <span className="text-[10px] text-gray-500 ml-2">api-example.js</span>
                   </div>
-                  <pre className="font-mono text-[11px] text-gray-300 overflow-x-auto"><code>{`// Fetch Rwanda quiz questions
+                  <pre className="font-mono text-[11px] text-gray-300 overflow-x-auto"><code>{`// Ask Moto Sensei AI — Courses & AI need a Pro key
 const res = await fetch(
-  'https://ishami.rw/api/public/quiz',
+  'https://ishami.rw/api/public/moto-sensei/ask',
   {
+    method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       'X-API-Key': 'ishami_pub_...'
-    }
+    },
+    body: JSON.stringify({
+      message: 'Nsobanurira icyapa cya STOP'
+    })
   }
 );
 const { data } = await res.json();
-// → 25 quiz questions ready!`}</code></pre>
+// → Moto Sensei AI answer (RW or EN)`}</code></pre>
                   <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
                     <div className="w-5 h-5 rounded bg-violet-500/20 flex items-center justify-center">
                       <Code className="w-3 h-3 text-violet-400" />
