@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router';
 import { motion } from 'motion/react';
-import { ArrowLeft, Clock, BookOpen, User, CheckCircle2, Play, FileText, Video, Zap, ClipboardCheck, Star, Lock } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, User, CheckCircle2, Play, FileText, Video, Zap, ClipboardCheck, Star, Lock, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from '../contexts/I18nContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getCourseProgress, isLessonCompleted, getNextLesson } from '../lib/courseProgress';
 import { useCourse } from '../hooks/useCourses';
+import { CourseResourcesContent } from './CourseResources';
 import AccessGate from '../components/AccessGate';
 
 const lessonTypeIcons: Record<string, { icon: typeof FileText; color: string; label: string }> = {
@@ -23,6 +25,12 @@ export default function CourseDetail() {
   const userId = user?.id || user?.uid || 'guest';
   const courseProgress = getCourseProgress(userId, courseId || '');
   const nextLesson = getNextLesson(userId, courseId || '');
+  const [activeTab, setActiveTab] = useState<'curriculum' | 'resources'>('curriculum');
+
+  // When navigating from one course straight to another, start on the overview tab.
+  useEffect(() => {
+    setActiveTab('curriculum');
+  }, [courseId]);
 
   if (loading) {
     return (
@@ -149,39 +157,41 @@ export default function CourseDetail() {
           </div>
         </motion.div>
 
-        {/* Course Resources CTA — downloadable photos, videos & PDFs for this course */}
+        {/* Tabs: Overview / Curriculum vs Resources & Downloads */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mb-8"
+          className="flex items-center gap-1 sm:gap-2 mb-8 border-b border-white/10 overflow-x-auto"
         >
-          <Link
-            to={`/courses/${courseId || course.id}/resources`}
-            className="flex items-center gap-4 p-5 sm:p-6 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 border border-amber-500/25 rounded-2xl hover:bg-amber-500/15 hover:border-amber-500/40 transition-all duration-300 group"
+          <button
+            onClick={() => setActiveTab('curriculum')}
+            className={`flex items-center gap-2 px-5 sm:px-6 py-3 rounded-t-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+              activeTab === 'curriculum'
+                ? 'text-blue-400 border-b-2 border-blue-500 bg-blue-500/5'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
           >
-            <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/25">
-              <FileText className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-white font-bold text-base sm:text-lg group-hover:text-amber-300 transition-colors font-[family-name:var(--font-heading)]">
-                {lang === 'rw'
-                  ? 'Ibikoresho byo Kwiga (Amafoto, Videwo na PDF)'
-                  : 'Course Resources (Photos, Videos & PDFs)'}
-              </h3>
-              <p className="text-gray-400 text-sm line-clamp-1">
-                {lang === 'rw'
-                  ? 'Manukura amafoto, videwo n\'inyandiko za PDF zijyanye n\'iri somo.'
-                  : 'Download photos, videos and PDF study materials for this course.'}
-              </p>
-            </div>
-            <span className="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-semibold rounded-xl flex items-center gap-1.5">
-              {lang === 'rw' ? 'Reba' : 'View'}
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </span>
-          </Link>
+            <BookOpen className="w-4 h-4" />
+            {lang === 'rw' ? 'Ibigize Isomo' : 'Curriculum'}
+          </button>
+          <button
+            onClick={() => setActiveTab('resources')}
+            className={`flex items-center gap-2 px-5 sm:px-6 py-3 rounded-t-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
+              activeTab === 'resources'
+                ? 'text-amber-400 border-b-2 border-amber-500 bg-amber-500/5'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Download className="w-4 h-4" />
+            {lang === 'rw' ? 'Ibikoresho byo Kwiga' : 'Resources & Downloads'}
+          </button>
         </motion.div>
 
+        {activeTab === 'resources' ? (
+          <CourseResourcesContent courseId={course.id} embedded />
+        ) : (
+        <>
         {/* Curriculum */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -278,6 +288,8 @@ export default function CourseDetail() {
             </div>
           </div>
         </motion.div>
+        </>
+        )}
       </div>
     </div>
     </AccessGate>
