@@ -7,7 +7,8 @@ import {
   Rocket, Star, Users, BarChart3, Plus, Trash2, Eye, EyeOff,
   Wifi, Database, HelpCircle, Sparkles, FileText, ArrowUpRight
 } from 'lucide-react';
-import { createApiKey, getKeysForUser, revokeApiKey, reactivateApiKey, deleteApiKey, fetchServerKeyUsage, type ApiKey } from '../lib/apiKeyStore';
+import { getAllKeys, createApiKey, getKeysForUser, revokeApiKey, reactivateApiKey, deleteApiKey, fetchServerKeyUsage, type ApiKey } from '../lib/apiKeyStore';
+import PaypackPayment from '../components/PaypackPayment';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 
@@ -164,6 +165,9 @@ export default function Developers() {
   const [pdfGenerating, setPdfGenerating] = useState(false);
   // Live usage + plan for each of the user's keys (from the backend when reachable)
   const [usageByKey, setUsageByKey] = useState<Record<string, { totalRequests: number; todayRequests: number; plan: string; isActive: boolean } | null>>({});
+  // Key currently being upgraded to Pro (10,000 RWF) via mobile money
+  const [upgradeKey, setUpgradeKey] = useState<ApiKey | null>(null);
+  const [usageRefresh, setUsageRefresh] = useState(0);
 
   const { user } = useAuth();
 
@@ -179,16 +183,15 @@ export default function Developers() {
     if (keysNow.length === 0) return;
     let cancelled = false;
     (async () => {
-      const results: Record<string, { totalRequests: number; todayRequests: number; plan: string; isActive: boolean } | null> = {};
       for (const k of keysNow) {
         const live = await fetchServerKeyUsage(k.key);
-        results[k.id] = live;
         if (cancelled) return;
+        // Trust the server plan (it is the source of truth after an upgrade)
         setUsageByKey(prev => ({ ...prev, [k.id]: live }));
       }
     })();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user?.id, usageRefresh]);
 
   const handleCreateKey = async () => {
     if (!newKeyName.trim() || !user?.id) return;
@@ -226,6 +229,16 @@ export default function Developers() {
       deleteApiKey(id);
       if (user?.id) setApiKeys(getKeysForUser(user.id));
     }
+  };
+
+  // After a successful 10,000 RWF payment the backend upgrades the key to Pro.
+  const handleUpgradeSuccess = (key: ApiKey) => {
+    // Reflect the new plan locally so the UI updates instantly
+    const localKeys = getAllKeys().map(k => (k.id === key.id ? { ...k, plan: 'pro' as const } : k));
+    localStorage.setItem('ishami_api_keys', JSON.stringify(localKeys));
+    setApiKeys(getKeysForUser(user?.id || ''));
+    setUsageRefresh(v => v + 1);
+    setUpgradeKey(null);
   };
 
   const generatePdf = async () => {
@@ -588,12 +601,18 @@ export default function Developers() {
                               : `${key.totalRequests} requests`} · {key.rateLimit}/min · Created {new Date(key.createdAt).toLocaleDateString()}
                           </div>
                           {(usageByKey[key.id]?.plan || key.plan) !== 'pro' && (usageByKey[key.id]?.plan || key.plan) !== 'enterprise' && (
-                            <p className="text-[10px] text-violet-400/80 mt-1">
-                              Courses & Moto Sensei AI need a Pro key (10,000 RWF/month).{' '}
-                              <a href="mailto:support@ishami.rw?subject=ISHAMI API Pro upgrade request" className="text-violet-300 underline underline-offset-2">
-                                Contact customer care to upgrade
+                            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                              <button
+                                onClick={() => setUpgradeKey(key)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 hover:bg-emerald-500/20 transition-all"
+                              >
+                                <CreditCard className="w-3 h-3" />
+                                Upgrade to Pro — 10,000 RWF (pay online)
+                              </button>
+                              <a href="mailto:support@ishami.rw?subject=ISHAMI API Pro upgrade request" className="text-[10px] text-violet-300 underline underline-offset-2">
+                                or contact customer care
                               </a>
-                            </p>
+                            </div>
                           )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -981,6 +1000,45 @@ console.log(data.data.response); // Requires Pro/Enterprise key`,
           )}
         </div>
       </div>
+
+      {/* Upgrade-to-Pro payment modal (Paypack mobile money) */}
+      <AnimatePresence>
+        {upgradeKey && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto py-10"
+            onClick={() => setUpgradeKey(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0, y: 16 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 16 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md"
+            >
+              <div className="mb-3 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-500/10 border border-violet-500/25 rounded-full text-violet-300 text-xs font-bold">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Pro — 10,000 RWF/mo · Courses & Moto Sensei AI
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Upgrading: <code className="font-mono text-white">{upgradeKey.name}</code>
+                </p>
+              </div>
+              <PaypackPayment
+                key={upgradeKey.id}
+                amount={10000}
+                product="api_pro"
+                apiKeyId={upgradeKey.id}
+                onSuccess={() => handleUpgradeSuccess(upgradeKey)}
+                onCancel={() => setUpgradeKey(null)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

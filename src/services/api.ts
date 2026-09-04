@@ -344,11 +344,13 @@ export const paymentAPI = {
   /**
    * Initiate Paypack Cashin — sends USSD push to phone.
    * Backend endpoint: POST /api/paypack/cashin
+   * product 'api_pro' = Public API key Pro upgrade (10,000 RWF); pass apiKeyId.
    */
   paypackCashin: async (data: {
     amount: number;
     phone: string;
-    product?: 'pro' | 'irembo';
+    product?: 'pro' | 'irembo' | 'api_pro';
+    apiKeyId?: string;
     iremboData?: {
       fullName: string;
       nationalId: string;
@@ -419,6 +421,39 @@ export const flipcardsAPI = {
     return apiCall('/api/flipcards/daily');
   },
 };
+
+// ============================================
+// CERTIFICATE APIs
+// ============================================
+
+export const certificatesAPI = {
+  /**
+   * Persist a newly earned certificate on the server (signed-in users) so it
+   * can be publicly verified at /verify/:certificateNo.
+   * Backend endpoint: POST /api/certificates/generate
+   */
+  generate: async (data: { score: number; totalQuestions: number; quizTitle: string }) => {
+    return apiCall('/api/certificates/generate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+/**
+ * Public certificate verification lookup (no auth needed — used by the QR code
+ * and the /verify page). Backend endpoint: GET /api/certificates/verify/:certNo
+ */
+export async function verifyCertificate(certificateNo: string): Promise<any> {
+  try {
+    const response = await fetch(`${PRIMARY_API_BASE}/api/certificates/verify/${encodeURIComponent(certificateNo)}`, {
+      headers: { 'Accept': 'application/json' },
+    });
+    return await response.json();
+  } catch {
+    return { valid: false, message: 'Verification service unavailable' };
+  }
+}
 
 // ============================================
 // PDF QUIZ APIs (from extracted PDF document)

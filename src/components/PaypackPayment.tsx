@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 
 interface PaypackPaymentProps {
   amount?: number;
-  product?: 'quiz' | 'full' | 'pro' | 'irembo';
+  product?: 'quiz' | 'full' | 'pro' | 'irembo' | 'api_pro';
+  apiKeyId?: string; // required when product === 'api_pro' (Public API key upgrade)
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -17,6 +18,7 @@ type PaymentStatus = 'idle' | 'initiating' | 'pending' | 'success' | 'failed' | 
 export default function PaypackPayment({
   amount = 1000, // Default to 1000 RWF for pro features
   product = 'pro',
+  apiKeyId,
   onSuccess,
   onCancel,
 }: PaypackPaymentProps) {
@@ -87,6 +89,7 @@ export default function PaypackPayment({
         amount,
         phone: cleanPhone,
         product,
+        ...(product === 'api_pro' && apiKeyId ? { apiKeyId } : {}),
       });
 
       setTransactionId(result.transactionId);
@@ -138,7 +141,13 @@ export default function PaypackPayment({
             {amount.toLocaleString()} RWF
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-            {product === 'pro' ? 'ISHAMI Pro Upgrade' : 'Irembo Service'}
+            {product === 'pro'
+              ? 'ISHAMI Pro Upgrade'
+              : product === 'api_pro'
+              ? 'ISHAMI Public API — Key Pro Upgrade (Courses & Moto Sensei AI)'
+              : product === 'irembo'
+              ? 'Irembo Service'
+              : 'ISHAMI Access'}
           </p>
         </div>
 

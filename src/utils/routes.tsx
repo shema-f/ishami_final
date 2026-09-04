@@ -22,6 +22,7 @@ const Terms = lazy(() => import("../pages/Terms"));
 const CookiePolicy = lazy(() => import("../pages/CookiePolicy"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Certificate = lazy(() => import("../pages/Certificate"));
+const CertificateVerify = lazy(() => import("../pages/CertificateVerify"));
 const Simulation = lazy(() => import("../pages/Simulation"));
 const ScenarioSelect = lazy(() => import("../simulation/ui/ScenarioSelect"));
 const SharedChat = lazy(() => import("../pages/SharedChat"));
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
       { path: "cookies", Component: CookiePolicy },
       { path: "profile", Component: Profile },
       { path: "certificate", Component: Certificate },
+      { path: "verify/:certificateNo", Component: CertificateVerify },
       { path: "simulation", Component: ScenarioSelect },
       { path: "simulation/play", Component: Simulation },
       { path: "simulation/:scenarioId", Component: Simulation },

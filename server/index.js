@@ -141,6 +141,7 @@ const Submission = model('Submission', SubmissionSchema);
 
 const PaymentSchema = new Schema({
   userId: { type: Types.ObjectId, ref: 'User' },
+  apiKeyId: { type: Types.ObjectId, ref: 'PublicApiKey', default: null }, // for API Pro (10,000 RWF) upgrades
   amount: Number,
   phone: String,
   provider: String,
@@ -318,7 +319,8 @@ async function seed() {
       { key: 'quizData4', title: 'Inzira Zihariye', category: 'Inzira', image: null, arr: quizSource.quizData4 },
       { key: 'quizData5', title: 'Ibindi By’ingenzi', category: 'Ibisanzwe', image: null, arr: quizSource.quizData5 },
       { key: 'quizData6', title: 'Ibyateza Impanuka', category: 'Umutekano', image: null, arr: quizSource.quizData6 },
-    ].filter(b => Array.isArray(b.arr));
+    ].map(b => ({ ...b, arr: Array.isArray(b.arr) ? b.arr.slice(0, 20) : b.arr })) // every seeded quiz gets exactly 20 questions
+    .filter(b => Array.isArray(b.arr));
 
     const extras = Object.entries(quizSource)
       .filter(([k]) => !baseKeys.includes(k))
@@ -640,7 +642,8 @@ await seed();
   try {
     const tierOrder = { free: 0, quiz: 1, full: 2 };
     // Find all successful payments with accessTierGranted
-    const successfulPayments = await Payment.find({ status: 'SUCCESS', accessTierGranted: { $in: ['quiz', 'full'] } }).lean();
+    // (api_pro = Public API key upgrade only, never changes the app access tier)
+    const successfulPayments = await Payment.find({ status: 'SUCCESS', accessTierGranted: { $in: ['quiz', 'full'] }, product: { $nin: ['irembo', 'api_pro'] } }).lean();
     const userTierMap = new Map();
     for (const p of successfulPayments) {
       const uid = String(p.userId);
@@ -658,6 +661,39 @@ await seed();
     console.log(`[Migration] Upgraded ${userTierMap.size} users based on payment history`);
   } catch (e) {
     console.error('[Migration] Payment-based upgrade error:', e?.message);
+  }
+})();
+
+// ─── Migration: trim every quiz to exactly 20 questions ────
+// Quizzes seeded earlier (e.g. quizData4 & quizData5) had up to 29 questions.
+// This makes sure each quiz has exactly 20 questions by keeping the first 20
+// questions of each quiz (deterministic) and deleting the rest.
+(async () => {
+  try {
+    const quizzes = await Quiz.find({}).lean();
+    let trimmed = 0;
+    let synced = 0;
+    for (const q of quizzes) {
+      const count = await Question.countDocuments({ quizId: q._id });
+      if (count > 20) {
+        const extras = await Question.find({ quizId: q._id })
+          .sort({ _id: 1 })
+          .skip(20)
+          .select('_id')
+          .lean();
+        if (extras.length) {
+          await Question.deleteMany({ _id: { $in: extras.map(x => x._id) } });
+        }
+        await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: 20 } });
+        trimmed++;
+      } else if (q.questionCount !== count) {
+        await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: count } });
+        synced++;
+      }
+    }
+    console.log(`[Migration] Trimmed ${trimmed} quizzes to 20 questions; synced counts on ${synced}`);
+  } catch (e) {
+    console.error('[Migration] Quiz trim error:', e?.message);
   }
 })();
 
@@ -2070,15 +2106,37 @@ import { paypackCashin, paypackFindTransaction, paypackListEvents, verifyWebhook
  * Initiate a Paypack Cashin — sends USSD push to customer's phone.
  * Body: { amount: number, phone: string, product?: string }
  */
+// Auto-upgrade a Public API key to Pro (plan='pro') once its 10,000 RWF payment
+// succeeds. Used by the paypack status-poll and webhook success handlers.
+async function applyApiProUpgrade(txn) {
+  try {
+    if (!txn || txn.product !== 'api_pro' || !txn.apiKeyId) return false;
+    const keyDoc = await PublicApiKey.findById(txn.apiKeyId);
+    if (!keyDoc) {
+      console.warn(`[API Pro] Upgrade skipped: API key ${txn.apiKeyId} not found for payment ${txn._id}`);
+      return false;
+    }
+    keyDoc.plan = 'pro';
+    keyDoc.isActive = true;
+    if (!keyDoc.rateLimit || keyDoc.rateLimit < 120) keyDoc.rateLimit = 120;
+    await keyDoc.save();
+    console.log(`[API Pro] Key ${keyDoc.key} upgraded to Pro after payment ${txn._id}`);
+    return true;
+  } catch (e) {
+    console.error('[API Pro] Upgrade error:', e?.message || e);
+    return false;
+  }
+}
+
 app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
   try {
-    const { amount, phone, product, iremboData } = req.body || {};
+    const { amount, phone, product, iremboData, apiKeyId } = req.body || {};
     const prod = String(product || 'pro');
 
     const testMode = process.env.PAYPACK_TEST_MODE === 'true';
     // Always compute the real expected amount based on product type
-    // Tiers: 'quiz' = 1000 RWF (quiz access), 'full' = 3000 RWF (full app access)
-    // Legacy 'pro' = 3000 RWF (alias for full)
+    // Tiers: 'quiz' = 100 RWF, 'full'/'pro' = 3,000 RWF (full app access),
+    // 'api_pro' = 10,000 RWF (Public API key upgrade to Pro)
     let expected;
     let accessTierGranted = 'quiz'; // default tier for payment
     if (prod === 'irembo') {
@@ -2090,6 +2148,8 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     } else if (prod === 'full' || prod === 'full_access' || prod === 'pro') {
       expected = 3000;
       accessTierGranted = 'full';
+    } else if (prod === 'api_pro') {
+      expected = 10000;
     } else {
       expected = 1000;
     }
@@ -2099,6 +2159,13 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: `Invalid amount. Expected ${expected} RWF` });
     }
     if (!phone) return res.status(400).json({ message: 'Phone number required' });
+    if (prod === 'api_pro' && !apiKeyId) {
+      return res.status(400).json({ message: 'API key id is required for API Pro upgrades' });
+    }
+    if (prod === 'api_pro' && apiKeyId) {
+      const exists = await PublicApiKey.findById(apiKeyId);
+      if (!exists) return res.status(400).json({ message: 'API key not found' });
+    }
 
     // Normalize phone: remove +, ensure leading 0
     const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^250/, '0');
@@ -2109,6 +2176,7 @@ app.post('/api/paypack/cashin', authMiddleware, async (req, res) => {
     // Save payment to DB — store the granted tier
     const payment = await Payment.create({
       userId: req.user._id,
+      apiKeyId: prod === 'api_pro' ? apiKeyId : null,
       amount: expected,
       phone: cleanPhone,
       provider: 'paypack',
@@ -2181,6 +2249,12 @@ app.get('/api/paypack/status/:transactionId', authMiddleware, async (req, res) =
         if (ppStatus === 'successful') {
           txn.status = 'SUCCESS';
           await txn.save();
+          // API Pro purchase: upgrade the paid API key (no app-tier change)
+          if (txn.product === 'api_pro') {
+            const upgraded = await applyApiProUpgrade(txn);
+            console.log(`[API Pro] Status poll: key upgrade ${upgraded ? 'completed' : 'failed/skipped'} for payment ${txn._id}`);
+            return res.json({ transactionId: String(txn._id), status: txn.status });
+          }
           // Upgrade user access tier based on payment
           if (txn.product !== 'irembo') {
             const u = await User.findById(txn.userId);
@@ -2264,8 +2338,12 @@ app.post('/api/webhook/paypack', async (req, res) => {
     if (status === 'successful') {
       txn.status = 'SUCCESS';
       await txn.save();
-      // Upgrade user access tier based on payment (same logic as status poll endpoint)
-      if (txn.product !== 'irembo') {
+      // API Pro purchase: upgrade the paid API key (no app-tier change)
+      if (txn.product === 'api_pro') {
+        const upgraded = await applyApiProUpgrade(txn);
+        console.log(`[API Pro] Webhook: key upgrade ${upgraded ? 'completed' : 'failed/skipped'} for payment ${txn._id}`);
+      } else if (txn.product !== 'irembo') {
+        // Upgrade user access tier based on payment (same logic as status poll endpoint)
         const u = await User.findById(txn.userId);
         if (u) {
           const granted = txn.accessTierGranted || 'quiz';
@@ -2518,10 +2596,12 @@ app.get('/api/certificates/my', authMiddleware, async (req, res) => {
 // Verify a certificate (public)
 app.get('/api/certificates/verify/:certNo', async (req, res) => {
   try {
-    const cert = await Certificate.findOne({ certificateNo: req.params.certNo }).lean();
+    const cert = await Certificate.findOne({ certificateNo: String(req.params.certNo || '').trim() }).lean();
     if (!cert) {
       return res.json({ valid: false, message: 'Certificate not found' });
     }
+    const now = new Date();
+    const expiresAt = cert.expiresAt ? new Date(cert.expiresAt) : null;
     const percentage = Math.round(((cert.score || 0) / Math.max(1, cert.totalQuestions || 1)) * 100);
     res.json({
       valid: true,
@@ -2531,8 +2611,11 @@ app.get('/api/certificates/verify/:certNo', async (req, res) => {
         score: cert.score,
         totalQuestions: cert.totalQuestions,
         percentage,
+        passed: percentage >= 70,
+        valid: !expiresAt || expiresAt > now,
         quizTitle: cert.quizTitle,
-        issuedAt: cert.issuedAt
+        issuedAt: cert.issuedAt,
+        expiresAt: cert.expiresAt || null
       }
     });
   } catch (e) {
@@ -3478,7 +3561,7 @@ app.get('/api/certificate/:certificateId.pdf', authMiddleware, async (req, res) 
 
     // Generate real QR code as PNG buffer
     const QRCode = (await import('qrcode')).default;
-    const verifyUrl = `https://ishami.rw/verify/${cert.certificateNo}`;
+    const verifyUrl = `${process.env.FRONTEND_URL || 'https://ishami-final.vercel.app'}/verify/${cert.certificateNo}`;
     const qrBuffer = await QRCode.toBuffer(verifyUrl, {
       width: 120,
       margin: 2,

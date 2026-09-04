@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Award, Zap, CheckCircle, XCircle, Sparkles, ArrowRight, ArrowLeft, Trophy, Languages } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router';
-import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI, flushPendingQuizSubmissions } from '../services/api';
+import { quizAPI, paymentAPI, pdfQuizAPI, usageAPI, certificatesAPI, flushPendingQuizSubmissions } from '../services/api';
 import { useTranslation } from '../contexts/I18nContext';
 const quizImages: Record<string, any> = import.meta.glob('../assets/*.webp', { eager: true });
 const resolveQuizImage = (idx: number) => {
@@ -285,8 +285,22 @@ export default function Quiz() {
         history.unshift(historyEntry);
         localStorage.setItem('quizHistory', JSON.stringify(history.slice(0, 50)));
         if (passed) {
-          const certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
-          const expiryDate = new Date();
+          // Persist the certificate on the server so it can be publicly verified
+          // at /verify/:certificateNo. The server issues the official number.
+          let certNo = `ISH-TRU-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999999)).padStart(6, '0')}`;
+          let issuedISO = new Date().toISOString();
+          try {
+            const res = await certificatesAPI.generate({
+              score,
+              totalQuestions: questions.length,
+              quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
+            });
+            if (res?.certificate?.certificateNo) {
+              certNo = res.certificate.certificateNo;
+              issuedISO = res.certificate.issuedAt || issuedISO;
+            }
+          } catch { /* offline — keep local certificate */ }
+          const expiryDate = new Date(new Date(issuedISO).getTime());
           expiryDate.setFullYear(expiryDate.getFullYear() + 1);
           localStorage.setItem('latestCertificate', JSON.stringify({
             userId: user.id,
@@ -294,7 +308,7 @@ export default function Quiz() {
             score,
             totalQuestions: questions.length,
             quizTitle: selectedQuiz.title || 'Traffic Rules & Road Safety Understanding',
-            issuedAt: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+            issuedAt: new Date(issuedISO).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
             expiresAt: expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
             certificateNo: certNo,
             passed: true,
