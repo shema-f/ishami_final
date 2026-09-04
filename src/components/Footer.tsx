@@ -146,7 +146,7 @@ export default function Footer() {
               {[
                 { path: '/', label: t('nav.home') },
                 { path: '/quiz', label: t('nav.quiz') },
-                { path: '/resources', label: t('nav.resources') },
+                { path: '/courses', label: t('nav.courses') },
                 { path: '/leaderboard', label: t('nav.leaderboard') },
                 { path: '/developers', label: t('footer.developers'), icon: <Code className="w-3 h-3" /> },
               ].map((item) => (

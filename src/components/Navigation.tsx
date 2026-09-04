@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router';
-import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronRight, Globe, User, Bell, Bookmark, History, ChevronDown, BookOpen, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +11,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
+  const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const { t, lang, setLang } = useTranslation();
@@ -25,21 +26,30 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setBlogDropdownOpen(false);
-    if (blogDropdownOpen) {
+    const handleClickOutside = () => {
+      setBlogDropdownOpen(false);
+      setCoursesDropdownOpen(false);
+    };
+    if (blogDropdownOpen || coursesDropdownOpen) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
-  }, [blogDropdownOpen]);
+  }, [blogDropdownOpen, coursesDropdownOpen]);
 
   const navItems = [
     { path: '/', label: t('nav.home') },
     { path: '/ai-assistant', label: t('nav.ai') },
     { path: '/quiz', label: t('nav.quiz') },
     { path: '/simulation', label: t('nav.simulation') },
-    { path: '/courses', label: t('nav.courses') },
+  ];
+
+  // Courses is a dropdown like Blog: all courses plus the downloadable
+  // resources (photos / videos / PDFs) living under the courses section.
+  const coursesSubItems = [
+    { path: '/courses', label: t('nav.courses'), icon: <BookOpen className="w-4 h-4" /> },
+    { path: '/resources', label: t('nav.resources'), icon: <Download className="w-4 h-4" /> },
   ];
 
   const blogSubItems = [
@@ -50,6 +60,8 @@ export default function Navigation() {
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
   const isBlogActive = location.pathname.startsWith('/blog');
+  const isCoursesActive =
+    location.pathname.startsWith('/courses') || location.pathname.startsWith('/resources');
 
   return (
     <nav
@@ -104,11 +116,66 @@ export default function Navigation() {
               </Link>
             ))}
 
+            {/* Courses Dropdown */}
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBlogDropdownOpen(false);
+                  setCoursesDropdownOpen(!coursesDropdownOpen);
+                }}
+                className={`relative px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center gap-1 ${
+                  isCoursesActive
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+              >
+                {isCoursesActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-white/10 rounded-lg border border-white/10"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 text-sm">{t('nav.courses')}</span>
+                <ChevronDown className={`relative z-10 w-3 h-3 transition-transform ${coursesDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {coursesDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#16171C] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/30 overflow-hidden z-50"
+                  >
+                    {coursesSubItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setCoursesDropdownOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 transition-all ${
+                          isActive(item.path)
+                            ? 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                      >
+                        {item.icon}
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Blog Dropdown */}
             <div className="relative">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  setCoursesDropdownOpen(false);
                   setBlogDropdownOpen(!blogDropdownOpen);
                 }}
                 className={`relative px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center gap-1 ${
@@ -311,11 +378,39 @@ export default function Navigation() {
                 </motion.div>
               ))}
 
-              {/* Blog Section (Mobile) */}
+              {/* Courses Section (Mobile) — courses + downloadable resources sub-pages */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: navItems.length * 0.05 }}
+              >
+                <div className={`px-4 py-2 text-xs uppercase tracking-wider text-gray-400 dark:text-slate-500 font-semibold ${isCoursesActive ? 'text-blue-500 dark:text-blue-400' : ''}`}>
+                  {t('nav.courses')}
+                </div>
+                {coursesSubItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center justify-between px-4 py-2.5 ml-2 rounded-xl transition-all font-medium ${
+                      isActive(item.path)
+                        ? 'bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 dark:text-white border border-blue-500/20'
+                        : 'text-gray-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </div>
+                  </Link>
+                ))}
+              </motion.div>
+
+              {/* Blog Section (Mobile) */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (navItems.length + 1) * 0.05 }}
               >
                 <div className={`px-4 py-2 text-xs uppercase tracking-wider text-gray-400 dark:text-slate-500 font-semibold ${isBlogActive ? 'text-blue-500 dark:text-blue-400' : ''}`}>
                   {t('nav.blog')}
