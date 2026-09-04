@@ -311,6 +311,32 @@ async function seed() {
     await User.updateOne({ email: adminEmail }, { $set: { role: 'admin', isPro: true } });
   }
   const baseKeys = ['quizData', 'quizData1', 'quizData2', 'quizData3', 'quizData4', 'quizData5', 'quizData6'];
+
+    // Every seeded quiz must have exactly 20 questions. Bundles with more are
+    // truncated to 20; bundles with fewer are padded from a shared pool of the
+    // other quiz questions (duplicates are allowed by design) so nothing is lost.
+    const TARGET_Q = 20;
+    const allSourceQuestions = Object.values(quizSource)
+      .flatMap((v) => {
+        if (Array.isArray(v)) {
+          if (v.length && v[0] && Array.isArray(v[0].questions)) return v[0].questions;
+          return v;
+        }
+        if (v && Array.isArray(v.questions)) return v.questions;
+        return [];
+      })
+      .filter(q => q && q.question);
+    const padToTarget = (arr) => {
+      const out = Array.isArray(arr) ? arr.slice(0, TARGET_Q) : [];
+      let i = 0;
+      while (out.length < TARGET_Q && i < allSourceQuestions.length * 4) {
+        const cand = allSourceQuestions[i % allSourceQuestions.length];
+        if (cand && cand.question && !out.some(q => q.question === cand.question)) out.push(cand);
+        i++;
+      }
+      return out;
+    };
+
     const baseBundles = [
       { key: 'quizData', title: 'Ibyapa n’Ibirango', category: 'Ibyapa', image: null, arr: quizSource.quizData },
       { key: 'quizData1', title: 'Umuvuduko n’Umutekano', category: 'Umuvuduko', image: null, arr: quizSource.quizData1 },
@@ -319,7 +345,7 @@ async function seed() {
       { key: 'quizData4', title: 'Inzira Zihariye', category: 'Inzira', image: null, arr: quizSource.quizData4 },
       { key: 'quizData5', title: 'Ibindi By’ingenzi', category: 'Ibisanzwe', image: null, arr: quizSource.quizData5 },
       { key: 'quizData6', title: 'Ibyateza Impanuka', category: 'Umutekano', image: null, arr: quizSource.quizData6 },
-    ].map(b => ({ ...b, arr: Array.isArray(b.arr) ? b.arr.slice(0, 20) : b.arr })) // every seeded quiz gets exactly 20 questions
+    ].map(b => ({ ...b, arr: padToTarget(b.arr) })) // every seeded quiz gets exactly 20 questions
     .filter(b => Array.isArray(b.arr));
 
     const extras = Object.entries(quizSource)
@@ -332,7 +358,7 @@ async function seed() {
         } else if (v && Array.isArray(v.questions)) {
           arr = v.questions;
         }
-        return { key: k, title: `Bundle ${k}`, category: 'Mixed', image: null, arr };
+        return { key: k, title: `Bundle ${k}`, category: 'Mixed', image: null, arr: padToTarget(arr) };
       })
       .filter(b => Array.isArray(b.arr) && b.arr.length > 0);
 
@@ -664,36 +690,69 @@ await seed();
   }
 })();
 
-// ─── Migration: trim every quiz to exactly 20 questions ────
-// Quizzes seeded earlier (e.g. quizData4 & quizData5) had up to 29 questions.
-// This makes sure each quiz has exactly 20 questions by keeping the first 20
-// questions of each quiz (deterministic) and deleting the rest.
+// ─── Migration: make every quiz exactly 20 questions ────
+// Quizzes seeded earlier (e.g. quizData4 & quizData5) had up to 29 questions,
+// and some PDF bundles were extracted with fewer than 20. This trims quizzes
+// over 20 (keeping the first 20 deterministically) and pads quizzes under 20
+// by duplicating questions from other quizzes, so every quiz has exactly 20.
 (async () => {
   try {
     const quizzes = await Quiz.find({}).lean();
     let trimmed = 0;
+    let padded = 0;
     let synced = 0;
+    const target = 20;
     for (const q of quizzes) {
       const count = await Question.countDocuments({ quizId: q._id });
-      if (count > 20) {
+      if (count > target) {
         const extras = await Question.find({ quizId: q._id })
           .sort({ _id: 1 })
-          .skip(20)
+          .skip(target)
           .select('_id')
           .lean();
         if (extras.length) {
           await Question.deleteMany({ _id: { $in: extras.map(x => x._id) } });
         }
-        await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: 20 } });
+        await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: target } });
         trimmed++;
+      } else if (count < target) {
+        // Pad from a deterministic pool of this quiz's own questions first,
+        // then from all other quizzes' questions (duplicates allowed by design).
+        const own = await Question.find({ quizId: q._id }).sort({ _id: 1 }).lean();
+        const others = await Question.find({ quizId: { $ne: q._id } })
+          .sort({ _id: 1 })
+          .limit(500)
+          .lean();
+        const pool = [...own, ...others];
+        const docs = [];
+        let i = 0;
+        while (own.length + docs.length < target && i < pool.length * 4) {
+          const src = pool[i % pool.length];
+          if (src && src.question) {
+            docs.push({
+              quizId: q._id,
+              category: q.category || src.category,
+              question: src.question,
+              questionEn: src.questionEn || '',
+              options: src.options || [],
+              optionsEn: src.optionsEn || [],
+              licenseClass: src.licenseClass || ['A', 'B', 'C', 'D'],
+              image: src.image || null
+            });
+          }
+          i++;
+        }
+        if (docs.length) await Question.insertMany(docs);
+        await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: target } });
+        padded++;
       } else if (q.questionCount !== count) {
         await Quiz.updateOne({ _id: q._id }, { $set: { questionCount: count } });
         synced++;
       }
     }
-    console.log(`[Migration] Trimmed ${trimmed} quizzes to 20 questions; synced counts on ${synced}`);
+    console.log(`[Migration] Trimmed ${trimmed} quizzes to 20, padded ${padded} to 20; synced counts on ${synced}`);
   } catch (e) {
-    console.error('[Migration] Quiz trim error:', e?.message);
+    console.error('[Migration] Quiz trim/pad error:', e?.message);
   }
 })();
 

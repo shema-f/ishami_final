@@ -101,7 +101,9 @@ export default function Quiz() {
         ]);
         let allQuizzes: QuizCard[] = [];
         if (quizRes.status === 'fulfilled') allQuizzes = quizRes.value.quizzes || [];
-        // Add PDF quiz bundles as selectable quiz cards
+        // Add PDF quiz bundles as selectable quiz cards, avoiding duplicates:
+        // the DB also seeds copies of these bundles, so keep the /api/pdf-quizzes
+        // version and drop any DB quiz with the same title.
         if (pdfRes.status === 'fulfilled') {
           const pdfBundles = (pdfRes.value.bundles || []).map((b: any) => ({
             id: b.id,
@@ -110,7 +112,8 @@ export default function Quiz() {
             image: null,
             questionCount: b.questionCount
           }));
-          allQuizzes = [...pdfBundles, ...allQuizzes];
+          const pdfTitles = new Set(pdfBundles.map((b: any) => b.title));
+          allQuizzes = [...pdfBundles, ...allQuizzes.filter((q) => !pdfTitles.has(q.title))];
         }
         setQuizzes(allQuizzes);
       } catch (error) {

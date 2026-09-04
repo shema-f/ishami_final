@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { motion } from 'motion/react';
 import { Zap, Brain, BookOpen, Trophy, Car, ChevronRight, Star, Mail, ArrowRight, Sparkles, Shield, Target, Award, CheckCircle2, Newspaper, ExternalLink, Terminal, Code, Key, Globe, Rocket, Clock } from 'lucide-react';
+import iremboLogo from '../assets/irembo.png';
 import { useState, lazy, Suspense, useEffect } from 'react';
 import { newsletterAPI, leaderboardAPI } from '../services/api';
 import { toast } from 'sonner';
@@ -660,7 +661,11 @@ export default function Home() {
               }}
             />
             <div className="relative z-10 text-center text-white">
-              <Trophy className="w-16 h-16 mx-auto mb-6" />
+              <img
+                src={iremboLogo}
+                alt="Irembo"
+                className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/90 p-2 object-contain shadow-lg shadow-black/20"
+              />
               <h2 className="text-3xl font-bold mb-4 font-[family-name:var(--font-heading)]">{t('home.irembo_section.title', 'Need Help with Irembo Registration?')}</h2>
               <p className="mb-8 text-purple-100">
                 {t('home.irembo_section.description', 'We can help you get your exam code through Irembo services. Fast, reliable, and secure assistance.')}

@@ -1482,40 +1482,59 @@ const b5 = [
   }
 ];
 
+// Every bundle must contain exactly 20 questions. Bundles that were extracted
+// with fewer (14-19) are padded to 20 by duplicating questions from the other
+// bundles' pools (deterministic: first unused question from the shared pool).
+const TARGET_QUESTION_COUNT = 20;
+const sharedPool = [b1, b2, b3, b4, b5].flat().filter(q => q && q.question);
+
+const padTo20 = (questions) => {
+  const out = Array.isArray(questions) ? questions.slice(0, TARGET_QUESTION_COUNT) : [];
+  let i = 0;
+  while (out.length < TARGET_QUESTION_COUNT && i < sharedPool.length * 4) {
+    const cand = sharedPool[i % sharedPool.length];
+    if (cand && cand.question && !out.some(q => q.question === cand.question)) {
+      out.push(cand);
+    }
+    i++;
+  }
+  return out;
+};
+
 export const pdfQuizBundles = [
   {
     id: "pdf_quiz_1",
     title: "Amategeko Y'Umubare (Fundamentals)",
     category: "Amategeko Y'Umubare",
     licenseClasses: ["A", "B", "C", "D"],
-    questions: b1
+    questions: padTo20(b1)
   },
   {
     id: "pdf_quiz_2",
     title: "Ibimenyetso By'amahotaro (Traffic Signs)",
     category: "Ibimenyetso",
     licenseClasses: ["A", "B", "C", "D"],
-    questions: b2
+    questions: padTo20(b2)
   },
   {
     id: "pdf_quiz_3",
     title: "Amategeko Yo Mu Muhanda (Road Rules)",
     category: "Amategeko Yo Mu Muhanda",
     licenseClasses: ["A", "B", "C", "D"],
-    questions: b3
+    questions: padTo20(b3)
   },
   {
     id: "pdf_quiz_4",
     title: "Amategeko Y'Ibintu By'Ingenzi (Key Rules)",
     category: "Amategeko y'Ibintu by'Ingenzi",
     licenseClasses: ["A", "B", "C", "D"],
-    questions: b4
+    questions: padTo20(b4)
   },
   {
     id: "pdf_quiz_5",
     title: "Amategeko Y'Ibinyabiziga (Vehicle Specs)",
     category: "Ibinyabiziga",
     licenseClasses: ["A", "B", "C", "D"],
-    questions: b5
+    questions: padTo20(b5)
   }
 ];
